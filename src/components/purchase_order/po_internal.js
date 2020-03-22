@@ -3,7 +3,6 @@ import { Container, Paper, Grid, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import TextField from "@material-ui/core/TextField";
@@ -43,12 +42,8 @@ export default function POInfo() {
       <Grid container alignItems="center" justify="space-around">
         <Grid item xs={1}>
           <FormControl className={classes.form100}>
-            <InputLabel shrink id="demo-simple-select-placeholder-label-label">
-              厂内工号
-            </InputLabel>
+            <InputLabel shrink>厂内工号</InputLabel>
             <Select
-              labelId="demo-simple-select-placeholder-label-label"
-              id="demo-simple-select-placeholder-label"
               // value="10"
               onChange={handleChange}
               displayEmpty
@@ -66,12 +61,8 @@ export default function POInfo() {
         </Grid>
         <Grid item xs={1}>
           <FormControl className={classes.form100}>
-            <InputLabel shrink id="demo-simple-select-placeholder-label-label">
-              快递公司
-            </InputLabel>
+            <InputLabel shrink>快递公司</InputLabel>
             <Select
-              labelId="demo-simple-select-placeholder-label-label"
-              id="demo-simple-select-placeholder-label"
               // value="10"
               onChange={handleChange}
               displayEmpty
@@ -89,12 +80,8 @@ export default function POInfo() {
         </Grid>
         <Grid item xs={1}>
           <FormControl className={classes.form100}>
-            <InputLabel shrink id="demo-simple-select-placeholder-label-label">
-              出货工厂
-            </InputLabel>
+            <InputLabel shrink>出货工厂</InputLabel>
             <Select
-              labelId="demo-simple-select-placeholder-label-label"
-              id="demo-simple-select-placeholder-label"
               // value="10"
               onChange={handleChange}
               displayEmpty
@@ -112,12 +99,8 @@ export default function POInfo() {
         </Grid>
         <Grid item xs={1}>
           <FormControl className={classes.form100}>
-            <InputLabel shrink id="demo-simple-select-placeholder-label-label">
-              收货人
-            </InputLabel>
+            <InputLabel shrink>收货人</InputLabel>
             <Select
-              labelId="demo-simple-select-placeholder-label-label"
-              id="demo-simple-select-placeholder-label"
               // value="10"
               onChange={handleChange}
               displayEmpty
@@ -135,12 +118,8 @@ export default function POInfo() {
         </Grid>
         <Grid item xs={1}>
           <FormControl className={classes.form100}>
-            <InputLabel shrink id="demo-simple-select-placeholder-label-label">
-              联系
-            </InputLabel>
+            <InputLabel shrink>联系</InputLabel>
             <Select
-              labelId="demo-simple-select-placeholder-label-label"
-              id="demo-simple-select-placeholder-label"
               // value="10"
               onChange={handleChange}
               displayEmpty
@@ -163,7 +142,7 @@ export default function POInfo() {
               variant="inline"
               format="dd/MM/yyyy"
               margin="normal"
-              id="客户交期"
+              id="dd"
               label="下单日期"
               value={selectedDate}
               onChange={handleDateChange}
@@ -180,7 +159,7 @@ export default function POInfo() {
               variant="inline"
               format="dd/MM/yyyy"
               margin="normal"
-              id="delivery-date"
+              id="ddd"
               label="厂内交期"
               value={selectedDate}
               onChange={handleDateChange}

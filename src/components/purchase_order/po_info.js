@@ -1,31 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import { Container, Paper, Grid, Typography } from "@material-ui/core";
+import { Paper, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import TextField from "@material-ui/core/TextField";
 import Checkbox from "@material-ui/core/Checkbox";
 import Select from "@material-ui/core/Select";
-import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from "@material-ui/pickers";
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 
-import { GetCustomers, UpdateState, GetPurchaser } from "../../actions/po_actions";
+import { GetCustomers, UpdateState, GetPurchaser, GetCurrency, ToggleState } from "../../actions/po_actions";
 
 const useStyles = makeStyles(theme => ({
   form100: {
     margin: theme.spacing(1),
-    minWidth: 100
+    minWidth: 90
   },
   empty: {
     marginTop: theme.spacing(2)
   },
-
   root: {
     margin: 10
+  },
+  clearMarginPadding: {
+    padding: 0,
+    margin: 0
   }
 }));
 
@@ -33,38 +35,39 @@ function POInfo(props) {
   const classes = useStyles();
 
   // vars from reducers
-  const { customers, selectedCustomer, customerPO, purchasers } = props;
+  const {
+    customers,
+    selectedCustomer,
+    customerPO,
+    purchasers,
+    selectedPurchaser,
+    customerContract,
+    currencies,
+    selectedCurrency,
+    exchangeRate,
+    tax,
+    taxRate,
+    customerSubmitDate,
+    deliveryDate
+  } = props;
 
   // methods from actions
-  const { GetCustomers, UpdateState, GetPurchaser } = props;
-
-  const [age, setAge] = React.useState("");
-  const [selectedDate, setSelectedDate] = React.useState(new Date("2020-03-22"));
+  const { GetCustomers, UpdateState, GetPurchaser, GetCurrency, ToggleState } = props;
 
   useEffect(() => {
     GetCustomers();
+    GetCurrency();
     return () => {};
-  }, [GetCustomers]);
+  }, [GetCustomers, GetCurrency]);
 
-  const handleChange = event => {
-    setAge(event.target.value);
-  };
-
-  const handleDateChange = date => {
-    setSelectedDate(date);
-  };
   return (
     // <Container maxWidth="lg">
     <Paper className={classes.root}>
       <Grid container alignItems="center" justify="space-around">
         <Grid item xs={1}>
           <FormControl className={classes.form100}>
-            <InputLabel shrink id="demo-simple-select-placeholder-label-label">
-              客户
-            </InputLabel>
+            <InputLabel shrink>客户</InputLabel>
             <Select
-              labelId="demo-simple-select-placeholder-label-label"
-              id="demo-simple-select-placeholder-label"
               value={selectedCustomer}
               onChange={e => {
                 UpdateState("selectedCustomer", e.target.value);
@@ -78,7 +81,7 @@ function POInfo(props) {
               </MenuItem>
               {customers.map(item => {
                 return (
-                  <MenuItem key={item.internal} value={item.internal}>
+                  <MenuItem key={item.id} value={item.internal}>
                     {item.internal}
                   </MenuItem>
                 );
@@ -89,165 +92,128 @@ function POInfo(props) {
         </Grid>
         <Grid item xs={1}>
           <FormControl className={classes.form100}>
-            <InputLabel shrink id="demo-simple-select-placeholder-label-label">
-              客户PO#
-            </InputLabel>
+            <InputLabel shrink>客户PO#</InputLabel>
             <TextField
               className={classes.empty}
               value={customerPO}
               onChange={e => UpdateState("customerPO", e.target.value)}
             />
-            {/* <FormHelperText>Label + placeholder</FormHelperText> */}
           </FormControl>
         </Grid>
         <Grid item xs={1}>
           <FormControl className={classes.form100}>
-            <InputLabel shrink id="demo-simple-select-placeholder-label-label">
-              采购人
-            </InputLabel>
+            <InputLabel shrink>采购人</InputLabel>
             <Select
-              labelId="demo-simple-select-placeholder-label-label"
-              id="demo-simple-select-placeholder-label"
-              // value="10"
-              onChange={handleChange}
+              value={selectedPurchaser}
+              onChange={e => UpdateState("selectedPurchaser", e.target.value)}
               displayEmpty
               className={classes.empty}
             >
               <MenuItem value="">
-                <em>None</em>
+                <em>空</em>
               </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
+              {purchasers.map(item => {
+                return (
+                  <MenuItem key={item.id} value={item.name}>
+                    {item.name}
+                  </MenuItem>
+                );
+              })}
             </Select>
-            {/* <FormHelperText>Label + placeholder</FormHelperText> */}
           </FormControl>
         </Grid>
         <Grid item xs={1}>
           <FormControl className={classes.form100}>
-            <InputLabel shrink id="demo-simple-select-placeholder-label-label">
-              客户合同
-            </InputLabel>
+            <InputLabel shrink>客户合同</InputLabel>
+            <TextField
+              className={classes.empty}
+              value={customerContract}
+              onChange={e => UpdateState("customerContract", e.target.value)}
+            />
+          </FormControl>
+        </Grid>
+        <Grid item xs={1}>
+          <FormControl className={classes.form100}>
+            <InputLabel shrink>货币</InputLabel>
             <Select
-              labelId="demo-simple-select-placeholder-label-label"
-              id="demo-simple-select-placeholder-label"
-              // value="10"
-              onChange={handleChange}
+              value={selectedCurrency}
+              onChange={e => UpdateState("selectedCurrency", e.target.value)}
               displayEmpty
               className={classes.empty}
             >
               <MenuItem value="">
-                <em>None</em>
+                <em>空</em>
               </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
+              {currencies.map(item => {
+                return (
+                  <MenuItem key={item.id} value={item.name}>
+                    {item.name}
+                  </MenuItem>
+                );
+              })}
             </Select>
-            {/* <FormHelperText>Label + placeholder</FormHelperText> */}
           </FormControl>
         </Grid>
         <Grid item xs={1}>
           <FormControl className={classes.form100}>
-            <InputLabel shrink id="demo-simple-select-placeholder-label-label">
-              货币
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-placeholder-label-label"
-              id="demo-simple-select-placeholder-label"
-              // value="10"
-              onChange={handleChange}
-              displayEmpty
+            <InputLabel shrink>汇率</InputLabel>
+            <TextField
               className={classes.empty}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-            {/* <FormHelperText>Label + placeholder</FormHelperText> */}
+              value={exchangeRate}
+              onChange={e => UpdateState("exchangeRate", e.target.value)}
+            />
           </FormControl>
         </Grid>
         <Grid item xs={1}>
-          <FormControl className={classes.form100}>
-            <InputLabel shrink id="demo-simple-select-placeholder-label-label">
-              汇率
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-placeholder-label-label"
-              id="demo-simple-select-placeholder-label"
-              // value="10"
-              onChange={handleChange}
-              displayEmpty
-              className={classes.empty}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-            {/* <FormHelperText>Label + placeholder</FormHelperText> */}
-          </FormControl>
+          <FormControlLabel
+            className={classes.clearMarginPadding}
+            control={
+              <Checkbox
+                checked={tax}
+                size="small"
+                color="primary"
+                className={classes.clearMarginPadding}
+                onChange={() => ToggleState("tax")}
+              />
+            }
+            label="税"
+          />
+          {tax && (
+            <TextField
+              value={taxRate}
+              onChange={e => UpdateState("taxRate", e.target.value)}
+              className={classes.clearMarginPadding}
+            />
+          )}
         </Grid>
-        <Grid item xs={1}>
-          <FormControl className={classes.form100}>
-            <TextField id="standard-basic" label="税率" />
-          </FormControl>
-        </Grid>
-        <Grid item xs={1}>
-          <FormControl className={classes.form100}>
-            <InputLabel shrink id="demo-simple-select-placeholder-label-label">
-              汇率
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-placeholder-label-label"
-              id="demo-simple-select-placeholder-label"
-              // value="10"
-              onChange={handleChange}
-              displayEmpty
-              className={classes.empty}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-            {/* <FormHelperText>Label + placeholder</FormHelperText> */}
-          </FormControl>
-        </Grid>
-        <Grid item xs={1}>
+        <Grid item xs={2}>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <KeyboardDatePicker
               disableToolbar
               variant="inline"
               format="dd/MM/yyyy"
-              margin="normal"
-              id="客户交期"
+              margin="none"
               label="客户交期"
-              value={selectedDate}
-              onChange={handleDateChange}
+              value={customerSubmitDate}
+              id="customer-submit-date"
+              onChange={date => UpdateState("customerSubmitDate", date)}
               KeyboardButtonProps={{
                 "aria-label": "change date"
               }}
             />
           </MuiPickersUtilsProvider>
         </Grid>
-        <Grid item xs={1}>
+        <Grid item xs={2}>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <KeyboardDatePicker
               disableToolbar
               variant="inline"
               format="dd/MM/yyyy"
-              margin="normal"
-              id="delivery-date"
+              margin="none"
               label="发货日期"
-              value={selectedDate}
-              onChange={handleDateChange}
+              id="delivery-date"
+              value={deliveryDate}
+              onChange={date => UpdateState("deliveryDate", date)}
               KeyboardButtonProps={{
                 "aria-label": "change date"
               }}
@@ -265,8 +231,17 @@ const mapStateToProps = ({ POReducer }) => {
     customers: POReducer.customers,
     selectedCustomer: POReducer.selectedCustomer,
     customerPO: POReducer.customerPO,
-    purchasers: POReducer.purchasers
+    purchasers: POReducer.purchasers,
+    selectedPurchaser: POReducer.selectedPurchaser,
+    customerContract: POReducer.customerContract,
+    currencies: POReducer.currencies,
+    selectedCurrency: POReducer.selectedCurrency,
+    exchangeRate: POReducer.exchangeRate,
+    tax: POReducer.tax,
+    taxRate: POReducer.taxRate,
+    customerSubmitDate: POReducer.customerSubmitDate,
+    deliveryDate: POReducer.deliveryDate
   };
 };
 
-export default connect(mapStateToProps, { GetCustomers, UpdateState, GetPurchaser })(POInfo);
+export default connect(mapStateToProps, { GetCustomers, UpdateState, GetPurchaser, GetCurrency, ToggleState })(POInfo);

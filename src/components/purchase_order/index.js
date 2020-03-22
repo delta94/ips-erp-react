@@ -8,7 +8,7 @@ import POItems from "./po_items";
 export default function PurchaseOrder() {
   return (
     <React.Fragment>
-      {/* <Grid container>
+      <Grid container>
         <Grid item xs={4}>
           <Typography>客户PO#</Typography>
           <SearchBar />
@@ -21,7 +21,7 @@ export default function PurchaseOrder() {
         </Grid>
         <Grid item xs={4}></Grid>
         <Grid item xs={4}></Grid>
-      </Grid> */}
+      </Grid>
       <POInfo />
       <POInternal />
       <POItems />

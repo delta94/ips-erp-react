@@ -13,5 +13,9 @@ export const GetCustomersAPI = async () => {
 };
 
 export const GetPurchaserAPI = async params => {
-  return await axios.get(`/purchaser?company=${params}`)
-}
+  return await axios.get(`/purchaser?company=${params}`);
+};
+
+export const GetCurrencyAPI = async () => {
+  return await axios.get(`/currency`);
+};

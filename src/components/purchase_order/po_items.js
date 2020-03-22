@@ -80,7 +80,7 @@ export default function POItems() {
               variant="inline"
               format="dd/MM/yyyy"
               margin="none"
-              id="delivery-date"
+              id="dddd"
               value={selectedDate}
               onChange={handleDateChange}
               KeyboardButtonProps={{
