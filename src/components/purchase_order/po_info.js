@@ -165,26 +165,28 @@ function POInfo(props) {
           </FormControl>
         </Grid>
         <Grid item xs={1}>
-          <FormControlLabel
-            className={classes.clearMarginPadding}
-            control={
-              <Checkbox
-                checked={tax}
-                size="small"
-                color="primary"
-                className={classes.clearMarginPadding}
-                onChange={() => ToggleState("tax")}
-              />
-            }
-            label="税"
-          />
-          {tax && (
-            <TextField
-              value={taxRate}
-              onChange={e => UpdateState("taxRate", e.target.value)}
+          <FormControl className={classes.form100}>
+            <FormControlLabel
               className={classes.clearMarginPadding}
+              control={
+                <Checkbox
+                  checked={tax}
+                  size="small"
+                  color="primary"
+                  className={classes.clearMarginPadding}
+                  onChange={() => ToggleState("tax")}
+                />
+              }
+              label="税"
             />
-          )}
+            {tax && (
+              <TextField
+                value={taxRate}
+                onChange={e => UpdateState("taxRate", e.target.value)}
+                className={classes.clearMarginPadding}
+              />
+            )}
+          </FormControl>
         </Grid>
         <Grid item xs={2}>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>

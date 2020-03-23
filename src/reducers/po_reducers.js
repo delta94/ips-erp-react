@@ -14,7 +14,16 @@ const defaultState = {
   tax: false,
   taxRate: "",
   customerSubmitDate: new Date(),
-  deliveryDate: new Date()
+  deliveryDate: new Date(),
+  // for po_internal.js
+  buEmployees: [],
+  selectedBUEmployee: "",
+  shippingCompanies: [],
+  selectedShipping: "",
+  outFactories: [],
+  selectedOutFactory: "",
+  deliverContacts: [],
+  selectedDeliverContact: ""
 };
 
 const reducer = (state = defaultState, action) => {

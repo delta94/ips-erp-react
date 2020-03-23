@@ -1,22 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
 import { Container, Paper, Grid, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import TextField from "@material-ui/core/TextField";
 import Checkbox from "@material-ui/core/Checkbox";
 import Select from "@material-ui/core/Select";
 import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 
+import {
+  UpdateState,
+  GetBUEmployee,
+  GetShippingCompany,
+  GetOutFactory,
+  GetDeliverContact
+} from "../../actions/po_actions";
+
 const useStyles = makeStyles(theme => ({
   form100: {
     margin: theme.spacing(1),
     minWidth: 100
   },
-  selectEmpty: {
+  empty: {
     marginTop: theme.spacing(2)
   },
   root: {
@@ -24,8 +32,24 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function POInfo() {
+function POInternal(props) {
   const classes = useStyles();
+
+  // vars from reducers
+  const {
+    buEmployees,
+    selectedBUEmployee,
+    shippingCompanies,
+    selectedShipping,
+    outFactories,
+    selectedOutFactory,
+    deliverContacts,
+    selectedDeliverContact
+  } = props;
+
+  // methods from actions
+  const { UpdateState, GetBUEmployee, GetShippingCompany, GetOutFactory, GetDeliverContact } = props;
+
   const [age, setAge] = React.useState("");
   const [selectedDate, setSelectedDate] = React.useState(new Date("2020-03-22"));
 
@@ -36,6 +60,14 @@ export default function POInfo() {
   const handleDateChange = date => {
     setSelectedDate(date);
   };
+
+  useEffect(() => {
+    GetBUEmployee();
+    GetShippingCompany();
+    GetOutFactory();
+    GetDeliverContact();
+    return () => {};
+  }, [GetBUEmployee, GetShippingCompany, GetOutFactory, GetDeliverContact]);
   return (
     // <Container maxWidth="lg">
     <Paper className={classes.root}>
@@ -44,95 +76,94 @@ export default function POInfo() {
           <FormControl className={classes.form100}>
             <InputLabel shrink>厂内工号</InputLabel>
             <Select
-              // value="10"
-              onChange={handleChange}
+              value={selectedBUEmployee}
+              onChange={e => UpdateState("selectedBUEmployee", e.target.value)}
               displayEmpty
-              className={classes.selectEmpty}
+              className={classes.empty}
             >
               <MenuItem value="">
-                <em>None</em>
+                <em>空</em>
               </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
+              {buEmployees.map(item => {
+                return (
+                  <MenuItem key={item.id} value={item.name}>
+                    {item.name}
+                  </MenuItem>
+                );
+              })}
             </Select>
-            {/* <FormHelperText>Label + placeholder</FormHelperText> */}
           </FormControl>
         </Grid>
         <Grid item xs={1}>
           <FormControl className={classes.form100}>
             <InputLabel shrink>快递公司</InputLabel>
             <Select
-              // value="10"
-              onChange={handleChange}
+              value={selectedShipping}
+              onChange={e => UpdateState("selectedShipping", e.target.value)}
               displayEmpty
-              className={classes.selectEmpty}
+              className={classes.empty}
             >
               <MenuItem value="">
-                <em>None</em>
+                <em>空</em>
               </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
+              {shippingCompanies.map(item => {
+                return (
+                  <MenuItem key={item.id} value={item.name}>
+                    {item.name}
+                  </MenuItem>
+                );
+              })}
             </Select>
-            {/* <FormHelperText>Label + placeholder</FormHelperText> */}
           </FormControl>
         </Grid>
         <Grid item xs={1}>
           <FormControl className={classes.form100}>
             <InputLabel shrink>出货工厂</InputLabel>
             <Select
-              // value="10"
-              onChange={handleChange}
+              value={selectedOutFactory}
+              onChange={e => UpdateState("selectedOutFactory", e.target.value)}
               displayEmpty
-              className={classes.selectEmpty}
+              className={classes.empty}
             >
               <MenuItem value="">
-                <em>None</em>
+                <em>空</em>
               </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
+              {outFactories.map(item => {
+                return (
+                  <MenuItem key={item.id} value={item.name}>
+                    {item.name}
+                  </MenuItem>
+                );
+              })}
             </Select>
-            {/* <FormHelperText>Label + placeholder</FormHelperText> */}
           </FormControl>
         </Grid>
         <Grid item xs={1}>
           <FormControl className={classes.form100}>
             <InputLabel shrink>收货人</InputLabel>
             <Select
-              // value="10"
-              onChange={handleChange}
+              value={selectedDeliverContact}
+              onChange={e => UpdateState("selectedDeliverContact", e.target.value)}
               displayEmpty
-              className={classes.selectEmpty}
+              className={classes.empty}
             >
               <MenuItem value="">
-                <em>None</em>
+                <em>空</em>
               </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
+              {deliverContacts.map(item => {
+                return (
+                  <MenuItem key={item.id} value={item.name}>
+                    {item.name}
+                  </MenuItem>
+                );
+              })}
             </Select>
-            {/* <FormHelperText>Label + placeholder</FormHelperText> */}
           </FormControl>
         </Grid>
         <Grid item xs={1}>
           <FormControl className={classes.form100}>
             <InputLabel shrink>联系</InputLabel>
-            <Select
-              // value="10"
-              onChange={handleChange}
-              displayEmpty
-              className={classes.selectEmpty}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-            {/* <FormHelperText>Label + placeholder</FormHelperText> */}
+            <TextField className={classes.empty} value={selectedDeliverContact} />
           </FormControl>
         </Grid>
         <Grid item xs={1}>
@@ -174,3 +205,24 @@ export default function POInfo() {
     // </Container>
   );
 }
+
+const mapStateToProps = ({ POReducer }) => {
+  return {
+    buEmployees: POReducer.buEmployees,
+    selectedBUEmployee: POReducer.selectedBUEmployee,
+    shippingCompanies: POReducer.shippingCompanies,
+    selectedShipping: POReducer.selectedShipping,
+    outFactories: POReducer.outFactories,
+    selectedOutFactory: POReducer.selectedOutFactory,
+    deliverContacts: POReducer.deliverContacts,
+    selectedDeliverContact: POReducer.selectedDeliverContact
+  };
+};
+
+export default connect(mapStateToProps, {
+  GetBUEmployee,
+  GetShippingCompany,
+  UpdateState,
+  GetOutFactory,
+  GetDeliverContact
+})(POInternal);

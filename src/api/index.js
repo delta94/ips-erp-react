@@ -19,3 +19,19 @@ export const GetPurchaserAPI = async params => {
 export const GetCurrencyAPI = async () => {
   return await axios.get(`/currency`);
 };
+
+export const GetEmployeeAPI = async params => {
+  return await axios.get(`/employee?bu=${params}`);
+};
+
+export const GetShippingCompanyAPI = async () => {
+  return await axios.get(`/shipping_company`);
+};
+
+export const GetOutFactoryAPI = async () => {
+  return await axios.get(`/out_factory`);
+};
+
+export const GetDeliverContactAPI = async () => {
+  return await axios.get(`/deliver_contact`);
+};

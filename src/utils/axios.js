@@ -2,8 +2,16 @@ import axios from "axios";
 
 var url;
 
+if (process.env.DEBUG === "ips") {
+  url = "http://192.168.2.11:8080/api/v1";
+} else if (process.env.DEBUG === "wg") {
+  url = `http://10.81.0.14:8080/api/v1`;
+} else {
+  url = `http://192.168.0.54:8080/api/v1`;
+}
+
 // if (process.env.NODE_ENV !== "production") {
-url = `http://192.168.0.54:8080/api/v1`;
+// url = `http://192.168.0.54:8080/api/v1`;
 // }
 
 // const loginUrl = "/login";
