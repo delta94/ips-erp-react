@@ -1,20 +1,27 @@
-import { UPDATE_STATE, TOGGLE_STATE } from "../actions/po_actions";
+import {
+  UPDATE_STATE,
+  TOGGLE_STATE,
+  UPDATE_WORK_ORDER_ITEM,
+  ADD_WORK_ORDER_ITEM,
+  RESET_STATE
+} from "../actions/po_actions";
 
 const defaultState = {
   // for po_info.js
   customers: [],
-  selectedCustomer: "",
-  customerPO: "",
-  purchasers: [],
-  selectedPurchaser: "",
-  customerContract: "",
-  currencies: [],
-  selectedCurrency: "",
-  exchangeRate: "",
-  tax: false,
-  taxRate: "",
-  customerSubmitDate: new Date(),
-  deliveryDate: new Date(),
+  customer: "",
+  customer_po: "",
+  po_submit_date: new Date(),
+  customer_dateline: new Date(),
+  internal_dateline: new Date(),
+  delivery_dateline: new Date(),
+  work_order_created: false,
+  internal_work_num: "",
+  internal_work_num_id: "",
+  // for alert
+  openAlert: false,
+  alertMessage: "",
+  alertSeverity: "error",
   // for po_internal.js
   buEmployees: [],
   selectedBUEmployee: "",
@@ -23,16 +30,29 @@ const defaultState = {
   outFactories: [],
   selectedOutFactory: "",
   deliverContacts: [],
-  selectedDeliverContact: ""
+  selectedDeliverContact: "",
+  // for po_items.js
+  work_order_items: []
 };
 
 const reducer = (state = defaultState, action) => {
-  let { name, value } = action;
+  let { name, value, index } = action;
+  let work_order_items = state.work_order_items;
   switch (action.type) {
     case UPDATE_STATE:
       return { ...state, [name]: value };
     case TOGGLE_STATE:
       return { ...state, [name]: !state[name] };
+    case UPDATE_WORK_ORDER_ITEM:
+      work_order_items[index][name] = value;
+      return { ...state, work_order_items: work_order_items };
+    case ADD_WORK_ORDER_ITEM:
+      let len = state.work_order_items.length;
+      // let work_order_items = state.work_order_items;
+      work_order_items.push({ item_id: `${state.internal_work_num}-00${len + 1}` });
+      return { ...state, work_order_items: [...work_order_items] };
+    case RESET_STATE:
+      return { ...state, customer: "", customer_po: "", work_order_created: false, work_order_items: [] };
     default:
       return state;
   }

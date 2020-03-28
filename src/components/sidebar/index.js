@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
+import { Link } from "react-router-dom";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
@@ -16,6 +17,13 @@ import { GetSidebarItems } from "../../actions/sidebar_actions";
 const useStyles = makeStyles({
   list: {
     width: 250
+  },
+  link: {
+    textDecoration: "none",
+    color: "rgba(0,0,0,0.87)"
+  },
+  listItem: {
+    paddingLeft: 30
   }
 });
 
@@ -35,10 +43,11 @@ function Sidebar(props) {
   const list = () => (
     <div className={classes.list} role="presentation">
       <List>
-        {sidebarItems.map((item, index) => (
-          <ListItem button key={item.item} onClick={() => ToggleState("openSidebar")}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            <ListItemText primary={item.item} />
+        {sidebarItems.map(item => (
+          <ListItem key={item.item} button onClick={() => ToggleState("openSidebar")}>
+            <Link to={item.url} className={classes.link}>
+              <ListItemText primary={item.item} className={classes.listItem} />
+            </Link>
           </ListItem>
         ))}
       </List>

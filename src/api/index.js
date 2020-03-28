@@ -35,3 +35,11 @@ export const GetOutFactoryAPI = async () => {
 export const GetDeliverContactAPI = async () => {
   return await axios.get(`/deliver_contact`);
 };
+
+export const PostInternalWorkOrderAPI = async params => {
+  return await axios.post(`/internal_work_order`, params);
+};
+
+export const PostInternalWorkOrderItemsAPI = async (params, objectID) => {
+  return await axios.post(`/internal_work_order_items?object_id=${objectID}`, params);
+};

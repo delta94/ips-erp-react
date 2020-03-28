@@ -1,30 +1,24 @@
 import React from "react";
-import { Grid, Typography, Button } from "@material-ui/core";
-import SearchBar from "material-ui-search-bar";
+import { connect } from "react-redux";
 import POInfo from "./po_info";
-import POInternal from "./po_internal";
 import POItems from "./po_items";
 
-export default function PurchaseOrder() {
+function PurchaseOrder(props) {
+  // vars from reducer
+  const { work_order_created } = props;
+
   return (
     <React.Fragment>
-      <Grid container>
-        <Grid item xs={4}>
-          <Typography>客户PO#</Typography>
-          <SearchBar />
-          <Button variant="contained" color="primary">
-            加载PO#
-          </Button>
-          <Button variant="contained" color="primary">
-            新PO#
-          </Button>
-        </Grid>
-        <Grid item xs={4}></Grid>
-        <Grid item xs={4}></Grid>
-      </Grid>
       <POInfo />
-      <POInternal />
-      <POItems />
+      {work_order_created && <POItems />}
     </React.Fragment>
   );
 }
+
+const mapStateToProps = ({ POReducer }) => {
+  return {
+    work_order_created: POReducer.work_order_created
+  };
+};
+
+export default connect(mapStateToProps, null)(PurchaseOrder);

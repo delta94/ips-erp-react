@@ -1,23 +1,23 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import { Paper, Grid } from "@material-ui/core";
+import { Paper, Grid, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import TextField from "@material-ui/core/TextField";
-import Checkbox from "@material-ui/core/Checkbox";
 import Select from "@material-ui/core/Select";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 
-import { GetCustomers, UpdateState, GetPurchaser, GetCurrency, ToggleState } from "../../actions/po_actions";
+import { GetCustomers, UpdateState, PostInternalWorkOrder } from "../../actions/po_actions";
+
+import Alert from "../alert";
 
 const useStyles = makeStyles(theme => ({
-  form100: {
-    margin: theme.spacing(1),
-    minWidth: 90
+  form150: {
+    margin: theme.spacing(1)
+    // minWidth: 150
   },
   empty: {
     marginTop: theme.spacing(2)
@@ -28,6 +28,12 @@ const useStyles = makeStyles(theme => ({
   clearMarginPadding: {
     padding: 0,
     margin: 0
+  },
+  center: {
+    backgroundColor: "#FFDC00",
+    width: 100,
+    height: 100,
+    margin: "0 auto"
   }
 }));
 
@@ -37,193 +43,160 @@ function POInfo(props) {
   // vars from reducers
   const {
     customers,
-    selectedCustomer,
-    customerPO,
-    purchasers,
-    selectedPurchaser,
-    customerContract,
-    currencies,
-    selectedCurrency,
-    exchangeRate,
-    tax,
-    taxRate,
-    customerSubmitDate,
-    deliveryDate
+    customer,
+    customer_po,
+    po_submit_date,
+    customer_dateline,
+    internal_dateline,
+    delivery_dateline,
+    work_order_created,
+    openAlert,
+    alertMessage,
+    alertSeverity
   } = props;
 
   // methods from actions
-  const { GetCustomers, UpdateState, GetPurchaser, GetCurrency, ToggleState } = props;
+  const { GetCustomers, UpdateState, PostInternalWorkOrder } = props;
 
   useEffect(() => {
     GetCustomers();
-    GetCurrency();
     return () => {};
-  }, [GetCustomers, GetCurrency]);
+  }, [GetCustomers]);
 
   return (
     // <Container maxWidth="lg">
-    <Paper className={classes.root}>
-      <Grid container alignItems="center" justify="space-around">
-        <Grid item xs={1}>
-          <FormControl className={classes.form100}>
-            <InputLabel shrink>客户</InputLabel>
-            <Select
-              value={selectedCustomer}
-              onChange={e => {
-                UpdateState("selectedCustomer", e.target.value);
-                GetPurchaser(e.target.value);
-              }}
-              displayEmpty
-              className={classes.empty}
-            >
-              <MenuItem value="">
-                <em>空</em>
-              </MenuItem>
-              {customers.map(item => {
-                return (
-                  <MenuItem key={item.id} value={item.internal}>
-                    {item.internal}
-                  </MenuItem>
-                );
-              })}
-            </Select>
-            {/* <FormHelperText>Label + placeholder</FormHelperText> */}
-          </FormControl>
-        </Grid>
-        <Grid item xs={1}>
-          <FormControl className={classes.form100}>
-            <InputLabel shrink>客户PO#</InputLabel>
-            <TextField
-              className={classes.empty}
-              value={customerPO}
-              onChange={e => UpdateState("customerPO", e.target.value)}
-            />
-          </FormControl>
-        </Grid>
-        <Grid item xs={1}>
-          <FormControl className={classes.form100}>
-            <InputLabel shrink>采购人</InputLabel>
-            <Select
-              value={selectedPurchaser}
-              onChange={e => UpdateState("selectedPurchaser", e.target.value)}
-              displayEmpty
-              className={classes.empty}
-            >
-              <MenuItem value="">
-                <em>空</em>
-              </MenuItem>
-              {purchasers.map(item => {
-                return (
-                  <MenuItem key={item.id} value={item.name}>
-                    {item.name}
-                  </MenuItem>
-                );
-              })}
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={1}>
-          <FormControl className={classes.form100}>
-            <InputLabel shrink>客户合同</InputLabel>
-            <TextField
-              className={classes.empty}
-              value={customerContract}
-              onChange={e => UpdateState("customerContract", e.target.value)}
-            />
-          </FormControl>
-        </Grid>
-        <Grid item xs={1}>
-          <FormControl className={classes.form100}>
-            <InputLabel shrink>货币</InputLabel>
-            <Select
-              value={selectedCurrency}
-              onChange={e => UpdateState("selectedCurrency", e.target.value)}
-              displayEmpty
-              className={classes.empty}
-            >
-              <MenuItem value="">
-                <em>空</em>
-              </MenuItem>
-              {currencies.map(item => {
-                return (
-                  <MenuItem key={item.id} value={item.name}>
-                    {item.name}
-                  </MenuItem>
-                );
-              })}
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={1}>
-          <FormControl className={classes.form100}>
-            <InputLabel shrink>汇率</InputLabel>
-            <TextField
-              className={classes.empty}
-              value={exchangeRate}
-              onChange={e => UpdateState("exchangeRate", e.target.value)}
-            />
-          </FormControl>
-        </Grid>
-        <Grid item xs={1}>
-          <FormControl className={classes.form100}>
-            <FormControlLabel
-              className={classes.clearMarginPadding}
-              control={
-                <Checkbox
-                  checked={tax}
-                  size="small"
-                  color="primary"
-                  className={classes.clearMarginPadding}
-                  onChange={() => ToggleState("tax")}
-                />
-              }
-              label="税"
-            />
-            {tax && (
+    <React.Fragment>
+      <Alert
+        message={alertMessage}
+        severity={alertSeverity}
+        open={openAlert}
+        onClose={() => UpdateState("openAlert", false)}
+      />
+      <Paper className={classes.root}>
+        <Grid container alignItems="center" justify="space-around">
+          <Grid item xs={1}>
+            <FormControl className={classes.form150} fullWidth>
+              <InputLabel shrink>客户</InputLabel>
+              <Select
+                value={customer}
+                onChange={e => {
+                  UpdateState("customer", e.target.value);
+                }}
+                displayEmpty
+                className={classes.empty}
+              >
+                <MenuItem value="">
+                  <em>空</em>
+                </MenuItem>
+                {customers.map(item => {
+                  return (
+                    <MenuItem key={item.id} value={item.internal}>
+                      {item.internal}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+              {/* <FormHelperText>Label + placeholder</FormHelperText> */}
+            </FormControl>
+          </Grid>
+          <Grid item xs={1}>
+            <FormControl className={classes.form150}>
+              <InputLabel shrink>客户PO#</InputLabel>
               <TextField
-                value={taxRate}
-                onChange={e => UpdateState("taxRate", e.target.value)}
-                className={classes.clearMarginPadding}
+                className={classes.empty}
+                value={customer_po}
+                onChange={e => UpdateState("customer_po", e.target.value)}
               />
-            )}
-          </FormControl>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={2}>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                disableToolbar
+                variant="inline"
+                format="dd/MM/yyyy"
+                margin="none"
+                label="下单日期"
+                value={po_submit_date}
+                id="po-submit-date"
+                onChange={date => UpdateState("po_submit_date", date)}
+                KeyboardButtonProps={{
+                  "aria-label": "change date"
+                }}
+              />
+            </MuiPickersUtilsProvider>
+          </Grid>
+          <Grid item xs={2}>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                disableToolbar
+                variant="inline"
+                format="dd/MM/yyyy"
+                margin="none"
+                label="客户交期"
+                value={customer_dateline.setDate(po_submit_date.getDate() - 7)}
+                id="customer-dateline"
+                onChange={date => UpdateState("customer_dateline", date)}
+                KeyboardButtonProps={{
+                  "aria-label": "change date"
+                }}
+              />
+            </MuiPickersUtilsProvider>
+          </Grid>
+
+          <Grid item xs={2}>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                disableToolbar
+                variant="inline"
+                format="dd/MM/yyyy"
+                margin="none"
+                label="厂内交期"
+                id="internal-dateline"
+                value={internal_dateline}
+                onChange={date => UpdateState("internal_dateline", date)}
+                KeyboardButtonProps={{
+                  "aria-label": "change date"
+                }}
+              />
+            </MuiPickersUtilsProvider>
+          </Grid>
+          <Grid item xs={2}>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                disableToolbar
+                variant="inline"
+                format="dd/MM/yyyy"
+                margin="none"
+                label="发货日期"
+                id="delivery-dateline"
+                value={delivery_dateline}
+                onChange={date => UpdateState("delivery_dateline", date)}
+                KeyboardButtonProps={{
+                  "aria-label": "change date"
+                }}
+              />
+            </MuiPickersUtilsProvider>
+          </Grid>
         </Grid>
-        <Grid item xs={2}>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-              disableToolbar
-              variant="inline"
-              format="dd/MM/yyyy"
-              margin="none"
-              label="客户交期"
-              value={customerSubmitDate}
-              id="customer-submit-date"
-              onChange={date => UpdateState("customerSubmitDate", date)}
-              KeyboardButtonProps={{
-                "aria-label": "change date"
-              }}
-            />
-          </MuiPickersUtilsProvider>
+      </Paper>
+      {!work_order_created && (
+        <Grid container justify="center">
+          <Button
+            variant="contained"
+            color="primary"
+            style={{ justifyContent: "center" }}
+            onClick={() => {
+              PostInternalWorkOrder();
+              // ToggleState("work_order_created");
+            }}
+          >
+            添加订单内容
+          </Button>
         </Grid>
-        <Grid item xs={2}>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-              disableToolbar
-              variant="inline"
-              format="dd/MM/yyyy"
-              margin="none"
-              label="发货日期"
-              id="delivery-date"
-              value={deliveryDate}
-              onChange={date => UpdateState("deliveryDate", date)}
-              KeyboardButtonProps={{
-                "aria-label": "change date"
-              }}
-            />
-          </MuiPickersUtilsProvider>
-        </Grid>
-      </Grid>
-    </Paper>
+      )}
+    </React.Fragment>
     // </Container>
   );
 }
@@ -231,19 +204,18 @@ function POInfo(props) {
 const mapStateToProps = ({ POReducer }) => {
   return {
     customers: POReducer.customers,
-    selectedCustomer: POReducer.selectedCustomer,
-    customerPO: POReducer.customerPO,
-    purchasers: POReducer.purchasers,
-    selectedPurchaser: POReducer.selectedPurchaser,
-    customerContract: POReducer.customerContract,
-    currencies: POReducer.currencies,
-    selectedCurrency: POReducer.selectedCurrency,
-    exchangeRate: POReducer.exchangeRate,
-    tax: POReducer.tax,
-    taxRate: POReducer.taxRate,
-    customerSubmitDate: POReducer.customerSubmitDate,
-    deliveryDate: POReducer.deliveryDate
+    customer: POReducer.customer,
+    customer_po: POReducer.customer_po,
+    po_submit_date: POReducer.po_submit_date,
+    customer_dateline: POReducer.customer_dateline,
+    internal_dateline: POReducer.internal_dateline,
+    delivery_dateline: POReducer.delivery_dateline,
+    work_order_created: POReducer.work_order_created,
+    // for alert
+    openAlert: POReducer.openAlert,
+    alertMessage: POReducer.alertMessage,
+    alertSeverity: POReducer.alertSeverity
   };
 };
 
-export default connect(mapStateToProps, { GetCustomers, UpdateState, GetPurchaser, GetCurrency, ToggleState })(POInfo);
+export default connect(mapStateToProps, { GetCustomers, UpdateState, PostInternalWorkOrder })(POInfo);
