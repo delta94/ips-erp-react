@@ -9,6 +9,7 @@ import {
 } from "../api";
 // for po_internal.js
 import { GetEmployeeAPI, GetShippingCompanyAPI, GetOutFactoryAPI, GetDeliverContactAPI } from "../api";
+import { BU_PLACE_ORDER } from "../utils/constants";
 export const UPDATE_STATE = "PO/UPDATE_STATE";
 export const TOGGLE_STATE = "PO/TOGGLE_STATE";
 export const UPDATE_WORK_ORDER_ITEM = "PO/UPDATE_WORK_ORDER_ITEM";
@@ -132,16 +133,27 @@ export const PostInternalWorkOrder = () => {
       delivery_dateline
     } = state.POReducer;
 
-    const params = { customer, customer_po, po_submit_date, customer_dateline, internal_dateline, delivery_dateline };
+    const params = {
+      customer,
+      customer_po,
+      po_submit_date,
+      customer_dateline,
+      internal_dateline,
+      delivery_dateline,
+      state: BU_PLACE_ORDER
+    };
 
     try {
       const res = await PostInternalWorkOrderAPI(params);
       const { data } = res;
       batch(() => {
         dispatch(UpdateState("work_order_created", true));
-        dispatch(UpdateState("internal_work_num_id", data.id));
         dispatch(UpdateState("internal_work_num", data.internal_work_num));
-        dispatch(UpdateState("work_order_items", [{ item_id: `${data.internal_work_num}-001` }]));
+        dispatch(
+          UpdateState("work_order_items", [
+            { item_id: `${data.internal_work_num}-1`, item_num: "", unit: "", qty: "", unit_price: "", cad_dir: "" }
+          ])
+        );
       });
     } catch (err) {
       // console.log(err.message);
@@ -172,15 +184,35 @@ export const AddWorkOrderItem = () => {
 export const PostInternalWorkOrderItems = () => {
   return async (dispatch, getState) => {
     const state = getState();
-    const { work_order_items, internal_work_num_id } = state.POReducer;
+    const {
+      work_order_items,
+      internal_work_num,
+      customer,
+      customer_po,
+      po_submit_date,
+      customer_dateline,
+      internal_dateline,
+      delivery_dateline
+    } = state.POReducer;
     work_order_items.forEach(element => {
       element.qty = parseInt(element.qty);
       element.unit_price = parseFloat(element.unit_price);
-      element.total_price = parseFloat(element.total_price);
+      element.total_price = parseFloat(element.unit_price * element.qty);
+      element.cad_dir = work_order_items[0].cad_dir;
+      element.state = BU_PLACE_ORDER;
+      element.internal_work_order = {
+        internal_work_num,
+        customer,
+        customer_po,
+        po_submit_date,
+        customer_dateline,
+        internal_dateline,
+        delivery_dateline
+      };
     });
     const params = { work_order_items };
     try {
-      const res = await PostInternalWorkOrderItemsAPI(params, internal_work_num_id);
+      const res = await PostInternalWorkOrderItemsAPI(params);
       const { data } = res;
       batch(() => {
         dispatch(UpdateState("openAlert", true));
@@ -190,6 +222,7 @@ export const PostInternalWorkOrderItems = () => {
       });
     } catch (err) {
       batch(() => {
+        console.log(err);
         dispatch(UpdateState("openAlert", true));
         dispatch(UpdateState("alertMessage", err.message));
         dispatch(UpdateState("alertSeverity", "error"));

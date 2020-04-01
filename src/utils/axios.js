@@ -55,6 +55,7 @@ Axios.interceptors.response.use(
   error => {
     console.log(error);
     if (error.response.status === 401) {
+      window.location.replace("/login");
     } else if (error.response.status === 400) {
       return Promise.reject(error.response.data);
     }
@@ -67,7 +68,7 @@ Axios.interceptors.response.use(
       return Promise.reject(error);
     }
     if (error.response.status === 500) {
-      return Promise.reject("Backend error!");
+      return Promise.reject(error.response.data);
     }
 
     return Promise.reject(error.response.data);

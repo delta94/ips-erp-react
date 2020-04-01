@@ -88,13 +88,11 @@ function POInfo(props) {
                 <MenuItem value="">
                   <em>空</em>
                 </MenuItem>
-                {customers.map(item => {
-                  return (
-                    <MenuItem key={item.id} value={item.internal}>
-                      {item.internal}
-                    </MenuItem>
-                  );
-                })}
+                {customers.map(item => (
+                  <MenuItem key={item.id} value={item.internal}>
+                    {item.internal}
+                  </MenuItem>
+                ))}
               </Select>
               {/* <FormHelperText>Label + placeholder</FormHelperText> */}
             </FormControl>

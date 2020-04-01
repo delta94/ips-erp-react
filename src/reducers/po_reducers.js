@@ -17,7 +17,6 @@ const defaultState = {
   delivery_dateline: new Date(),
   work_order_created: false,
   internal_work_num: "",
-  internal_work_num_id: "",
   // for alert
   openAlert: false,
   alertMessage: "",
@@ -45,11 +44,18 @@ const reducer = (state = defaultState, action) => {
       return { ...state, [name]: !state[name] };
     case UPDATE_WORK_ORDER_ITEM:
       work_order_items[index][name] = value;
-      return { ...state, work_order_items: work_order_items };
+      return { ...state, work_order_items: [...work_order_items] };
     case ADD_WORK_ORDER_ITEM:
       let len = state.work_order_items.length;
-      // let work_order_items = state.work_order_items;
-      work_order_items.push({ item_id: `${state.internal_work_num}-00${len + 1}` });
+      let item = {
+        item_id: `${state.internal_work_num}-${len + 1}`,
+        item_num: "",
+        unit: "",
+        qty: "",
+        unit_price: "",
+        cad_dir: ""
+      };
+      work_order_items.push(item);
       return { ...state, work_order_items: [...work_order_items] };
     case RESET_STATE:
       return { ...state, customer: "", customer_po: "", work_order_created: false, work_order_items: [] };

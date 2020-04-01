@@ -10,6 +10,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
+import Cookies from "js-cookie";
 
 import { ToggleState } from "../../actions/header_actions";
 import { GetSidebarItems } from "../../actions/sidebar_actions";
@@ -43,13 +44,19 @@ function Sidebar(props) {
   const list = () => (
     <div className={classes.list} role="presentation">
       <List>
-        {sidebarItems.map(item => (
-          <ListItem key={item.item} button onClick={() => ToggleState("openSidebar")}>
-            <Link to={item.url} className={classes.link}>
-              <ListItemText primary={item.item} className={classes.listItem} />
-            </Link>
-          </ListItem>
-        ))}
+        {sidebarItems.map(item => {
+          if (item.allow_department.includes(Cookies.get("OU"))) {
+            return (
+              <ListItem key={item.item} button onClick={() => ToggleState("openSidebar")}>
+                <Link to={item.url} className={classes.link}>
+                  <ListItemText primary={item.item} className={classes.listItem} />
+                </Link>
+              </ListItem>
+            );
+          } else {
+            return null;
+          }
+        })}
       </List>
       <Divider />
       <List>
@@ -83,7 +90,8 @@ function Sidebar(props) {
 const mapStateToProps = state => {
   return {
     openSidebar: state.HeaderReducer.openSidebar,
-    sidebarItems: state.SidebarReducer.sidebarItems
+    sidebarItems: state.SidebarReducer.sidebarItems,
+    department: state.HeaderReducer.department
   };
 };
 

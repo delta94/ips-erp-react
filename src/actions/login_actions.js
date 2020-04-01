@@ -23,12 +23,12 @@ export const PostLogin = history => {
       try {
         const res = await PostLoginAPI({ username: username, password: password });
         const { data } = res;
+        console.log(data);
         batch(() => {
           dispatch(UpdateState("username", ""));
           dispatch(UpdateState("password", ""));
           dispatch(UpdateState("error", false));
           dispatch(HeaderUpdateState("isAuthenticated", true));
-          dispatch(HeaderUpdateState("displayName", data.CN));
         });
         history.push("/");
       } catch (error) {

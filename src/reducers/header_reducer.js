@@ -1,9 +1,9 @@
 import { UPDATE_STATE, TOGGLE_STATE } from "../actions/header_actions";
 
 const defaultState = {
-  isAuthenticated: false,
-  displayName: "",
-  openSidebar: false
+  openSidebar: false,
+  // isAuthenticated: process.env.NODE_ENV === "development" ? true : false
+  isAuthenticated: false
 };
 
 const reducer = (state = defaultState, action) => {

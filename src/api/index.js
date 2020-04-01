@@ -40,6 +40,10 @@ export const PostInternalWorkOrderAPI = async params => {
   return await axios.post(`/internal_work_order`, params);
 };
 
-export const PostInternalWorkOrderItemsAPI = async (params, objectID) => {
-  return await axios.post(`/internal_work_order_items?object_id=${objectID}`, params);
+export const PostInternalWorkOrderItemsAPI = async params => {
+  return await axios.post(`/internal_work_order_items`, params);
+};
+
+export const GetInternalWorkOrdersItemsAPI = async () => {
+  return await axios.get(`/internal_work_order_items`);
 };

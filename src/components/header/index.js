@@ -8,6 +8,7 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Sidebar from "../sidebar";
+import Cookies from "js-cookie";
 
 import { ToggleState } from "../../actions/header_actions";
 
@@ -18,7 +19,7 @@ const useStyles = makeStyles(theme => ({
   title: {
     flexGrow: 1
   },
-  loginBtn: {
+  link: {
     color: "white",
     textDecoration: "none"
   }
@@ -27,32 +28,38 @@ const useStyles = makeStyles(theme => ({
 function Header(props) {
   const classes = useStyles();
 
-  // vars from reducer
-  const { displayName, isAuthenticated } = props;
+  // vars from reducers
+  const { isAuthenticated } = props;
   // methods from action
   const { ToggleState } = props;
   return (
     <div className={classes.root}>
-      <Sidebar />
+      {isAuthenticated && <Sidebar />}
       <AppBar position="static">
         <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={() => ToggleState("openSidebar")}
-            // onClick={handleDrawerOpen}
-            edge="start"
-            // className={clsx(classes.menuButton, open && classes.hide)}
-          >
-            <MenuIcon />
-          </IconButton>
+          {isAuthenticated && (
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={() => ToggleState("openSidebar")}
+              // onClick={handleDrawerOpen}
+              edge="start"
+              // className={clsx(classes.menuButton, open && classes.hide)}
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
           <Typography variant="h6" className={classes.title}>
-            主页
+            <Link to="/" className={classes.link}>
+              主页
+            </Link>
           </Typography>
           {isAuthenticated ? (
-            <Typography>{displayName}</Typography>
+            <Typography>
+              {Cookies.get("CN")} - {Cookies.get("OU")}
+            </Typography>
           ) : (
-            <Link className={classes.loginBtn} to="/login">
+            <Link className={classes.link} to="/login">
               登录
             </Link>
           )}
@@ -64,7 +71,6 @@ function Header(props) {
 
 const mapStateToProps = ({ HeaderReducer }) => {
   return {
-    displayName: HeaderReducer.displayName,
     isAuthenticated: HeaderReducer.isAuthenticated
   };
 };
