@@ -2,6 +2,8 @@ import { batch } from "react-redux";
 import { PostLoginAPI } from "../api";
 import { UpdateState as HeaderUpdateState } from "./header_actions";
 
+import Cookies from "js-cookie";
+
 export const UPDATE_STATE = "LOGIN/UPDATE_STATE";
 
 export const UpdateState = (name, value) => {
@@ -25,6 +27,8 @@ export const PostLogin = history => {
         const { data } = res;
         console.log(data);
         batch(() => {
+          Cookies.set("CN", data.CN);
+          Cookies.set("OU", data.OU);
           dispatch(UpdateState("username", ""));
           dispatch(UpdateState("password", ""));
           dispatch(UpdateState("error", false));
