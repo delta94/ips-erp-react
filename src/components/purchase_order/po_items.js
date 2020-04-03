@@ -6,9 +6,12 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 
-import POBarcode from "./po_barcode";
-
-import { UpdateWorkOrderItem, AddWorkOrderItem, PostInternalWorkOrderItems } from "../../actions/po_actions";
+import {
+  UpdateWorkOrderItem,
+  AddWorkOrderItem,
+  PostInternalWorkOrderItems,
+  PrintLabel
+} from "../../actions/po_actions";
 import { Button } from "@material-ui/core";
 
 const useStyle = makeStyles(theme => ({
@@ -29,7 +32,7 @@ function POItems(props) {
   // vars from reducer
   const { work_order_items } = props;
   // methods from actions
-  const { UpdateWorkOrderItem, AddWorkOrderItem, PostInternalWorkOrderItems } = props;
+  const { UpdateWorkOrderItem, AddWorkOrderItem, PostInternalWorkOrderItems, PrintLabel } = props;
 
   const classes = useStyle();
   const renderHeader = () => {
@@ -42,10 +45,10 @@ function POItems(props) {
           <Typography color="primary">品名/图号</Typography>
         </Grid>
         <Grid item xs={1}>
-          <Typography color="primary">单位</Typography>
+          <Typography color="primary">数量</Typography>
         </Grid>
         <Grid item xs={1}>
-          <Typography color="primary">数量</Typography>
+          <Typography color="primary">单位</Typography>
         </Grid>
         <Grid item xs={1}>
           <Typography color="primary">单价</Typography>
@@ -76,16 +79,16 @@ function POItems(props) {
           </Grid>
           <Grid item xs={1}>
             <TextField
-              name="unit"
-              value={item.unit}
+              name="qty"
+              type="number"
+              value={item.qty}
               onChange={e => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
             />
           </Grid>
           <Grid item xs={1}>
             <TextField
-              name="qty"
-              type="number"
-              value={item.qty}
+              name="unit"
+              value={item.unit}
               onChange={e => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
             />
           </Grid>
@@ -130,7 +133,9 @@ function POItems(props) {
           </Button>
         </Grid>
         <Grid item xs={1}>
-          <POBarcode />
+          <Button variant="contained" color="primary" onClick={() => PrintLabel()}>
+            打印标签
+          </Button>
         </Grid>
         <Grid item xs={1}>
           <Button variant="contained" color="primary" onClick={() => PostInternalWorkOrderItems()}>
@@ -148,4 +153,9 @@ const mapStateToProps = ({ POReducer }) => {
   };
 };
 
-export default connect(mapStateToProps, { UpdateWorkOrderItem, AddWorkOrderItem, PostInternalWorkOrderItems })(POItems);
+export default connect(mapStateToProps, {
+  UpdateWorkOrderItem,
+  AddWorkOrderItem,
+  PostInternalWorkOrderItems,
+  PrintLabel
+})(POItems);

@@ -1,4 +1,5 @@
 import axios from "../utils/axios";
+import { LABEL_ENDPOINT } from "../utils/constants";
 
 export const PostLoginAPI = async params => {
   return await axios.post(`/login`, params);
@@ -46,4 +47,8 @@ export const PostInternalWorkOrderItemsAPI = async params => {
 
 export const GetInternalWorkOrdersItemsAPI = async () => {
   return await axios.get(`/internal_work_order_items`);
+};
+
+export const PrintLabelAPI = async body => {
+  return await axios.post(LABEL_ENDPOINT, body);
 };

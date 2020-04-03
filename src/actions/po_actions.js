@@ -5,7 +5,8 @@ import {
   GetPurchaserAPI,
   GetCurrencyAPI,
   PostInternalWorkOrderAPI,
-  PostInternalWorkOrderItemsAPI
+  PostInternalWorkOrderItemsAPI,
+  PrintLabelAPI
 } from "../api";
 // for po_internal.js
 import { GetEmployeeAPI, GetShippingCompanyAPI, GetOutFactoryAPI, GetDeliverContactAPI } from "../api";
@@ -226,5 +227,36 @@ export const PostInternalWorkOrderItems = () => {
         dispatch(UpdateState("alertSeverity", "error"));
       });
     }
+  };
+};
+
+export const PrintLabel = () => {
+  return async (dispatch, getState) => {
+    const state = getState();
+    const { po_submit_date, internal_dateline, work_order_items } = state.POReducer;
+
+    const data = work_order_items.map(element => {
+      return {
+        item_id: element.item_id,
+        po_submit_date: po_submit_date,
+        internal_dateline: internal_dateline,
+        qty: element.qty,
+        item_num: element.item_num,
+        unit: element.unit
+      };
+    });
+    data.forEach(element => {
+      PrintLabelAPI(element)
+        .then(res => console.log(res))
+        .catch(err => console.log(err));
+    });
+    // try {
+    //   const res = await PrintLabelAPI(data[0]);
+    //   const { data } = res;
+
+    //   console.log(data);
+    // } catch (err) {
+    //   console.log(err);
+    // }
   };
 };
