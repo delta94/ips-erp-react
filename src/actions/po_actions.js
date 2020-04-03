@@ -200,15 +200,13 @@ export const PostInternalWorkOrderItems = () => {
       element.total_price = parseFloat(element.unit_price * element.qty);
       element.cad_dir = work_order_items[0].cad_dir;
       element.state = BU_PLACE_ORDER;
-      element.internal_work_order = {
-        internal_work_num,
-        customer,
-        customer_po,
-        po_submit_date,
-        customer_dateline,
-        internal_dateline,
-        delivery_dateline
-      };
+      element.internal_work_num = internal_work_num;
+      element.customer = customer;
+      element.customer_po = customer_po;
+      element.po_submit_date = po_submit_date;
+      element.customer_dateline = customer_dateline;
+      element.internal_dateline = internal_dateline;
+      element.delivery_dateline = delivery_dateline;
     });
     const params = { work_order_items };
     try {

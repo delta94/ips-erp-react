@@ -133,7 +133,7 @@ function POInfo(props) {
                 format="dd/MM/yyyy"
                 margin="none"
                 label="客户交期"
-                value={customer_dateline.setDate(po_submit_date.getDate() - 7)}
+                value={customer_dateline}
                 id="customer-dateline"
                 onChange={date => UpdateState("customer_dateline", date)}
                 KeyboardButtonProps={{

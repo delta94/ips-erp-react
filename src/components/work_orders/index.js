@@ -28,8 +28,8 @@ function WorkOrderStatus(props) {
           },
           {
             title: "厂内交期",
-            field: "internal_dateline"
-            // render: rowData => <div>{rowData.internal_work_order.internal_dateline.split("T")[0]}</div>
+            field: "internal_dateline",
+            render: rowData => <div>{rowData.internal_dateline.split("T")[0]}</div>
           },
           { title: "状态", field: "state", lookup: WORK_ORDER_STATE_FILTER }
         ]}
