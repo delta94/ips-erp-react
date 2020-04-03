@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { connect } from "react-redux";
-import { Typography, Button } from "@material-ui/core";
+import { div, Button } from "@material-ui/core";
 import Barcode from "react-barcode";
 import ReactToPrint from "react-to-print";
 import "./style.css";
@@ -10,19 +10,19 @@ class POBarcodeContent extends React.PureComponent {
     const { work_order_items, customer_dateline, internal_dateline } = this.props;
     return (
       <React.Fragment>
-        <div style={{ width: 200 }} className="print-source">
+        <div style={{ width: 150 }} className="print-source">
           {work_order_items.map(item => {
             return (
               <React.Fragment key={item.item_id}>
-                <Typography align="center">管制章</Typography>
-                <Barcode value={item.item_id} width={1} height={15} fontSize={15} />
-                <Typography>
+                <div align="center">管制章</div>
+                <Barcode value={item.item_id} width={1} height={10} fontSize={10} />
+                <div>
                   数量: {item.qty} {item.unit}
-                </Typography>
-                <Typography>交期: {internal_dateline.toISOString().split("T")[0]}</Typography>
+                </div>
+                <div>交期: {internal_dateline.toISOString().split("T")[0]}</div>
 
-                <Typography>下单: {customer_dateline.toISOString().split("T")[0]}</Typography>
-                <Typography>图号: {item.item_num}</Typography>
+                <div>下单: {customer_dateline.toISOString().split("T")[0]}</div>
+                <div>图号: {item.item_num}</div>
                 <hr />
               </React.Fragment>
             );
