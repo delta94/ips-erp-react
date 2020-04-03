@@ -1,5 +1,12 @@
 import axios from "../utils/axios";
+import qs from "querystring";
 import { LABEL_ENDPOINT } from "../utils/constants";
+
+const formUrlEncodedConfig = {
+  headers: {
+    "Content-Type": "application/x-www-form-urlencoded"
+  }
+};
 
 export const PostLoginAPI = async params => {
   return await axios.post(`/login`, params);
@@ -50,5 +57,5 @@ export const GetInternalWorkOrdersItemsAPI = async () => {
 };
 
 export const PrintLabelAPI = async body => {
-  return await axios.post(LABEL_ENDPOINT, body);
+  return await axios.post(LABEL_ENDPOINT, qs.stringify(body), formUrlEncodedConfig);
 };
