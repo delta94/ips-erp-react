@@ -17,15 +17,15 @@ import { GetSidebarItems } from "../../actions/sidebar_actions";
 
 const useStyles = makeStyles({
   list: {
-    width: 250
+    width: 250,
   },
   link: {
     textDecoration: "none",
-    color: "rgba(0,0,0,0.87)"
+    color: "rgba(0,0,0,0.87)",
   },
   listItem: {
-    paddingLeft: 30
-  }
+    paddingLeft: 30,
+  },
 });
 
 function Sidebar(props) {
@@ -44,7 +44,7 @@ function Sidebar(props) {
   const list = () => (
     <div className={classes.list} role="presentation">
       <List>
-        {sidebarItems.map(item => {
+        {sidebarItems.map((item) => {
           if (item.allow_department.includes(Cookies.get("OU"))) {
             return (
               <ListItem key={item.item} button onClick={() => ToggleState("openSidebar")}>
@@ -59,20 +59,6 @@ function Sidebar(props) {
         })}
       </List>
       <Divider />
-      <List>
-        {["All mail", "Trash", "Spam"].map((text, index) => (
-          <ListItem
-            button
-            key={text}
-            onClick={() => {
-              window.open("file://c:\\Windows", "explorer");
-            }}
-          >
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
     </div>
   );
 
@@ -87,11 +73,11 @@ function Sidebar(props) {
   );
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     openSidebar: state.HeaderReducer.openSidebar,
     sidebarItems: state.SidebarReducer.sidebarItems,
-    department: state.HeaderReducer.department
+    department: state.HeaderReducer.department,
   };
 };
 

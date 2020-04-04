@@ -5,27 +5,29 @@ import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
 
 import {
   UpdateWorkOrderItem,
   AddWorkOrderItem,
   PostInternalWorkOrderItems,
-  PrintLabel
+  PrintLabel,
 } from "../../actions/po_actions";
-import { Button } from "@material-ui/core";
 
-const useStyle = makeStyles(theme => ({
+import POImport from "./po_import";
+
+const useStyle = makeStyles((theme) => ({
   root: {
     // margin: 20
-    padding: 20
+    padding: 20,
   },
   tableHeader: {
     paddingTop: 10,
-    paddingBottom: 10
+    paddingBottom: 10,
   },
   tableRow: {
-    paddingBottom: 4
-  }
+    paddingBottom: 4,
+  },
 }));
 
 function POItems(props) {
@@ -74,7 +76,7 @@ function POItems(props) {
             <TextField
               name="item_num"
               value={item.item_num}
-              onChange={e => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
+              onChange={(e) => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
             />
           </Grid>
           <Grid item xs={1}>
@@ -82,14 +84,14 @@ function POItems(props) {
               name="qty"
               type="number"
               value={item.qty}
-              onChange={e => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
+              onChange={(e) => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
             />
           </Grid>
           <Grid item xs={1}>
             <TextField
               name="unit"
               value={item.unit}
-              onChange={e => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
+              onChange={(e) => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
             />
           </Grid>
           <Grid item xs={1}>
@@ -97,7 +99,7 @@ function POItems(props) {
               type="number"
               name="unit_price"
               value={item.unit_price}
-              onChange={e => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
+              onChange={(e) => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
             />
           </Grid>
           <Grid item xs={1}>
@@ -112,7 +114,7 @@ function POItems(props) {
             <TextField
               name="cad_dir"
               value={work_order_items[0].cad_dir}
-              onChange={e => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
+              onChange={(e) => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
             />
           </Grid>
         </Grid>
@@ -126,11 +128,14 @@ function POItems(props) {
         {renderItems()}
       </Paper>
       <Grid container className={classes.root}>
-        <Grid item xs={9}></Grid>
+        <Grid item xs={8}></Grid>
         <Grid item xs={1}>
           <Button variant="contained" color="primary" onClick={() => AddWorkOrderItem()}>
             添加
           </Button>
+        </Grid>
+        <Grid item xs={1}>
+          <POImport />
         </Grid>
         <Grid item xs={1}>
           <Button variant="contained" color="primary" onClick={() => PrintLabel()}>
@@ -149,7 +154,7 @@ function POItems(props) {
 
 const mapStateToProps = ({ POReducer }) => {
   return {
-    work_order_items: POReducer.work_order_items
+    work_order_items: POReducer.work_order_items,
   };
 };
 
@@ -157,5 +162,5 @@ export default connect(mapStateToProps, {
   UpdateWorkOrderItem,
   AddWorkOrderItem,
   PostInternalWorkOrderItems,
-  PrintLabel
+  PrintLabel,
 })(POItems);

@@ -12,29 +12,27 @@ import DateFnsUtils from "@date-io/date-fns";
 
 import { GetCustomers, UpdateState, PostInternalWorkOrder } from "../../actions/po_actions";
 
-import Alert from "../alert";
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   form150: {
-    margin: theme.spacing(1)
+    margin: theme.spacing(1),
     // minWidth: 150
   },
   empty: {
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
   },
   root: {
-    margin: 10
+    margin: 10,
   },
   clearMarginPadding: {
     padding: 0,
-    margin: 0
+    margin: 0,
   },
   center: {
     backgroundColor: "#FFDC00",
     width: 100,
     height: 100,
-    margin: "0 auto"
-  }
+    margin: "0 auto",
+  },
 }));
 
 function POInfo(props) {
@@ -50,9 +48,6 @@ function POInfo(props) {
     internal_dateline,
     delivery_dateline,
     work_order_created,
-    openAlert,
-    alertMessage,
-    alertSeverity
   } = props;
 
   // methods from actions
@@ -66,12 +61,6 @@ function POInfo(props) {
   return (
     // <Container maxWidth="lg">
     <React.Fragment>
-      <Alert
-        message={alertMessage}
-        severity={alertSeverity}
-        open={openAlert}
-        onClose={() => UpdateState("openAlert", false)}
-      />
       <Paper className={classes.root}>
         <Grid container alignItems="center" justify="space-around">
           <Grid item xs={1}>
@@ -79,7 +68,7 @@ function POInfo(props) {
               <InputLabel shrink>客户</InputLabel>
               <Select
                 value={customer}
-                onChange={e => {
+                onChange={(e) => {
                   UpdateState("customer", e.target.value);
                 }}
                 displayEmpty
@@ -88,7 +77,7 @@ function POInfo(props) {
                 <MenuItem value="">
                   <em>空</em>
                 </MenuItem>
-                {customers.map(item => (
+                {customers.map((item) => (
                   <MenuItem key={item.id} value={item.internal}>
                     {item.internal}
                   </MenuItem>
@@ -103,7 +92,7 @@ function POInfo(props) {
               <TextField
                 className={classes.empty}
                 value={customer_po}
-                onChange={e => UpdateState("customer_po", e.target.value)}
+                onChange={(e) => UpdateState("customer_po", e.target.value)}
               />
             </FormControl>
           </Grid>
@@ -118,9 +107,9 @@ function POInfo(props) {
                 label="下单日期"
                 value={po_submit_date}
                 id="po-submit-date"
-                onChange={date => UpdateState("po_submit_date", date)}
+                onChange={(date) => UpdateState("po_submit_date", date)}
                 KeyboardButtonProps={{
-                  "aria-label": "change date"
+                  "aria-label": "change date",
                 }}
               />
             </MuiPickersUtilsProvider>
@@ -135,9 +124,9 @@ function POInfo(props) {
                 label="客户交期"
                 value={customer_dateline}
                 id="customer-dateline"
-                onChange={date => UpdateState("customer_dateline", date)}
+                onChange={(date) => UpdateState("customer_dateline", date)}
                 KeyboardButtonProps={{
-                  "aria-label": "change date"
+                  "aria-label": "change date",
                 }}
               />
             </MuiPickersUtilsProvider>
@@ -153,9 +142,9 @@ function POInfo(props) {
                 label="厂内交期"
                 id="internal-dateline"
                 value={internal_dateline}
-                onChange={date => UpdateState("internal_dateline", date)}
+                onChange={(date) => UpdateState("internal_dateline", date)}
                 KeyboardButtonProps={{
-                  "aria-label": "change date"
+                  "aria-label": "change date",
                 }}
               />
             </MuiPickersUtilsProvider>
@@ -170,9 +159,9 @@ function POInfo(props) {
                 label="发货日期"
                 id="delivery-dateline"
                 value={delivery_dateline}
-                onChange={date => UpdateState("delivery_dateline", date)}
+                onChange={(date) => UpdateState("delivery_dateline", date)}
                 KeyboardButtonProps={{
-                  "aria-label": "change date"
+                  "aria-label": "change date",
                 }}
               />
             </MuiPickersUtilsProvider>
@@ -209,10 +198,6 @@ const mapStateToProps = ({ POReducer }) => {
     internal_dateline: POReducer.internal_dateline,
     delivery_dateline: POReducer.delivery_dateline,
     work_order_created: POReducer.work_order_created,
-    // for alert
-    openAlert: POReducer.openAlert,
-    alertMessage: POReducer.alertMessage,
-    alertSeverity: POReducer.alertSeverity
   };
 };
 

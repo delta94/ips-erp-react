@@ -12,17 +12,17 @@ import Cookies from "js-cookie";
 
 import { ToggleState } from "../../actions/header_actions";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   title: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   link: {
     color: "white",
-    textDecoration: "none"
-  }
+    textDecoration: "none",
+  },
 }));
 
 function Header(props) {
@@ -34,10 +34,10 @@ function Header(props) {
   const { ToggleState } = props;
   return (
     <div className={classes.root}>
-      {isAuthenticated && <Sidebar />}
+      {Cookies.get("CN") && <Sidebar />}
       <AppBar position="static">
         <Toolbar>
-          {isAuthenticated && (
+          {Cookies.get("OU") && (
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -54,7 +54,7 @@ function Header(props) {
               主页
             </Link>
           </Typography>
-          {isAuthenticated ? (
+          {Cookies.get("OU") ? (
             <Typography>
               {Cookies.get("CN")} - {Cookies.get("OU")}
             </Typography>
@@ -71,7 +71,7 @@ function Header(props) {
 
 const mapStateToProps = ({ HeaderReducer }) => {
   return {
-    isAuthenticated: HeaderReducer.isAuthenticated
+    isAuthenticated: HeaderReducer.isAuthenticated,
   };
 };
 

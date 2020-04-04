@@ -6,7 +6,7 @@ import {
   GetCurrencyAPI,
   PostInternalWorkOrderAPI,
   PostInternalWorkOrderItemsAPI,
-  PrintLabelAPI
+  PrintLabelAPI,
 } from "../api";
 // for po_internal.js
 import { GetEmployeeAPI, GetShippingCompanyAPI, GetOutFactoryAPI, GetDeliverContactAPI } from "../api";
@@ -19,7 +19,7 @@ export const RESET_STATE = "PO/RESET_INPUT";
 
 export const ResetState = () => {
   return {
-    type: RESET_STATE
+    type: RESET_STATE,
   };
 };
 
@@ -27,19 +27,19 @@ export const UpdateState = (name, value) => {
   return {
     type: UPDATE_STATE,
     name,
-    value
+    value,
   };
 };
 
-export const ToggleState = name => {
+export const ToggleState = (name) => {
   return {
     type: TOGGLE_STATE,
-    name
+    name,
   };
 };
 
 export const GetCustomers = () => {
-  return async dispatch => {
+  return async (dispatch) => {
     try {
       const res = await GetCustomersAPI();
       const { data } = res;
@@ -50,8 +50,8 @@ export const GetCustomers = () => {
   };
 };
 
-export const GetPurchaser = company => {
-  return async dispatch => {
+export const GetPurchaser = (company) => {
+  return async (dispatch) => {
     try {
       const res = await GetPurchaserAPI(company);
       const { data } = res;
@@ -63,7 +63,7 @@ export const GetPurchaser = company => {
 };
 
 export const GetCurrency = () => {
-  return async dispatch => {
+  return async (dispatch) => {
     try {
       const res = await GetCurrencyAPI();
       const { data } = res;
@@ -75,7 +75,7 @@ export const GetCurrency = () => {
 };
 
 export const GetBUEmployee = () => {
-  return async dispatch => {
+  return async (dispatch) => {
     try {
       const res = await GetEmployeeAPI("bu");
       const { data } = res;
@@ -87,7 +87,7 @@ export const GetBUEmployee = () => {
 };
 
 export const GetShippingCompany = () => {
-  return async dispatch => {
+  return async (dispatch) => {
     try {
       const res = await GetShippingCompanyAPI();
       const { data } = res;
@@ -99,7 +99,7 @@ export const GetShippingCompany = () => {
 };
 
 export const GetOutFactory = () => {
-  return async dispatch => {
+  return async (dispatch) => {
     try {
       const res = await GetOutFactoryAPI();
       const { data } = res;
@@ -111,7 +111,7 @@ export const GetOutFactory = () => {
 };
 
 export const GetDeliverContact = () => {
-  return async dispatch => {
+  return async (dispatch) => {
     try {
       const res = await GetDeliverContactAPI();
       const { data } = res;
@@ -131,7 +131,7 @@ export const PostInternalWorkOrder = () => {
       po_submit_date,
       customer_dateline,
       internal_dateline,
-      delivery_dateline
+      delivery_dateline,
     } = state.POReducer;
 
     const params = {
@@ -141,7 +141,7 @@ export const PostInternalWorkOrder = () => {
       customer_dateline,
       internal_dateline,
       delivery_dateline,
-      state: BU_PLACE_ORDER
+      state: BU_PLACE_ORDER,
     };
 
     try {
@@ -152,7 +152,7 @@ export const PostInternalWorkOrder = () => {
         dispatch(UpdateState("internal_work_num", data.internal_work_num));
         dispatch(
           UpdateState("work_order_items", [
-            { item_id: `${data.internal_work_num}-1`, item_num: "", unit: "", qty: "", unit_price: "", cad_dir: "" }
+            { item_id: `${data.internal_work_num}-1`, item_num: "", unit: "", qty: "", unit_price: "", cad_dir: "" },
           ])
         );
       });
@@ -172,13 +172,13 @@ export const UpdateWorkOrderItem = (index, name, value) => {
     type: UPDATE_WORK_ORDER_ITEM,
     index,
     name,
-    value
+    value,
   };
 };
 
 export const AddWorkOrderItem = () => {
   return {
-    type: ADD_WORK_ORDER_ITEM
+    type: ADD_WORK_ORDER_ITEM,
   };
 };
 
@@ -193,9 +193,9 @@ export const PostInternalWorkOrderItems = () => {
       po_submit_date,
       customer_dateline,
       internal_dateline,
-      delivery_dateline
+      delivery_dateline,
     } = state.POReducer;
-    work_order_items.forEach(element => {
+    work_order_items.forEach((element) => {
       element.qty = parseInt(element.qty);
       element.unit_price = parseFloat(element.unit_price);
       element.total_price = parseFloat(element.unit_price * element.qty);
@@ -235,28 +235,45 @@ export const PrintLabel = () => {
     const state = getState();
     const { po_submit_date, internal_dateline, work_order_items } = state.POReducer;
 
-    const data = work_order_items.map(element => {
+    const data = work_order_items.map((element) => {
       return {
         item_id: element.item_id,
         po_submit_date: po_submit_date,
         internal_dateline: internal_dateline,
         qty: element.qty,
         item_num: element.item_num,
-        unit: element.unit
+        unit: element.unit,
       };
     });
-    data.forEach(element => {
+    data.forEach((element) => {
       PrintLabelAPI(element)
-        .then(res => console.log(res))
-        .catch(err => console.log(err));
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err));
     });
-    // try {
-    //   const res = await PrintLabelAPI(data[0]);
-    //   const { data } = res;
 
-    //   console.log(data);
-    // } catch (err) {
-    //   console.log(err);
-    // }
+    batch(() => {
+      dispatch(UpdateState("openAlert", true));
+      dispatch(UpdateState("alertMessage", "打印成功! "));
+      dispatch(UpdateState("alertSeverity", "success"));
+      dispatch(ResetState());
+    });
+  };
+};
+
+export const UploadedFile = (data) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const { internal_work_num } = state.POReducer;
+    const work_order_items = data.map((item) => {
+      return {
+        item_id: `${internal_work_num}-${item.Item}`,
+        item_num: item.Description,
+        unit: item.Unit,
+        qty: item.Quantity,
+        unit_price: item["UNIT PRICE"],
+        cad_dir: "",
+      };
+    });
+    dispatch(UpdateState("work_order_items", work_order_items));
   };
 };
