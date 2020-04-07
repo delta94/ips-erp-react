@@ -28,8 +28,6 @@ const useStyles = makeStyles((theme) => ({
 function Header(props) {
   const classes = useStyles();
 
-  // vars from reducers
-  const { isAuthenticated } = props;
   // methods from action
   const { ToggleState } = props;
   return (
@@ -69,10 +67,4 @@ function Header(props) {
   );
 }
 
-const mapStateToProps = ({ HeaderReducer }) => {
-  return {
-    isAuthenticated: HeaderReducer.isAuthenticated,
-  };
-};
-
-export default connect(mapStateToProps, { ToggleState })(Header);
+export default connect(null, { ToggleState })(Header);

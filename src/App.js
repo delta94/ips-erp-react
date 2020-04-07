@@ -5,6 +5,7 @@ import Header from "./components/header";
 import Login from "./components/login";
 import PurchaseOrder from "./components/purchase_order";
 import WorkOrderStatus from "./components/work_orders";
+import EngineerProcess from "./components/engineer_process";
 import CraftSchedule from "./components/craft_schdeule";
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <Switch>
           <Route exact path="/login" component={Login} />
           <Route exact path="/po" component={PurchaseOrder} />
+          <Route exact path="/engineer_process" component={EngineerProcess} />
           <Route exact path="/work_orders" component={WorkOrderStatus} />
           <Route exact path="/craft_schedule" component={CraftSchedule} />
         </Switch>
