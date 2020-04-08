@@ -255,7 +255,6 @@ export const PrintLabel = () => {
       dispatch(UpdateState("openAlert", true));
       dispatch(UpdateState("alertMessage", "打印成功! "));
       dispatch(UpdateState("alertSeverity", "success"));
-      dispatch(ResetState());
     });
   };
 };

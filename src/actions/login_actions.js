@@ -10,11 +10,11 @@ export const UpdateState = (name, value) => {
   return {
     type: UPDATE_STATE,
     name,
-    value
+    value,
   };
 };
 
-export const PostLogin = history => {
+export const PostLogin = (history) => {
   return async (dispatch, getState) => {
     const state = getState();
     const { username, password } = state.LoginReducer;
@@ -34,7 +34,8 @@ export const PostLogin = history => {
           dispatch(UpdateState("error", false));
           dispatch(HeaderUpdateState("isAuthenticated", true));
         });
-        history.push("/");
+        // history.push("/");
+        window.location.replace("/");
       } catch (error) {
         console.log(error);
       }
