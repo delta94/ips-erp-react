@@ -3,11 +3,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import CheckIcon from "@material-ui/icons/Check";
+import Icon from "@material-ui/core/Icon";
 import SearchBar from "material-ui-search-bar";
-import green from "@material-ui/core/colors/green";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 // import { useDebouncedCallback } from "use-debounce";
 
 import {
@@ -28,6 +28,13 @@ const useStyle = makeStyles((theme) => ({
   tableHeader: {
     paddingTop: 10,
     paddingBottom: 10,
+    paddingLeft: 10,
+  },
+  tableRow: {
+    paddingLeft: 10,
+  },
+  btn: {
+    marginTop: -12,
   },
 }));
 
@@ -64,13 +71,16 @@ function EngineerProcess(props) {
           <Grid item xs={1}>
             <Typography color="primary">单位</Typography>
           </Grid>
+          <Grid item xs={1}>
+            <Typography color="primary">下单人</Typography>
+          </Grid>
           <Grid item xs={2}>
             <Typography color="primary">CAD图档</Typography>
           </Grid>
           <Grid item xs={1}>
             <Typography color="primary">状态</Typography>
           </Grid>
-          <Grid item xs={1}></Grid>
+          <Grid item xs={2}></Grid>
         </Grid>
       );
     } else {
@@ -81,7 +91,7 @@ function EngineerProcess(props) {
   const renderData = () => {
     if (data) {
       return (
-        <Grid container justify="space-around" spacing={2}>
+        <Grid container justify="space-around" spacing={2} className={classes.tableRow}>
           <Grid item xs={2}>
             <Typography>{data.item_id}</Typography>
           </Grid>
@@ -94,22 +104,31 @@ function EngineerProcess(props) {
           <Grid item xs={1}>
             <Typography>{data.unit}</Typography>
           </Grid>
+          <Grid item xs={1}>
+            <Typography>{data.submit_by}</Typography>
+          </Grid>
           <Grid item xs={2}>
-            <Typography>{data.cad_dir}</Typography>
+            <CopyToClipboard text={data.cad_dir} className={classes.btn}>
+              <Button variant="contained" color="primary">
+                点击复制
+              </Button>
+            </CopyToClipboard>
           </Grid>
           <Grid item xs={1}>
             <Typography>{data.state}</Typography>
           </Grid>
-          <Grid item xs={1}>
-            <IconButton
-              edge="start"
-              style={{ marginTop: -12, color: green[500] }}
+          <Grid item xs={2}>
+            <Button
+              className={classes.btn}
+              variant="contained"
+              color="primary"
+              endIcon={<Icon>send</Icon>}
               onClick={() => {
                 PatchInternalWorkOrderItem(data.item_id);
               }}
             >
-              <CheckIcon />
-            </IconButton>
+              完成处理
+            </Button>
           </Grid>
         </Grid>
       );

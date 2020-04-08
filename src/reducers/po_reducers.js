@@ -3,7 +3,7 @@ import {
   TOGGLE_STATE,
   UPDATE_WORK_ORDER_ITEM,
   ADD_WORK_ORDER_ITEM,
-  RESET_STATE
+  RESET_STATE,
 } from "../actions/po_actions";
 
 const defaultState = {
@@ -17,6 +17,7 @@ const defaultState = {
   delivery_dateline: new Date(),
   work_order_created: false,
   internal_work_num: "",
+  cad_dir: "",
   // for alert
   openAlert: false,
   alertMessage: "",
@@ -31,7 +32,7 @@ const defaultState = {
   deliverContacts: [],
   selectedDeliverContact: "",
   // for po_items.js
-  work_order_items: []
+  work_order_items: [],
 };
 
 const reducer = (state = defaultState, action) => {
@@ -53,7 +54,7 @@ const reducer = (state = defaultState, action) => {
         unit: "",
         qty: "",
         unit_price: "",
-        cad_dir: ""
+        cad_dir: "",
       };
       work_order_items.push(item);
       return { ...state, work_order_items: [...work_order_items] };

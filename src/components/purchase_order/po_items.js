@@ -43,7 +43,7 @@ function POItems(props) {
         <Grid item xs={2}>
           <Typography color="primary">工号</Typography>
         </Grid>
-        <Grid item xs={2}>
+        <Grid item xs={4}>
           <Typography color="primary">品名/图号</Typography>
         </Grid>
         <Grid item xs={1}>
@@ -58,9 +58,9 @@ function POItems(props) {
         <Grid item xs={1}>
           <Typography color="primary">总价</Typography>
         </Grid>
-        <Grid item xs={2}>
+        {/* <Grid item xs={2}>
           <Typography color="primary">CAD图档</Typography>
-        </Grid>
+        </Grid> */}
       </Grid>
     );
   };
@@ -72,10 +72,11 @@ function POItems(props) {
           <Grid item xs={2}>
             <TextField value={item.item_id} />
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={4}>
             <TextField
               name="item_num"
               value={item.item_num}
+              fullWidth
               onChange={(e) => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
             />
           </Grid>
@@ -110,13 +111,13 @@ function POItems(props) {
               // onChange={e => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
             />
           </Grid>
-          <Grid item xs={2}>
+          {/* <Grid item xs={2}>
             <TextField
               name="cad_dir"
               value={work_order_items[0].cad_dir}
               onChange={(e) => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
             />
-          </Grid>
+          </Grid> */}
         </Grid>
       );
     });

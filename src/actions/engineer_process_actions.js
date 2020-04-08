@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import { GetInternalWorkOrdersItemAPI, PatchInternalWorkOrderItemAPI } from "../api";
 export const UPDATE_STATE = "ENGINEER_PROCESS/UPDATE_STATE";
 
@@ -24,7 +25,7 @@ export const GetInternalWorkOrderItem = (item_id) => {
 export const PatchInternalWorkOrderItem = (item_id) => {
   return async (dispatch) => {
     try {
-      const params = { state: "工程处理" };
+      const params = { state: "工程处理", process_by: Cookies.get("CN") };
       const res = await PatchInternalWorkOrderItemAPI(item_id, params);
       const { data } = res;
       console.log(data);

@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import { batch } from "react-redux";
 // for po_info.js
 import {
@@ -150,6 +151,7 @@ export const PostInternalWorkOrder = () => {
       batch(() => {
         dispatch(UpdateState("work_order_created", true));
         dispatch(UpdateState("internal_work_num", data.internal_work_num));
+        dispatch(UpdateState("cad_dir", data.cad_dir));
         dispatch(
           UpdateState("work_order_items", [
             { item_id: `${data.internal_work_num}-1`, item_num: "", unit: "", qty: "", unit_price: "", cad_dir: "" },
@@ -194,12 +196,14 @@ export const PostInternalWorkOrderItems = () => {
       customer_dateline,
       internal_dateline,
       delivery_dateline,
+      cad_dir,
     } = state.POReducer;
     work_order_items.forEach((element) => {
       element.qty = parseInt(element.qty);
       element.unit_price = parseFloat(element.unit_price);
       element.total_price = parseFloat(element.unit_price * element.qty);
-      element.cad_dir = work_order_items[0].cad_dir;
+      element.cad_dir = cad_dir;
+      element.submit_by = Cookies.get("CN");
       element.state = BU_PLACE_ORDER;
       element.internal_work_num = internal_work_num;
       element.customer = customer;
