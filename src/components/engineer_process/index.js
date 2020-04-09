@@ -1,4 +1,5 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import Paper from "@material-ui/core/Paper";
@@ -15,6 +16,8 @@ import {
   GetInternalWorkOrderItem,
   PatchInternalWorkOrderItem,
 } from "../../actions/engineer_process_actions";
+import { enqueueSnackbar as enqueueSnackbarAction } from "../../actions/notify_actions";
+import { SUCCESS } from "../../utils/constants";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -40,6 +43,8 @@ const useStyle = makeStyles((theme) => ({
 
 function EngineerProcess(props) {
   const classes = useStyle();
+  const dispatch = useDispatch();
+  const enqueueSnackbar = (...args) => dispatch(enqueueSnackbarAction(...args));
 
   // vars from reducer
   const { search, data } = props;
@@ -109,7 +114,7 @@ function EngineerProcess(props) {
           </Grid>
           <Grid item xs={2}>
             <CopyToClipboard text={data.cad_dir} className={classes.btn}>
-              <Button variant="contained" color="primary">
+              <Button variant="contained" color="primary" onClick={() => enqueueSnackbar("复制成功! ", SUCCESS)}>
                 点击复制
               </Button>
             </CopyToClipboard>

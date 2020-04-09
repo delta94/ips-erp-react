@@ -9,6 +9,8 @@ import {
   PostInternalWorkOrderItemsAPI,
   PrintLabelAPI,
 } from "../api";
+import { enqueueSnackbar } from "./notify_actions";
+import { SUCCESS, ERROR } from "../utils/constants";
 // for po_internal.js
 import { GetEmployeeAPI, GetShippingCompanyAPI, GetOutFactoryAPI, GetDeliverContactAPI } from "../api";
 import { BU_PLACE_ORDER } from "../utils/constants";
@@ -159,12 +161,7 @@ export const PostInternalWorkOrder = () => {
         );
       });
     } catch (err) {
-      // console.log(err.message);
-      batch(() => {
-        dispatch(UpdateState("openAlert", true));
-        dispatch(UpdateState("alertMessage", err.message));
-        dispatch(UpdateState("alertSeverity", "error"));
-      });
+      dispatch(enqueueSnackbar(err.message, ERROR));
     }
   };
 };
@@ -217,19 +214,9 @@ export const PostInternalWorkOrderItems = () => {
     try {
       const res = await PostInternalWorkOrderItemsAPI(params);
       const { data } = res;
-      batch(() => {
-        dispatch(UpdateState("openAlert", true));
-        dispatch(UpdateState("alertMessage", data));
-        dispatch(UpdateState("alertSeverity", "success"));
-        dispatch(ResetState());
-      });
+      dispatch(enqueueSnackbar(data, SUCCESS));
     } catch (err) {
-      batch(() => {
-        console.log(err);
-        dispatch(UpdateState("openAlert", true));
-        dispatch(UpdateState("alertMessage", err.message));
-        dispatch(UpdateState("alertSeverity", "error"));
-      });
+      dispatch(enqueueSnackbar(err.message, ERROR));
     }
   };
 };
@@ -255,11 +242,7 @@ export const PrintLabel = () => {
         .catch((err) => console.log(err));
     });
 
-    batch(() => {
-      dispatch(UpdateState("openAlert", true));
-      dispatch(UpdateState("alertMessage", "打印成功! "));
-      dispatch(UpdateState("alertSeverity", "success"));
-    });
+    dispatch(enqueueSnackbar("打印成功! ", SUCCESS));
   };
 };
 

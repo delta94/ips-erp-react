@@ -1,14 +1,18 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import { connect, batch } from "react-redux";
 import { Button } from "@material-ui/core";
 
 import * as XLSX from "xlsx";
 
-import { UploadedFile, UpdateState } from "../../actions/po_actions";
+import { UploadedFile } from "../../actions/po_actions";
+import { enqueueSnackbar as enqueueSnackbarAction } from "../../actions/notify_actions";
 
 function POImport(props) {
+  const dispatch = useDispatch();
+  const enqueueSnackbar = (...args) => dispatch(enqueueSnackbarAction(...args));
   // methods from actions
-  const { UploadedFile, UpdateState } = props;
+  const { UploadedFile } = props;
   // non redux actions
   const onImportExcel = (file) => {
     // 获取上传的文件对象
@@ -33,19 +37,12 @@ function POImport(props) {
         }
         // 最终获取到并且格式化后的 json 数据
         batch(() => {
-          UpdateState("openAlert", true);
-          UpdateState("alertMessage", "上传成功! ");
-          UpdateState("alertSeverity", "success");
+          enqueueSnackbar("上传成功! ", "success");
           UploadedFile(data);
         });
       } catch (e) {
         // 这里可以抛出文件类型错误不正确的相关提示
-        console.log("文件类型不正确！");
-        batch(() => {
-          UpdateState("openAlert", true);
-          UpdateState("alertMessage", "文件类型不正确！");
-          UpdateState("alertSeverity", "error");
-        });
+        enqueueSnackbar("文件类型不正确！", "success");
       }
     };
     // 以二进制方式打开文件
@@ -63,4 +60,4 @@ function POImport(props) {
   );
 }
 
-export default connect(null, { UploadedFile, UpdateState })(POImport);
+export default connect(null, { UploadedFile })(POImport);
