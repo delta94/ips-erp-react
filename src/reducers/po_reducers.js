@@ -19,9 +19,9 @@ const defaultState = {
   internal_work_num: "",
   cad_dir: "",
   // for alert
-  openAlert: false,
-  alertMessage: "",
-  alertSeverity: "error",
+  // openAlert: false,
+  // alertMessage: "",
+  // alertSeverity: "error",
   // for po_internal.js
   buEmployees: [],
   selectedBUEmployee: "",
