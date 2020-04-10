@@ -4,6 +4,7 @@ import { UpdateState as HeaderUpdateState } from "./header_actions";
 import { enqueueSnackbar } from "./notify_actions";
 
 import Cookies from "js-cookie";
+import { ERROR } from "../utils/constants";
 
 export const UPDATE_STATE = "LOGIN/UPDATE_STATE";
 
@@ -38,7 +39,7 @@ export const PostLogin = (history) => {
         // history.push("/");
         window.location.replace("/");
       } catch (error) {
-        dispatch(enqueueSnackbar(error.message, "ERROR"));
+        dispatch(enqueueSnackbar(error.message, ERROR));
       }
     }
   };

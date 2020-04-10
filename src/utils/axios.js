@@ -61,11 +61,11 @@ Axios.interceptors.response.use(
     }
 
     if (error.response.status === 403) {
-      return Promise.reject(error);
+      return Promise.reject(error.response.data);
     }
 
     if (error.response.status === 405) {
-      return Promise.reject(error);
+      return Promise.reject(error.response.data);
     }
     if (error.response.status === 500) {
       return Promise.reject(error.response.data);
