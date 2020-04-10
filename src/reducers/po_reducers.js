@@ -57,7 +57,6 @@ const reducer = (state = defaultState, action) => {
         unit: "",
         qty: "",
         unit_price: "",
-        cad_dir: "",
       };
       work_order_items.push(item);
       return { ...state, work_order_items: [...work_order_items] };

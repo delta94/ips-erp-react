@@ -156,7 +156,7 @@ export const PostInternalWorkOrder = () => {
         dispatch(UpdateState("cad_dir", data.cad_dir));
         dispatch(
           UpdateState("work_order_items", [
-            { item_id: `${data.internal_work_num}-1`, item_num: "", unit: "", qty: "", unit_price: "", cad_dir: "" },
+            { item_id: `${data.internal_work_num}-1`, item_num: "", unit: "", qty: "", unit_price: "" },
           ])
         );
       });
@@ -195,28 +195,44 @@ export const PostInternalWorkOrderItems = () => {
       delivery_dateline,
       cad_dir,
     } = state.POReducer;
-    work_order_items.forEach((element) => {
-      element.qty = parseInt(element.qty);
-      element.unit_price = parseFloat(element.unit_price);
-      element.total_price = parseFloat(element.unit_price * element.qty);
-      element.cad_dir = cad_dir;
-      element.submit_by = Cookies.get("CN");
-      element.state = BU_PLACE_ORDER;
-      element.internal_work_num = internal_work_num;
-      element.customer = customer;
-      element.customer_po = customer_po;
-      element.po_submit_date = po_submit_date;
-      element.customer_dateline = customer_dateline;
-      element.internal_dateline = internal_dateline;
-      element.delivery_dateline = delivery_dateline;
+    let flag = true;
+    work_order_items.forEach((ele) => {
+      for (let value of Object.values(ele)) {
+        if (value === "") {
+          flag = false;
+          return flag;
+        }
+      }
     });
-    const params = { work_order_items };
-    try {
-      const res = await PostInternalWorkOrderItemsAPI(params);
-      const { data } = res;
-      dispatch(enqueueSnackbar(data, SUCCESS));
-    } catch (err) {
-      dispatch(enqueueSnackbar(err.message, ERROR));
+    if (flag) {
+      work_order_items.forEach((element) => {
+        element.qty = parseInt(element.qty);
+        element.unit_price = parseFloat(element.unit_price);
+        element.total_price = parseFloat(element.unit_price * element.qty);
+        element.cad_dir = cad_dir;
+        element.submit_by = Cookies.get("CN");
+        element.state = BU_PLACE_ORDER;
+        element.internal_work_num = internal_work_num;
+        element.customer = customer;
+        element.customer_po = customer_po;
+        element.po_submit_date = po_submit_date;
+        element.customer_dateline = customer_dateline;
+        element.internal_dateline = internal_dateline;
+        element.delivery_dateline = delivery_dateline;
+      });
+      const params = { work_order_items };
+      try {
+        const res = await PostInternalWorkOrderItemsAPI(params);
+        const { data } = res;
+        batch(() => {
+          dispatch(ResetState());
+          dispatch(enqueueSnackbar(data, SUCCESS));
+        });
+      } catch (err) {
+        dispatch(enqueueSnackbar(err.message, ERROR));
+      }
+    } else {
+      dispatch(enqueueSnackbar("所有输入不能为空! ", ERROR));
     }
   };
 };
@@ -258,7 +274,6 @@ export const UploadedFile = (data) => {
         unit: item.Unit,
         qty: item.Quantity,
         unit_price: item["UNIT PRICE"],
-        cad_dir: "",
       };
     });
     total_price = work_order_items.reduce((acc, el) => acc + el.qty * el.unit_price, total_price);
