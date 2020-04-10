@@ -38,7 +38,7 @@ export const PostLogin = (history) => {
         // history.push("/");
         window.location.replace("/");
       } catch (error) {
-        enqueueSnackbar(error.message, "ERROR");
+        dispatch(enqueueSnackbar(error.message, "ERROR"));
       }
     }
   };
