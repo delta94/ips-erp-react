@@ -250,6 +250,7 @@ export const UploadedFile = (data) => {
   return (dispatch, getState) => {
     const state = getState();
     const { internal_work_num } = state.POReducer;
+    let total_price = 0;
     const work_order_items = data.map((item) => {
       return {
         item_id: `${internal_work_num}-${item.Item}`,
@@ -260,6 +261,10 @@ export const UploadedFile = (data) => {
         cad_dir: "",
       };
     });
-    dispatch(UpdateState("work_order_items", work_order_items));
+    total_price = work_order_items.reduce((acc, el) => acc + el.qty * el.unit_price, total_price);
+    batch(() => {
+      dispatch(UpdateState("work_order_items", work_order_items));
+      dispatch(UpdateState("total_price", total_price));
+    });
   };
 };

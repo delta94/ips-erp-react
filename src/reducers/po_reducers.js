@@ -33,6 +33,7 @@ const defaultState = {
   selectedDeliverContact: "",
   // for po_items.js
   work_order_items: [],
+  total_price: "",
 };
 
 const reducer = (state = defaultState, action) => {
@@ -45,7 +46,9 @@ const reducer = (state = defaultState, action) => {
       return { ...state, [name]: !state[name] };
     case UPDATE_WORK_ORDER_ITEM:
       work_order_items[index][name] = value;
-      return { ...state, work_order_items: [...work_order_items] };
+      let total_price = 0;
+      total_price = work_order_items.reduce((acc, el) => acc + el.qty * el.unit_price, total_price);
+      return { ...state, work_order_items: [...work_order_items], total_price: total_price };
     case ADD_WORK_ORDER_ITEM:
       let len = state.work_order_items.length;
       let item = {

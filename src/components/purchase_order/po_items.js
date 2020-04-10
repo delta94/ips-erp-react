@@ -32,11 +32,25 @@ const useStyle = makeStyles((theme) => ({
 
 function POItems(props) {
   // vars from reducer
-  const { work_order_items } = props;
+  const { work_order_items, total_price } = props;
   // methods from actions
   const { UpdateWorkOrderItem, AddWorkOrderItem, PostInternalWorkOrderItems, PrintLabel } = props;
 
   const classes = useStyle();
+  const renderTotal = () => {
+    return (
+      <Grid container justify="space-around" className={classes.tableHeader} spacing={2}>
+        <Grid item xs={2}></Grid>
+        <Grid item xs={4}></Grid>
+        <Grid item xs={1}></Grid>
+        <Grid item xs={1}></Grid>
+        <Grid item xs={1}></Grid>
+        <Grid item xs={1}>
+          <Typography color="primary">金额总计: {total_price}</Typography>
+        </Grid>
+      </Grid>
+    );
+  };
   const renderHeader = () => {
     return (
       <Grid container justify="space-around" className={classes.tableHeader} spacing={2}>
@@ -127,6 +141,7 @@ function POItems(props) {
       <Paper className={classes.root}>
         {renderHeader()}
         {renderItems()}
+        {renderTotal()}
       </Paper>
       <Grid container className={classes.root}>
         <Grid item xs={8}></Grid>
@@ -156,6 +171,7 @@ function POItems(props) {
 const mapStateToProps = ({ POReducer }) => {
   return {
     work_order_items: POReducer.work_order_items,
+    total_price: POReducer.total_price,
   };
 };
 
