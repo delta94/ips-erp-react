@@ -5,10 +5,10 @@ import { Grid, Container, Paper, Typography } from "@material-ui/core";
 import { TextField, Button } from "@material-ui/core";
 import { UpdateState, PostLogin } from "../../actions/login_actions";
 
-const useStyle = makeStyles(theme => ({
+const useStyle = makeStyles((theme) => ({
   root: {
-    marginTop: theme.spacing(10)
-  }
+    marginTop: theme.spacing(10),
+  },
 }));
 function Login(props) {
   // vars from reducer
@@ -33,9 +33,9 @@ function Login(props) {
               label="用户名"
               required
               inputProps={{
-                "aria-label": "用户名"
+                "aria-label": "用户名",
               }}
-              onChange={e => UpdateState("username", e.target.value)}
+              onChange={(e) => UpdateState("username", e.target.value)}
               helperText={error && username.length < 3 && "用户名不能小于3位"}
             />
           </Grid>
@@ -48,10 +48,15 @@ function Login(props) {
               type="password"
               required
               inputProps={{
-                "aria-label": "密码"
+                "aria-label": "密码",
               }}
-              onChange={e => UpdateState("password", e.target.value)}
+              onChange={(e) => UpdateState("password", e.target.value)}
               helperText={error && password.length < 8 && "密码不能小于8位"}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  PostLogin();
+                }
+              }}
             />
           </Grid>
           <Grid item xs={8}>
@@ -69,7 +74,7 @@ const mapStateToProps = ({ LoginReducer }) => {
   return {
     username: LoginReducer.username,
     password: LoginReducer.password,
-    error: LoginReducer.error
+    error: LoginReducer.error,
   };
 };
 

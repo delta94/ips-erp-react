@@ -1,6 +1,7 @@
 import { batch } from "react-redux";
 import { PostLoginAPI } from "../api";
 import { UpdateState as HeaderUpdateState } from "./header_actions";
+import { enqueueSnackbar } from "./notify_actions";
 
 import Cookies from "js-cookie";
 
@@ -37,7 +38,7 @@ export const PostLogin = (history) => {
         // history.push("/");
         window.location.replace("/");
       } catch (error) {
-        console.log(error);
+        enqueueSnackbar(error.message, "ERROR");
       }
     }
   };
