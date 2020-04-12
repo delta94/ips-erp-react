@@ -3,7 +3,8 @@ import { UPDATE_STATE } from "../actions/login_actions";
 const defaultState = {
   username: "",
   password: "",
-  error: false
+  reset: false,
+  error: false,
 };
 
 const reducer = (state = defaultState, action) => {

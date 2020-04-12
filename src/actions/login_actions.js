@@ -1,10 +1,10 @@
 import { batch } from "react-redux";
-import { PostLoginAPI } from "../api";
+import { PostLoginAPI, ResetPwdAPI } from "../api";
 import { UpdateState as HeaderUpdateState } from "./header_actions";
 import { enqueueSnackbar } from "./notify_actions";
 
 import Cookies from "js-cookie";
-import { ERROR } from "../utils/constants";
+import { ERROR, SUCCESS } from "../utils/constants";
 
 export const UPDATE_STATE = "LOGIN/UPDATE_STATE";
 
@@ -40,6 +40,28 @@ export const PostLogin = (history) => {
         window.location.replace("/");
       } catch (error) {
         dispatch(enqueueSnackbar(error.message, ERROR));
+      }
+    }
+  };
+};
+
+export const ResetPwd = () => {
+  return async (dispatch, getState) => {
+    const state = getState();
+    const { username } = state.LoginReducer;
+    if (username.length < 3) {
+      dispatch(UpdateState("error", true));
+    } else {
+      try {
+        const res = await ResetPwdAPI({ username: username });
+        const { data } = res;
+        console.log(data);
+
+        batch(() => {
+          dispatch(enqueueSnackbar("密码重置为Passw0rd", SUCCESS));
+        });
+      } catch (err) {
+        dispatch(enqueueSnackbar(err.message, ERROR));
       }
     }
   };

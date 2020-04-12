@@ -11,6 +11,10 @@ export const PostLoginAPI = async (params) => {
   return await axios.post(`/login`, params);
 };
 
+export const ResetPwdAPI = async (params) => {
+  return await axios.post(`/reset_pwd`, params);
+};
+
 export const GetSidebarItemsAPI = async () => {
   return await axios.get(`/sidebar`);
 };

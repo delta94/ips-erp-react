@@ -34,10 +34,10 @@ function App() {
         <Notify />
         <Header />
         <Switch>
+          <Route exact path="/" component={WorkOrderStatus} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/po" component={PurchaseOrder} />
           <Route exact path="/engineer_process" component={EngineerProcess} />
-          <Route exact path="/work_orders" component={WorkOrderStatus} />
           <Route exact path="/craft_schedule" component={CraftSchedule} />
         </Switch>
       </SnackbarProvider>
