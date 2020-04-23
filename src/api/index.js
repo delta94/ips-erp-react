@@ -7,11 +7,11 @@ const formUrlEncodedConfig = {
   },
 };
 
-export const PostLoginAPI = async (params) => {
+export const PostLoginAPI = async params => {
   return await axios.post(`/login`, params);
 };
 
-export const ResetPwdAPI = async (params) => {
+export const ResetPwdAPI = async params => {
   return await axios.post(`/reset_pwd`, params);
 };
 
@@ -23,7 +23,7 @@ export const GetCustomersAPI = async () => {
   return await axios.get(`/customer`);
 };
 
-export const GetPurchaserAPI = async (params) => {
+export const GetPurchaserAPI = async params => {
   return await axios.get(`/purchaser?company=${params}`);
 };
 
@@ -31,7 +31,7 @@ export const GetCurrencyAPI = async () => {
   return await axios.get(`/currency`);
 };
 
-export const GetEmployeeAPI = async (params) => {
+export const GetEmployeeAPI = async params => {
   return await axios.get(`/employee?bu=${params}`);
 };
 
@@ -47,11 +47,11 @@ export const GetDeliverContactAPI = async () => {
   return await axios.get(`/deliver_contact`);
 };
 
-export const PostInternalWorkOrderAPI = async (params) => {
+export const PostInternalWorkOrderAPI = async params => {
   return await axios.post(`/internal_work_order`, params);
 };
 
-export const PostInternalWorkOrderItemsAPI = async (params) => {
+export const PostInternalWorkOrderItemsAPI = async params => {
   return await axios.post(`/internal_work_order_items`, params);
 };
 
@@ -59,14 +59,22 @@ export const GetInternalWorkOrdersItemsAPI = async () => {
   return await axios.get(`/internal_work_order_items`);
 };
 
-export const PrintLabelAPI = async (body) => {
+export const PrintLabelAPI = async body => {
   return await axios.post(LABEL_ENDPOINT, JSON.stringify(body), formUrlEncodedConfig);
 };
 
-export const GetInternalWorkOrdersItemAPI = async (params) => {
+export const GetInternalWorkOrdersItemAPI = async params => {
   return await axios.get(`/internal_work_order_item?item_id=${params}`);
 };
 
 export const PatchInternalWorkOrderItemAPI = async (item_id, params) => {
   return await axios.patch(`/internal_work_order_item/${item_id}`, params);
+};
+
+export const GetMaterialsAPI = async () => {
+  return await axios.get(`/materials`);
+};
+
+export const GetCraftsAPI = async params => {
+  return await axios.get(`/crafts?category=${params}`);
 };

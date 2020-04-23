@@ -16,7 +16,7 @@ import {
 
 import POImport from "./po_import";
 
-const useStyle = makeStyles((theme) => ({
+const useStyle = makeStyles(theme => ({
   root: {
     // margin: 20
     padding: 20,
@@ -91,7 +91,7 @@ function POItems(props) {
               name="item_num"
               value={item.item_num}
               fullWidth
-              onChange={(e) => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
+              onChange={e => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
             />
           </Grid>
           <Grid item xs={1}>
@@ -99,14 +99,14 @@ function POItems(props) {
               name="qty"
               type="number"
               value={item.qty}
-              onChange={(e) => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
+              onChange={e => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
             />
           </Grid>
           <Grid item xs={1}>
             <TextField
               name="unit"
               value={item.unit}
-              onChange={(e) => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
+              onChange={e => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
             />
           </Grid>
           <Grid item xs={1}>
@@ -114,7 +114,7 @@ function POItems(props) {
               type="number"
               name="unit_price"
               value={item.unit_price}
-              onChange={(e) => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
+              onChange={e => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
             />
           </Grid>
           <Grid item xs={1}>

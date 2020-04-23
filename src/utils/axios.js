@@ -5,7 +5,7 @@ var url;
 if (process.env.REACT_APP_LOCATION === "ips") {
   url = "http://192.168.2.11:8080/api/v1";
 } else if (process.env.REACT_APP_LOCATION === "wg") {
-  url = `http://10.81.0.14:8080/api/v1`;
+  url = `http://10.81.0.210:8080/api/v1`;
 } else {
   url = `http://192.168.122.21:8080/api/v1`;
 }
@@ -39,7 +39,7 @@ const Axios = axios.create({
 
 // interceptor to handle different HTTP RESPONSE STATUS
 Axios.interceptors.response.use(
-  (response) => {
+  response => {
     if (response.status === 204) {
       return response;
     }
@@ -52,7 +52,7 @@ Axios.interceptors.response.use(
       return response.data;
     }
   },
-  (error) => {
+  error => {
     console.log(error);
     if (error.response.status === 401) {
       window.location.replace("/login");
