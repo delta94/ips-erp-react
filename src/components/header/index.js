@@ -7,12 +7,13 @@ import { Link } from "react-router-dom";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import Sidebar from "../sidebar";
 import Cookies from "js-cookie";
 
-import { ToggleState } from "../../actions/header_actions";
+import { ToggleState, clickLogout } from "../../actions/header_actions";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
   },
@@ -29,7 +30,7 @@ function Header(props) {
   const classes = useStyles();
 
   // methods from action
-  const { ToggleState } = props;
+  const { ToggleState, clickLogout } = props;
   return (
     <div className={classes.root}>
       {Cookies.get("CN") && <Sidebar />}
@@ -53,9 +54,14 @@ function Header(props) {
             </Link>
           </Typography>
           {Cookies.get("OU") ? (
-            <Typography>
-              {Cookies.get("CN")} - {Cookies.get("OU")}
-            </Typography>
+            <React.Fragment>
+              <Typography>
+                {Cookies.get("CN")} - {Cookies.get("OU")}
+              </Typography>
+              <IconButton color="inherit" aria-label="logout" onClick={() => clickLogout()}>
+                <ExitToAppIcon />
+              </IconButton>
+            </React.Fragment>
           ) : (
             <Link className={classes.link} to="/login">
               登录
@@ -67,4 +73,4 @@ function Header(props) {
   );
 }
 
-export default connect(null, { ToggleState })(Header);
+export default connect(null, { ToggleState, clickLogout })(Header);
