@@ -8,7 +8,7 @@ import Select from "@material-ui/core/Select";
 import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
 
-import { GetMaterials, UpdateState, filterHardness, UpdateObjectState } from "../../actions/craft_schedule_actions";
+import { GetMaterials, UpdateObjectState, updateSelectMaterial } from "../../actions/craft_schedule_actions";
 
 const useStyle = makeStyles(theme => ({
   paperRoot: {
@@ -25,20 +25,10 @@ const useStyle = makeStyles(theme => ({
 function Material(props) {
   const classes = useStyle();
   // vars from reducers
-  const {
-    data,
-    materials,
-    selected_material,
-    filter_hardness,
-    filter_replacement_hardness,
-    selected_hardness,
-    selected_replacement_material,
-    selected_replacement_hardness,
-    dimension,
-  } = props;
+  const { data, materials, selected_material, dimension } = props;
 
   // methods from actions
-  const { GetMaterials, UpdateState, filterHardness, UpdateObjectState } = props;
+  const { GetMaterials, UpdateObjectState, updateSelectMaterial } = props;
 
   useEffect(() => {
     GetMaterials();
@@ -49,7 +39,7 @@ function Material(props) {
       return (
         <Grid container alignItems="center" justify="space-around" spacing={4} className={classes.gridRoot}>
           <Grid item xs={6}>
-            <Grid container direction="column">
+            <Grid container>
               <Typography color="primary">材质</Typography>
               <Grid container spacing={4}>
                 <Grid item xs={2}>
@@ -58,20 +48,19 @@ function Material(props) {
                 <Grid item xs={4}>
                   <Select
                     fullWidth
-                    value={selected_material}
+                    value={selected_material.name}
                     onChange={e => {
-                      UpdateState("selected_material", e.target.value);
-                      filterHardness(e.target.name);
+                      updateSelectMaterial(e.target.value);
                     }}
                     name="selected_material"
-                    displayEmpty
+                    // displayEmpty
                   >
                     <MenuItem value="">
                       <em>空</em>
                     </MenuItem>
                     {materials.map(item => (
-                      <MenuItem key={item} value={item}>
-                        {item.split("^")[0]}
+                      <MenuItem key={item.id} value={item.name}>
+                        {item.name}
                       </MenuItem>
                     ))}
                   </Select>
@@ -80,80 +69,11 @@ function Material(props) {
                   <Typography className={classes.empty}>硬度</Typography>
                 </Grid>
                 <Grid item xs={4}>
-                  <Select
-                    fullWidth
-                    displayEmpty
-                    value={selected_hardness}
-                    onChange={e => {
-                      UpdateState("selected_hardness", e.target.value);
-                    }}
-                  >
-                    <MenuItem value="">
-                      <em>空</em>
-                    </MenuItem>
-                    {filter_hardness.map(item => (
-                      <MenuItem key={item} value={item}>
-                        {item.split("^")[0]}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                  <Typography className={classes.empty}>{selected_material.hardness}</Typography>
                 </Grid>
               </Grid>
             </Grid>
           </Grid>
-          {/* <Grid item xs={4}>
-          <Grid container direction="column">
-            <Typography>代替材质</Typography>
-            <Grid container spacing={4}>
-              <Grid item xs={2}>
-                <Typography className={classes.empty}>种类</Typography>
-              </Grid>
-              <Grid item xs={4}>
-                <Select
-                  fullWidth
-                  value={selected_replacement_material}
-                  onChange={e => {
-                    UpdateState("selected_replacement_material", e.target.value);
-                    filterHardness(e.target.name);
-                  }}
-                  name="selected_replacement_material"
-                  displayEmpty
-                >
-                  <MenuItem value="">
-                    <em>空</em>
-                  </MenuItem>
-                  {materials.map(item => (
-                    <MenuItem key={item} value={item}>
-                      {item.split("^")[0]}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </Grid>
-              <Grid item xs={2}>
-                <Typography className={classes.empty}>硬度</Typography>
-              </Grid>
-              <Grid item xs={4}>
-                <Select
-                  fullWidth
-                  displayEmpty
-                  value={selected_replacement_hardness}
-                  onChange={e => {
-                    UpdateState("selected_replacement_hardness", e.target.value);
-                  }}
-                >
-                  <MenuItem value="">
-                    <em>空</em>
-                  </MenuItem>
-                  {filter_replacement_hardness.map(item => (
-                    <MenuItem key={item} value={item}>
-                      {item.split("^")[0]}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid> */}
           <Grid item xs={6}>
             <Grid container direction="column">
               <Typography color="primary">零件规格</Typography>
@@ -207,13 +127,8 @@ const mapStateToProps = ({ CraftScheduleReducer }) => {
     data: CraftScheduleReducer.data,
     materials: CraftScheduleReducer.materials,
     selected_material: CraftScheduleReducer.selected_material,
-    filter_hardness: CraftScheduleReducer.filter_hardness,
-    filter_replacement_hardness: CraftScheduleReducer.filter_replacement_hardness,
-    selected_hardness: CraftScheduleReducer.selected_hardness,
-    selected_replacement_material: CraftScheduleReducer.selected_replacement_material,
-    selected_replacement_hardness: CraftScheduleReducer.selected_replacement_hardness,
     dimension: CraftScheduleReducer.dimension,
   };
 };
 
-export default connect(mapStateToProps, { GetMaterials, UpdateState, filterHardness, UpdateObjectState })(Material);
+export default connect(mapStateToProps, { GetMaterials, UpdateObjectState, updateSelectMaterial })(Material);

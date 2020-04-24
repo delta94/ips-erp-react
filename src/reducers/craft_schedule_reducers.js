@@ -4,16 +4,9 @@ const defaultState = {
   search: "",
   data: "",
   materials: [],
-  hardness: [],
-  filter_hardness: [],
-  filter_replacement_hardness: [],
-  selected_material: "",
-  selected_hardness: "",
-  selected_replacement_material: "",
-  selected_replacement_hardness: "",
+  selected_material: { category: "", name: "", hardness: "" },
   dimension: { length: "", width: "", height: "", qty: "" },
   crafts: [],
-  craft_schedule: [],
 };
 
 const reducer = (state = defaultState, action) => {

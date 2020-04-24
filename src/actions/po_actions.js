@@ -34,7 +34,7 @@ export const UpdateState = (name, value) => {
   };
 };
 
-export const ToggleState = (name) => {
+export const ToggleState = name => {
   return {
     type: TOGGLE_STATE,
     name,
@@ -42,7 +42,7 @@ export const ToggleState = (name) => {
 };
 
 export const GetCustomers = () => {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const res = await GetCustomersAPI();
       const { data } = res;
@@ -53,8 +53,8 @@ export const GetCustomers = () => {
   };
 };
 
-export const GetPurchaser = (company) => {
-  return async (dispatch) => {
+export const GetPurchaser = company => {
+  return async dispatch => {
     try {
       const res = await GetPurchaserAPI(company);
       const { data } = res;
@@ -66,7 +66,7 @@ export const GetPurchaser = (company) => {
 };
 
 export const GetCurrency = () => {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const res = await GetCurrencyAPI();
       const { data } = res;
@@ -78,7 +78,7 @@ export const GetCurrency = () => {
 };
 
 export const GetBUEmployee = () => {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const res = await GetEmployeeAPI("bu");
       const { data } = res;
@@ -90,7 +90,7 @@ export const GetBUEmployee = () => {
 };
 
 export const GetShippingCompany = () => {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const res = await GetShippingCompanyAPI();
       const { data } = res;
@@ -102,7 +102,7 @@ export const GetShippingCompany = () => {
 };
 
 export const GetOutFactory = () => {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const res = await GetOutFactoryAPI();
       const { data } = res;
@@ -114,7 +114,7 @@ export const GetOutFactory = () => {
 };
 
 export const GetDeliverContact = () => {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const res = await GetDeliverContactAPI();
       const { data } = res;
@@ -196,7 +196,7 @@ export const PostInternalWorkOrderItems = () => {
       cad_dir,
     } = state.POReducer;
     let flag = true;
-    work_order_items.forEach((ele) => {
+    work_order_items.forEach(ele => {
       for (let value of Object.values(ele)) {
         if (value === "") {
           flag = false;
@@ -205,7 +205,7 @@ export const PostInternalWorkOrderItems = () => {
       }
     });
     if (flag) {
-      work_order_items.forEach((element) => {
+      work_order_items.forEach(element => {
         element.qty = parseInt(element.qty);
         element.unit_price = parseFloat(element.unit_price);
         element.total_price = parseFloat(element.unit_price * element.qty);
@@ -219,6 +219,7 @@ export const PostInternalWorkOrderItems = () => {
         element.customer_dateline = customer_dateline;
         element.internal_dateline = internal_dateline;
         element.delivery_dateline = delivery_dateline;
+        element.ng = false;
       });
       const params = { work_order_items };
       try {
@@ -242,7 +243,7 @@ export const PrintLabel = () => {
     const state = getState();
     const { po_submit_date, internal_dateline, work_order_items } = state.POReducer;
 
-    const data = work_order_items.map((element) => {
+    const data = work_order_items.map(element => {
       return {
         item_id: element.item_id,
         po_submit_date: po_submit_date,
@@ -252,22 +253,22 @@ export const PrintLabel = () => {
         unit: element.unit,
       };
     });
-    data.forEach((element) => {
+    data.forEach(element => {
       PrintLabelAPI(element)
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err));
+        .then(res => console.log(res))
+        .catch(err => console.log(err));
     });
 
     dispatch(enqueueSnackbar("打印成功! ", SUCCESS));
   };
 };
 
-export const UploadedFile = (data) => {
+export const UploadedFile = data => {
   return (dispatch, getState) => {
     const state = getState();
     const { internal_work_num } = state.POReducer;
     let total_price = 0;
-    const work_order_items = data.map((item) => {
+    const work_order_items = data.map(item => {
       return {
         item_id: `${internal_work_num}-${item.Item}`,
         item_num: item.Description,

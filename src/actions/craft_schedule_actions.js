@@ -34,6 +34,18 @@ export const UpdateArrayObjectState = (name, index, key, value) => {
   };
 };
 
+export const updateSelectMaterial = name => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const { materials } = state.CraftScheduleReducer;
+    const selected_material = materials.filter(el => el.name === name)[0];
+    batch(() => {
+      dispatch(UpdateState("selected_material", selected_material));
+      dispatch(GetCrafts(selected_material.category));
+    });
+  };
+};
+
 export const clickSeqCheckbox = id => {
   return (dispatch, getState) => {
     const state = getState();
@@ -88,19 +100,8 @@ export const GetMaterials = () => {
     try {
       const res = await GetMaterialsAPI();
       const { data } = res;
-      let materials = [];
-      let hardness = [];
-      data.forEach(element => {
-        element.name.forEach(item => {
-          materials.push(`${item} ^ ${element.category}`);
-        });
-        element.hardness.forEach(item => {
-          hardness.push(`${item} ^ ${element.category}`);
-        });
-      });
       batch(() => {
-        dispatch(UpdateState("materials", materials));
-        dispatch(UpdateState("hardness", hardness));
+        dispatch(UpdateState("materials", data));
       });
     } catch (err) {
       dispatch(enqueueSnackbar(err.message, ERROR));
@@ -108,35 +109,17 @@ export const GetMaterials = () => {
   };
 };
 
-export const filterHardness = name => {
-  return (dispatch, getState) => {
-    const state = getState();
-    const { hardness, selected_material, selected_replacement_material } = state.CraftScheduleReducer;
-    let category;
-    if (name.includes("replacement")) {
-      category = selected_replacement_material.split("^")[1];
-      const filter_replacement_hardness = hardness.filter(el => el.includes(category));
-      dispatch(UpdateState("filter_replacement_hardness", filter_replacement_hardness));
-    } else {
-      category = selected_material.split("^")[1].trim();
-      const filter_hardness = hardness.filter(el => el.includes(category));
-      batch(() => {
-        dispatch(GetCrafts(category));
-        dispatch(UpdateState("filter_hardness", filter_hardness));
-      });
-    }
-  };
-};
-
 export const GetCrafts = category => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const reducer = getState().CraftScheduleReducer;
+    const internal_work_order_item = reducer.data;
     try {
       const res = await GetCraftsAPI(category);
       const { data } = res;
       data.forEach(element => {
         element.check = false;
         element.seq = "";
-        element.qty = "";
+        element.qty = internal_work_order_item.qty;
         element.level = "";
         element.estimate = "";
         element.start_time = "";
