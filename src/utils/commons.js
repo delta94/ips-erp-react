@@ -137,5 +137,3 @@ export const calEndTime = (time, estimate) => {
   console.log(`end_time: ${end_time}`);
   return end_time;
 };
-
-// calEndTime(new Date(2020, 3, 23, 7, 0, 0), 4);

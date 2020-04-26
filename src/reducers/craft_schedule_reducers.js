@@ -1,4 +1,9 @@
-import { UPDATE_STATE, UPDATE_OBJECT_STATE, UPDATE_ARRAY_OBJECT_STATE } from "../actions/craft_schedule_actions";
+import {
+  UPDATE_STATE,
+  UPDATE_OBJECT_STATE,
+  UPDATE_ARRAY_OBJECT_STATE,
+  RESET_STATE,
+} from "../actions/craft_schedule_actions";
 
 const defaultState = {
   search: "",
@@ -30,6 +35,8 @@ const reducer = (state = defaultState, action) => {
       let arr = state[name];
       arr[index] = item;
       return { ...state, [name]: [...arr] };
+    case RESET_STATE:
+      return defaultState;
     default:
       return state;
   }
