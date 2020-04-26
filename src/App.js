@@ -14,6 +14,12 @@ import Notify from "./components/notify";
 
 const defaultTheme = createMuiTheme();
 const theme = createMuiTheme({
+  //    MuiTypography: {
+  //    content: {
+  //         fontSize: '14px',
+  //         fontWeight: 'bold',
+  //       }
+  //  },
   typography: {
     body1: defaultTheme.typography.body2,
   },
@@ -26,6 +32,18 @@ const theme = createMuiTheme({
         padding: "4px 12px",
       },
       label: defaultTheme.typography.body2,
+    },
+    MuiTableCell: {
+      root: {
+        borderBottom: 0,
+        borderRight: "1px solid black",
+        borderLeft: "1px solid black",
+      },
+    },
+    MuiTableRow: {
+      head: {
+        borderBottom: "1px solid black",
+      },
     },
   },
 });

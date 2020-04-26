@@ -1,13 +1,15 @@
 import { batch } from "react-redux";
+import Cookies from "js-cookie";
 import differenceInMinutes from "date-fns/differenceInMinutes";
 import parseISO from "date-fns/parseISO";
 import { enqueueSnackbar } from "./notify_actions";
-import { GetInternalWorkOrdersItemAPI, GetMaterialsAPI, GetCraftsAPI } from "../api";
+import { GetInternalWorkOrdersItemAPI, GetMaterialsAPI, GetCraftsAPI, PatchInternalWorkOrderItemAPI } from "../api";
 import { propComparator } from "../utils/commons";
 import { SUCCESS, ERROR } from "../utils/constants";
 export const UPDATE_STATE = "CRAFT_SCHEDULE/UPDATE_STATE";
 export const UPDATE_OBJECT_STATE = "CRAFT_SCHEDULE/UPDATE_OBJECT_STATE";
 export const UPDATE_ARRAY_OBJECT_STATE = "CRAFT_SCHEDULE/UPDATE_ARRAY_OBJECT_STATE";
+export const RESET_STATE = "CRAFT_SCHEDULE/RESET_STATE";
 
 export const UpdateState = (name, value) => {
   return {
@@ -36,6 +38,11 @@ export const UpdateArrayObjectState = (name, index, key, value) => {
   };
 };
 
+export const resetState = () => {
+  return {
+    type: RESET_STATE,
+  };
+};
 export const updateSelectMaterial = name => {
   return (dispatch, getState) => {
     const state = getState();
@@ -163,7 +170,6 @@ export const clickCalWorkHour = crafts => {
     crafts.forEach(el => {
       el.estimateFractionMinute = ((el.estimate * 60) / totalTimeHour) * difInternalDeadlineSubmitDate - 60;
     });
-    console.log(crafts);
     crafts.forEach((element, index) => {
       if (index === 0) {
         let start_time = new Date();
@@ -177,10 +183,32 @@ export const clickCalWorkHour = crafts => {
       );
       element.end_time = new Date(end_time);
     });
-    crafts.forEach(el => {
-      el.start_time = el.start_time.toLocaleString();
-      el.end_time = el.end_time.toLocaleString();
-    });
+    // crafts.forEach(el => {
+    //   el.start_time = el.start_time.toLocaleString();
+    //   el.end_time = el.end_time.toLocaleString();
+    // });
     dispatch(UpdateState("crafts", crafts));
+  };
+};
+
+export const clickSubmitCraftSchedule = () => {
+  return async (dispatch, getState) => {
+    const { data, crafts, selected_material, dimension } = getState().CraftScheduleReducer;
+    try {
+      const params = {
+        state: "下发加工",
+        craft_schedule_by: Cookies.get("CN"),
+        attach_crafts: crafts,
+        selected_material: { ...selected_material, ...dimension },
+      };
+      const res = await PatchInternalWorkOrderItemAPI(data.item_id, params);
+      console.log(res);
+      batch(() => {
+        dispatch(resetState());
+        dispatch(enqueueSnackbar("下发加工成功! ", SUCCESS));
+      });
+    } catch (err) {
+      dispatch(enqueueSnackbar(err.message, ERROR));
+    }
   };
 };

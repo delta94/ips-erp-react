@@ -171,10 +171,10 @@ function CraftList(props) {
             />
           </Grid>
           <Grid item xs={1}>
-            <Typography variant="body2">{craft.start_time}</Typography>
+            <Typography variant="body2">{craft.start_time.toLocaleString()}</Typography>
           </Grid>
           <Grid item xs={1}>
-            <Typography variant="body2">{craft.end_time}</Typography>
+            <Typography variant="body2">{craft.end_time.toLocaleString()}</Typography>
           </Grid>
         </Grid>
       );
