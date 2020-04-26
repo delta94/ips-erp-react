@@ -1,7 +1,9 @@
 import { batch } from "react-redux";
+import differenceInMinutes from "date-fns/differenceInMinutes";
+import parseISO from "date-fns/parseISO";
 import { enqueueSnackbar } from "./notify_actions";
 import { GetInternalWorkOrdersItemAPI, GetMaterialsAPI, GetCraftsAPI } from "../api";
-import { propComparator, calEndTime } from "../utils/commons";
+import { propComparator } from "../utils/commons";
 import { SUCCESS, ERROR } from "../utils/constants";
 export const UPDATE_STATE = "CRAFT_SCHEDULE/UPDATE_STATE";
 export const UPDATE_OBJECT_STATE = "CRAFT_SCHEDULE/UPDATE_OBJECT_STATE";
@@ -31,6 +33,18 @@ export const UpdateArrayObjectState = (name, index, key, value) => {
     index,
     key,
     value,
+  };
+};
+
+export const updateSelectMaterial = name => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const { materials } = state.CraftScheduleReducer;
+    const selected_material = materials.filter(el => el.name === name)[0];
+    batch(() => {
+      dispatch(UpdateState("selected_material", selected_material));
+      dispatch(GetCrafts(selected_material.category));
+    });
   };
 };
 
@@ -88,19 +102,8 @@ export const GetMaterials = () => {
     try {
       const res = await GetMaterialsAPI();
       const { data } = res;
-      let materials = [];
-      let hardness = [];
-      data.forEach(element => {
-        element.name.forEach(item => {
-          materials.push(`${item} ^ ${element.category}`);
-        });
-        element.hardness.forEach(item => {
-          hardness.push(`${item} ^ ${element.category}`);
-        });
-      });
       batch(() => {
-        dispatch(UpdateState("materials", materials));
-        dispatch(UpdateState("hardness", hardness));
+        dispatch(UpdateState("materials", data));
       });
     } catch (err) {
       dispatch(enqueueSnackbar(err.message, ERROR));
@@ -108,35 +111,17 @@ export const GetMaterials = () => {
   };
 };
 
-export const filterHardness = name => {
-  return (dispatch, getState) => {
-    const state = getState();
-    const { hardness, selected_material, selected_replacement_material } = state.CraftScheduleReducer;
-    let category;
-    if (name.includes("replacement")) {
-      category = selected_replacement_material.split("^")[1];
-      const filter_replacement_hardness = hardness.filter(el => el.includes(category));
-      dispatch(UpdateState("filter_replacement_hardness", filter_replacement_hardness));
-    } else {
-      category = selected_material.split("^")[1].trim();
-      const filter_hardness = hardness.filter(el => el.includes(category));
-      batch(() => {
-        dispatch(GetCrafts(category));
-        dispatch(UpdateState("filter_hardness", filter_hardness));
-      });
-    }
-  };
-};
-
 export const GetCrafts = category => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const reducer = getState().CraftScheduleReducer;
+    const internal_work_order_item = reducer.data;
     try {
       const res = await GetCraftsAPI(category);
       const { data } = res;
       data.forEach(element => {
         element.check = false;
         element.seq = "";
-        element.qty = "";
+        element.qty = internal_work_order_item.qty;
         element.level = "";
         element.estimate = "";
         element.start_time = "";
@@ -167,17 +152,29 @@ export const clickSortCraftSchedule = crafts => {
 // 04:30-07:00（加班情况）
 
 export const clickCalWorkHour = crafts => {
-  return dispatch => {
+  return (dispatch, getState) => {
+    const { data } = getState().CraftScheduleReducer;
+    const difInternalDeadlineSubmitDate = differenceInMinutes(
+      parseISO(data.internal_dateline),
+      parseISO(data.po_submit_date)
+    );
+    let totalTimeHour = 0;
+    totalTimeHour = crafts.reduce((acc, el) => acc + el.estimate * 60, totalTimeHour);
+    crafts.forEach(el => {
+      el.estimateFractionMinute = ((el.estimate * 60) / totalTimeHour) * difInternalDeadlineSubmitDate - 60;
+    });
+    console.log(crafts);
     crafts.forEach((element, index) => {
       if (index === 0) {
-        element.start_time = new Date();
+        let start_time = new Date();
+        element.start_time = new Date(start_time.setMinutes(start_time.getMinutes() + 30));
       } else {
         let start_time = new Date(crafts[index - 1].end_time);
         element.start_time = new Date(start_time.setMinutes(start_time.getMinutes() + 30));
       }
-      let end_time = new Date(element.start_time);
-      end_time = calEndTime(end_time, element.estimate);
-      // element.end_time = new Date(end_time.setHours(end_time.getHours() + parseInt(element.estimate)));
+      let end_time = new Date(element.start_time).setMinutes(
+        new Date(element.start_time).getMinutes() + element.estimateFractionMinute
+      );
       element.end_time = new Date(end_time);
     });
     crafts.forEach(el => {

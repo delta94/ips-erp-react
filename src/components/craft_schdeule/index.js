@@ -60,9 +60,15 @@ function EngineerProcess(props) {
             <Typography color="primary">单位</Typography>
           </Grid>
           <Grid item xs={1}>
+            <Typography color="primary">下单日期</Typography>
+          </Grid>
+          <Grid item xs={1}>
+            <Typography color="primary">厂内交期</Typography>
+          </Grid>
+          <Grid item xs={1}>
             <Typography color="primary">下单人</Typography>
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={1}>
             <Typography color="primary">处理人</Typography>
           </Grid>
           <Grid item xs={1}>
@@ -92,9 +98,15 @@ function EngineerProcess(props) {
             <Typography>{data.unit}</Typography>
           </Grid>
           <Grid item xs={1}>
+            <Typography>{data.po_submit_date.split("T")[0]}</Typography>
+          </Grid>
+          <Grid item xs={1}>
+            <Typography>{data.internal_dateline.split("T")[0]}</Typography>
+          </Grid>
+          <Grid item xs={1}>
             <Typography>{data.submit_by}</Typography>
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={1}>
             <Typography>{data.process_by}</Typography>
           </Grid>
           <Grid item xs={1}>

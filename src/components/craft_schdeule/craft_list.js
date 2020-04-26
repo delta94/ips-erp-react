@@ -51,13 +51,14 @@ const useStyle = makeStyles(theme => ({
   gridRoot: { margin: 2 },
   gridItemAlign: { marginTop: -7, marginLeft: -2 },
   narrowTextInput: { maxWidth: 40 },
+  text: theme.typography.body2,
 }));
 
 function CraftList(props) {
   const classes = useStyle();
 
   // vars from reducers
-  const { crafts } = props;
+  const { data, crafts } = props;
 
   // methods from actions
   const { clickSeqCheckbox, UpdateArrayObjectState } = props;
@@ -77,7 +78,7 @@ function CraftList(props) {
           <Typography color="primary">工业内容</Typography>
         </Grid>
         <Grid item xs={1}>
-          <Typography color="primary">等级 数量</Typography>
+          {data.ng ? <Typography color="primary">等级 数量</Typography> : <Typography color="primary">数量</Typography>}
         </Grid>
         <Grid item xs={1}>
           <Typography color="primary">预计工时</Typography>
@@ -122,20 +123,31 @@ function CraftList(props) {
             <Typography variant="body2">{craft.craft_num}</Typography>
           </Grid>
           <Grid item xs={5}>
-            <Typography variant="body2">{craft.description}</Typography>
+            <TextField
+              margin="none"
+              multiline
+              fullWidth
+              rowsMax={4}
+              className={classes.gridItemAlign}
+              value={craft.description}
+              size="small"
+              onChange={e => UpdateArrayObjectState("crafts", index, "description", e.target.value)}
+            />
           </Grid>
           <Grid item xs={1}>
             <Grid container direction="row">
-              <Grid item xs={6}>
-                <TextField
-                  disabled={!craft.check}
-                  value={craft.level}
-                  type="number"
-                  onChange={e => UpdateArrayObjectState("crafts", index, "level", e.target.value)}
-                  className={clsx(classes.gridItemAlign, classes.narrowTextInput)}
-                  size="small"
-                />
-              </Grid>
+              {data.ng && (
+                <Grid item xs={6}>
+                  <TextField
+                    disabled={!craft.check}
+                    value={craft.level}
+                    type="number"
+                    onChange={e => UpdateArrayObjectState("crafts", index, "level", e.target.value)}
+                    className={clsx(classes.gridItemAlign, classes.narrowTextInput)}
+                    size="small"
+                  />
+                </Grid>
+              )}
               <Grid item xs={6}>
                 <TextField
                   disabled={!craft.check}
@@ -182,6 +194,7 @@ function CraftList(props) {
 
 const mapStateToProps = ({ CraftScheduleReducer }) => {
   return {
+    data: CraftScheduleReducer.data,
     crafts: CraftScheduleReducer.crafts,
   };
 };

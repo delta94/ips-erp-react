@@ -51,13 +51,12 @@ export const calEndTime = (time, estimate) => {
   const nightThirdEnd = new Date(year, month, day + 1, 7, 0, 0).getTime();
 
   let end_time = new Date(time);
-  if (morningFirstStart <= time && time <= morningFirstEnd) {
+  if (modifyDate(nightThirdEnd, "date", -1) < time && time <= morningFirstEnd) {
+    end_time = new Date(morningFirstStart);
     let dif = differenceInMinutes(morningFirstEnd, time);
-    console.log(dif);
     if (estimateMin <= dif) {
       end_time.setMinutes(end_time.getMinutes() + estimateMin);
     } else {
-      console.log(estimate - Math.round(dif / 60));
       end_time = new Date(morningSecStart);
       end_time.setMinutes(end_time.getMinutes() + (estimateMin - dif));
     }
@@ -115,12 +114,15 @@ export const calEndTime = (time, estimate) => {
         end_time.setMinutes(end_time.getMinutes() + (estimateMin - 4 * 60));
       }
     } else {
-      let dif = differenceInMinutes(modifyDate(nightSecEnd, " date", -1), time);
+      let dif = differenceInMinutes(modifyDate(nightSecEnd, "date", -1), time);
       if (estimateMin <= dif) {
         end_time.setMinutes(end_time.getMinutes() + estimateMin);
-      } else {
+      } else if (estimateMin - dif <= 150) {
         end_time = new Date(modifyDate(nightThirdStart, "date", -1));
         end_time.setMinutes(end_time.getMinutes() + (estimateMin - dif));
+      } else {
+        end_time = new Date(morningFirstStart);
+        end_time.setMinutes(end_time.getMinutes() + (estimateMin - dif - 150));
       }
     }
   } else if (modifyDate(nightThirdStart, "date", -1) <= time && time <= modifyDate(nightThirdEnd, "date", -1)) {
