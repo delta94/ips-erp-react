@@ -4,10 +4,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
+import RestoreIcon from "@material-ui/icons/Restore";
 import SortByAlphaIcon from "@material-ui/icons/SortByAlpha";
 import FunctionsIcon from "@material-ui/icons/Functions";
 
-import { clickSortCraftSchedule, clickCalWorkHour } from "../../actions/craft_schedule_actions";
+import { clickSortCraftSchedule, clickCalWorkHour, GetCrafts } from "../../actions/craft_schedule_actions";
 
 const useStyle = makeStyles(() => ({
   paperRoot: {
@@ -22,10 +23,10 @@ function CraftOperations(props) {
   const classes = useStyle();
 
   // vars from reducers
-  const { data, crafts } = props;
+  const { crafts, selected_material } = props;
 
   // methods from actions
-  const { clickSortCraftSchedule, clickCalWorkHour } = props;
+  const { clickSortCraftSchedule, clickCalWorkHour, GetCrafts } = props;
 
   const renderOperation = () => {
     if (crafts.length > 0) {
@@ -35,7 +36,16 @@ function CraftOperations(props) {
             <Button
               variant="contained"
               color="primary"
-              className={classes.button}
+              startIcon={<RestoreIcon />}
+              onClick={() => GetCrafts(selected_material.category)}
+            >
+              重置
+            </Button>
+          </Grid>
+          <Grid item xs={2}>
+            <Button
+              variant="contained"
+              color="primary"
               startIcon={<SortByAlphaIcon />}
               onClick={() => clickSortCraftSchedule(crafts)}
             >
@@ -63,9 +73,9 @@ function CraftOperations(props) {
 }
 const mapStateToProps = ({ CraftScheduleReducer }) => {
   return {
-    data: CraftScheduleReducer.data,
     crafts: CraftScheduleReducer.crafts,
+    selected_material: CraftScheduleReducer.selected_material,
   };
 };
 
-export default connect(mapStateToProps, { clickSortCraftSchedule, clickCalWorkHour })(CraftOperations);
+export default connect(mapStateToProps, { clickSortCraftSchedule, clickCalWorkHour, GetCrafts })(CraftOperations);
