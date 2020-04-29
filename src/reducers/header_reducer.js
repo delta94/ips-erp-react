@@ -5,7 +5,8 @@ const defaultState = {
   username: "",
   department: "",
   // isAuthenticated: process.env.NODE_ENV === "development" ? true : false
-  isAuthenticated: false
+  isAuthenticated: false,
+  sidebarItems: [],
 };
 
 const reducer = (state = defaultState, action) => {
@@ -16,7 +17,7 @@ const reducer = (state = defaultState, action) => {
     case TOGGLE_STATE:
       return { ...state, [name]: !state[name] };
     case RESET_STATE:
-      return defaultState
+      return defaultState;
     default:
       return state;
   }

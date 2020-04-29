@@ -1,13 +1,14 @@
 import React, { useEffect } from "react";
-import { push } from 'connected-react-router'
-import { connect } from 'react-redux'
-import Cookies from 'js-cookie'
-import { ConnectedRouter } from 'connected-react-router'
-import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import clsx from "clsx";
+import { push } from "connected-react-router";
+import { connect } from "react-redux";
+import { ConnectedRouter } from "connected-react-router";
+import { MuiThemeProvider, createMuiTheme, makeStyles } from "@material-ui/core/styles";
 import { SnackbarProvider } from "notistack";
 import { CssBaseline } from "@material-ui/core";
 import { Switch, Route } from "react-router";
 import Header from "./components/header";
+// import Sidebar from "./components/sidebar";
 import Login from "./components/login";
 import PurchaseOrder from "./components/purchase_order";
 import WorkOrderStatus from "./components/work_orders";
@@ -50,22 +51,50 @@ const theme = createMuiTheme({
     },
   },
 });
+
+const useStyle = makeStyles(theme => ({
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    // marginLeft: -240,
+  },
+  contentShift: {
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    // marginLeft: 0,
+    paddingLeft: 240,
+  },
+  drawerHeader: {
+    display: "flex",
+    alignItems: "center",
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: "flex-end",
+  },
+}));
+
 function App(props) {
+  const classes = useStyle();
+  const { history } = props;
 
-  const { history } = props
-
-  const { isAuthenticated } = props
+  const { isAuthenticated, openSidebar } = props;
 
   useEffect(() => {
     if (!isAuthenticated) {
-      props.push("/login")
+      props.push("/login");
     }
-  })
+  });
 
   return (
     <ConnectedRouter history={history}>
       <MuiThemeProvider theme={theme}>
-        {/* <BrowserRouter> */}
         <SnackbarProvider
           anchorOrigin={{
             vertical: "top",
@@ -77,29 +106,34 @@ function App(props) {
           <CssBaseline />
           <Notify />
           <Header />
-          <Switch>
-            <Route exact path="/" component={WorkOrderStatus} />
-            <Route exact path="/login" component={Login} />
-            <Route exact path="/po" component={PurchaseOrder} />
-            <Route exact path="/engineer_process" component={EngineerProcess} />
-            <Route exact path="/craft_schedule" component={CraftSchedule} />
-          </Switch>
+          {/* <Sidebar /> */}
+          <div
+            className={clsx(classes.content, {
+              [classes.contentShift]: openSidebar,
+            })}
+          >
+            <div className={classes.drawerHeader} />
+            <Switch>
+              <Route exact path="/login" component={Login} />
+              <Route exact path="/work_orders" component={WorkOrderStatus} />
+              <Route exact path="/po" component={PurchaseOrder} />
+              <Route exact path="/engineer_process" component={EngineerProcess} />
+              <Route exact path="/craft_schedule" component={CraftSchedule} />
+            </Switch>
+          </div>
         </SnackbarProvider>
-        {/* </BrowserRouter> */}
       </MuiThemeProvider>
     </ConnectedRouter>
   );
-
-
 }
 const mapStateToProps = ({ HeaderReducer }) => {
   return {
     isAuthenticated: HeaderReducer.isAuthenticated,
+    openSidebar: HeaderReducer.openSidebar,
   };
 };
 
-
 const mapDispatchToProps = dispatch => ({
-  push: (url) => dispatch(push(url))
-})
-export default connect(null, mapDispatchToProps)(App)
+  push: url => dispatch(push(url)),
+});
+export default connect(mapStateToProps, mapDispatchToProps)(App);

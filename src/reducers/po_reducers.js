@@ -14,7 +14,6 @@ const defaultState = {
   po_submit_date: new Date(),
   customer_dateline: new Date(),
   internal_dateline: new Date(),
-  delivery_dateline: new Date(),
   work_order_created: false,
   internal_work_num: "",
   cad_dir: "",

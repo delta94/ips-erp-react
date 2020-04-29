@@ -97,7 +97,6 @@ function POItems(props) {
           <Grid item xs={1}>
             <TextField
               name="qty"
-              type="number"
               value={item.qty}
               onChange={e => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
             />
@@ -111,7 +110,6 @@ function POItems(props) {
           </Grid>
           <Grid item xs={1}>
             <TextField
-              type="number"
               name="unit_price"
               value={item.unit_price}
               onChange={e => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
@@ -119,10 +117,9 @@ function POItems(props) {
           </Grid>
           <Grid item xs={1}>
             <TextField
-              // type="number"
               name="total_price"
               value={item.unit_price * item.qty ? item.unit_price * item.qty : ""}
-              // onChange={e => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
+            // onChange={e => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
             />
           </Grid>
           {/* <Grid item xs={2}>

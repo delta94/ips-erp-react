@@ -4,7 +4,6 @@ import { PostLoginAPI, ResetPwdAPI } from "../api";
 import { UpdateState as HeaderUpdateState } from "./header_actions";
 import { enqueueSnackbar } from "./notify_actions";
 
-import Cookies from "js-cookie";
 import { ERROR, SUCCESS } from "../utils/constants";
 
 export const UPDATE_STATE = "LOGIN/UPDATE_STATE";
@@ -17,7 +16,7 @@ export const UpdateState = (name, value) => {
   };
 };
 
-export const PostLogin = (history) => {
+export const PostLogin = () => {
   return async (dispatch, getState) => {
     const state = getState();
     const { username, password } = state.LoginReducer;

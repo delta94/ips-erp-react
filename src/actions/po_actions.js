@@ -1,4 +1,3 @@
-import Cookies from "js-cookie";
 import { batch } from "react-redux";
 // for po_info.js
 import {
@@ -134,7 +133,6 @@ export const PostInternalWorkOrder = () => {
       po_submit_date,
       customer_dateline,
       internal_dateline,
-      delivery_dateline,
     } = state.POReducer;
 
     const params = {
@@ -143,7 +141,6 @@ export const PostInternalWorkOrder = () => {
       po_submit_date,
       customer_dateline,
       internal_dateline,
-      delivery_dateline,
       state: BU_PLACE_ORDER,
     };
 
@@ -192,7 +189,6 @@ export const PostInternalWorkOrderItems = () => {
       po_submit_date,
       customer_dateline,
       internal_dateline,
-      delivery_dateline,
       cad_dir,
     } = state.POReducer;
     const { username } = state.HeaderReducer
@@ -219,7 +215,6 @@ export const PostInternalWorkOrderItems = () => {
         element.po_submit_date = po_submit_date;
         element.customer_dateline = customer_dateline;
         element.internal_dateline = internal_dateline;
-        element.delivery_dateline = delivery_dateline;
         element.ng = false;
       });
       const params = { work_order_items };

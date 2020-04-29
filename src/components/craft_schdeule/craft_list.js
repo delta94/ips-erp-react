@@ -74,11 +74,23 @@ function CraftList(props) {
         <Grid item xs={1}>
           <Typography color="primary">工艺编号</Typography>
         </Grid>
-        <Grid item xs={5}>
+        <Grid item xs={4}>
           <Typography color="primary">工业内容</Typography>
         </Grid>
-        <Grid item xs={1}>
-          {data.ng ? <Typography color="primary">等级 数量</Typography> : <Typography color="primary">数量</Typography>}
+        <Grid item xs={2}>
+          <Grid container direction="row">
+            {data.ng && (
+              <Grid item xs={4}>
+                <Typography color="primary">等级</Typography>
+              </Grid>
+            )}
+            <Grid item xs={4}>
+              <Typography color="primary">数量</Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography color="primary">单位</Typography>
+            </Grid>
+          </Grid>
         </Grid>
         <Grid item xs={1}>
           <Typography color="primary">预计工时</Typography>
@@ -122,7 +134,7 @@ function CraftList(props) {
           <Grid item xs={1}>
             <Typography variant="body2">{craft.craft_num}</Typography>
           </Grid>
-          <Grid item xs={5}>
+          <Grid item xs={4}>
             <TextField
               margin="none"
               multiline
@@ -134,26 +146,33 @@ function CraftList(props) {
               onChange={e => UpdateArrayObjectState("crafts", index, "description", e.target.value)}
             />
           </Grid>
-          <Grid item xs={1}>
+          <Grid item xs={2}>
             <Grid container direction="row">
               {data.ng && (
-                <Grid item xs={6}>
+                <Grid item xs={4}>
                   <TextField
                     disabled={!craft.check}
                     value={craft.level}
-                    type="number"
                     onChange={e => UpdateArrayObjectState("crafts", index, "level", e.target.value)}
                     className={clsx(classes.gridItemAlign, classes.narrowTextInput)}
                     size="small"
                   />
                 </Grid>
               )}
-              <Grid item xs={6}>
+              <Grid item xs={4}>
                 <TextField
                   disabled={!craft.check}
                   value={craft.qty}
-                  type="number"
                   onChange={e => UpdateArrayObjectState("crafts", index, "qty", e.target.value)}
+                  className={clsx(classes.gridItemAlign, classes.narrowTextInput)}
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  disabled={!craft.check}
+                  value={craft.unit}
+                  onChange={e => UpdateArrayObjectState("crafts", index, "unit", e.target.value)}
                   className={clsx(classes.gridItemAlign, classes.narrowTextInput)}
                   size="small"
                 />
@@ -164,7 +183,6 @@ function CraftList(props) {
             <TextField
               disabled={!craft.check}
               value={craft.estimate}
-              type="number"
               onChange={e => UpdateArrayObjectState("crafts", index, "estimate", e.target.value)}
               className={clsx(classes.gridItemAlign, classes.narrowTextInput)}
               size="small"

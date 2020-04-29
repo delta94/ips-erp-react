@@ -1,5 +1,4 @@
 import { batch } from "react-redux";
-import Cookies from "js-cookie";
 import differenceInMinutes from "date-fns/differenceInMinutes";
 import parseISO from "date-fns/parseISO";
 import { enqueueSnackbar } from "./notify_actions";
@@ -120,15 +119,14 @@ export const GetMaterials = () => {
 
 export const GetCrafts = category => {
   return async (dispatch, getState) => {
-    const reducer = getState().CraftScheduleReducer;
-    const internal_work_order_item = reducer.data;
     try {
       const res = await GetCraftsAPI(category);
       const { data } = res;
       data.forEach(element => {
         element.check = false;
         element.seq = "";
-        element.qty = internal_work_order_item.qty;
+        element.qty = "";
+        element.unit = "";
         element.level = "";
         element.estimate = "";
         element.start_time = "";
@@ -185,7 +183,12 @@ export const clickCalWorkHour = crafts => {
 export const clickSubmitCraftSchedule = () => {
   return async (dispatch, getState) => {
     const { data, crafts, selected_material, dimension } = getState().CraftScheduleReducer;
-    const { username } = getState().HeaderReducer
+    const { username } = getState().HeaderReducer;
+    crafts.forEach(element => {
+      element.qty = parseInt(element.qty);
+      element.level = parseInt(element.level);
+      element.estimate = parseInt(element.estimate);
+    });
     try {
       const params = {
         state: "下发加工",

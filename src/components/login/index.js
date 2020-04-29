@@ -54,7 +54,7 @@ function Login(props) {
             </Link>
           </Grid>
           <Grid item xs={8}>
-            <Button variant="contained" fullWidth color="primary" onClick={() => PostLogin(props.history)}>
+            <Button variant="contained" fullWidth color="primary" onClick={() => PostLogin()}>
               登录
             </Button>
           </Grid>
@@ -102,7 +102,7 @@ function Login(props) {
                 helperText={error && password.length < 8 && "密码不能小于8位"}
                 onKeyPress={(e) => {
                   if (e.key === "Enter") {
-                    PostLogin(props.history);
+                    PostLogin();
                   }
                 }}
               />

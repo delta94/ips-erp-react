@@ -19,9 +19,9 @@ import {
 // import { enqueueSnackbar as enqueueSnackbarAction } from "../../actions/notify_actions";
 // import { SUCCESS } from "../../utils/constants";
 
-const electron = window.require('electron')
+const electron = window.require("electron");
 
-const useStyle = makeStyles((theme) => ({
+const useStyle = makeStyles(theme => ({
   root: {
     margin: "0 auto",
     marginTop: 10,
@@ -116,9 +116,16 @@ function EngineerProcess(props) {
           </Grid>
           <Grid item xs={2}>
             {/* <CopyToClipboard text={data.cad_dir} className={classes.btn}> */}
-            <Button variant="contained" color="primary" className={classes.btn} onClick={() => { electron.shell.showItemInFolder('C:') }}>
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.btn}
+              onClick={() => {
+                electron.shell.showItemInFolder(data.cad_dir);
+              }}
+            >
               点击打开
-              </Button>
+            </Button>
             {/* <Button variant="contained" color="primary" onClick={() => enqueueSnackbar("复制成功! ", SUCCESS)}>
                 点击复制
               </Button> */}
@@ -154,7 +161,7 @@ function EngineerProcess(props) {
         value={search}
         // onChange={(e) => debouncedCallback(e)}
         placeholder="输入工号"
-        onChange={(v) => UpdateState("search", v)}
+        onChange={v => UpdateState("search", v)}
         onRequestSearch={() => GetInternalWorkOrderItem(search)}
       />
       <Paper className={classes.paperRoot}>

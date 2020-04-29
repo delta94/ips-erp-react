@@ -1,4 +1,3 @@
-import Cookies from "js-cookie";
 import { batch } from "react-redux";
 import { enqueueSnackbar } from "./notify_actions";
 import { GetInternalWorkOrdersItemAPI, PatchInternalWorkOrderItemAPI } from "../api";

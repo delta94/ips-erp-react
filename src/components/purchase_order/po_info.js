@@ -46,7 +46,6 @@ function POInfo(props) {
     po_submit_date,
     customer_dateline,
     internal_dateline,
-    delivery_dateline,
     work_order_created,
   } = props;
 
@@ -61,7 +60,7 @@ function POInfo(props) {
     <React.Fragment>
       <Paper className={classes.root}>
         <Grid container alignItems="center" justify="space-around">
-          <Grid item xs={1}>
+          <Grid item xs={2}>
             <FormControl className={classes.form150} fullWidth>
               <InputLabel shrink>客户</InputLabel>
               <Select
@@ -83,7 +82,7 @@ function POInfo(props) {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={1}>
+          <Grid item xs={2}>
             <FormControl className={classes.form150}>
               <InputLabel shrink>客户PO#</InputLabel>
               <TextField
@@ -146,23 +145,6 @@ function POInfo(props) {
               />
             </MuiPickersUtilsProvider>
           </Grid>
-          {/* <Grid item xs={2}>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <KeyboardDatePicker
-                disableToolbar
-                variant="inline"
-                format="dd/MM/yyyy"
-                margin="none"
-                label="发货日期"
-                id="delivery-dateline"
-                value={delivery_dateline}
-                onChange={date => UpdateState("delivery_dateline", date)}
-                KeyboardButtonProps={{
-                  "aria-label": "change date",
-                }}
-              />
-            </MuiPickersUtilsProvider>
-          </Grid> */}
         </Grid>
       </Paper>
       {!work_order_created && (
@@ -191,7 +173,6 @@ const mapStateToProps = ({ POReducer }) => {
     po_submit_date: POReducer.po_submit_date,
     customer_dateline: POReducer.customer_dateline,
     internal_dateline: POReducer.internal_dateline,
-    delivery_dateline: POReducer.delivery_dateline,
     work_order_created: POReducer.work_order_created,
   };
 };
