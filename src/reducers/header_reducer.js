@@ -1,7 +1,9 @@
-import { UPDATE_STATE, TOGGLE_STATE } from "../actions/header_actions";
+import { UPDATE_STATE, TOGGLE_STATE, RESET_STATE } from "../actions/header_actions";
 
 const defaultState = {
   openSidebar: false,
+  username: "",
+  department: "",
   // isAuthenticated: process.env.NODE_ENV === "development" ? true : false
   isAuthenticated: false
 };
@@ -13,6 +15,8 @@ const reducer = (state = defaultState, action) => {
       return { ...state, [name]: value };
     case TOGGLE_STATE:
       return { ...state, [name]: !state[name] };
+    case RESET_STATE:
+      return defaultState
     default:
       return state;
   }

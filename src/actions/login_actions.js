@@ -1,4 +1,5 @@
 import { batch } from "react-redux";
+import { push } from 'connected-react-router'
 import { PostLoginAPI, ResetPwdAPI } from "../api";
 import { UpdateState as HeaderUpdateState } from "./header_actions";
 import { enqueueSnackbar } from "./notify_actions";
@@ -27,17 +28,19 @@ export const PostLogin = (history) => {
       try {
         const res = await PostLoginAPI({ username: username, password: password });
         const { data } = res;
-        console.log(data);
         batch(() => {
-          Cookies.set("CN", data.CN);
-          Cookies.set("OU", data.OU);
+          // Cookies.set("CN", data.CN, { 'samesite': 'strict' });
+          // Cookies.set("OU", data.OU, { 'samesite': 'strict' });
           dispatch(UpdateState("username", ""));
           dispatch(UpdateState("password", ""));
           dispatch(UpdateState("error", false));
+          dispatch(HeaderUpdateState("username", data.CN));
+          dispatch(HeaderUpdateState("department", data.OU));
           dispatch(HeaderUpdateState("isAuthenticated", true));
+          dispatch(push("/"))
         });
-        // history.push("/");
-        window.location.replace("/");
+        // window.location.replace("/");
+        // window.location.replace("/");
       } catch (error) {
         dispatch(enqueueSnackbar(error.message, ERROR));
       }

@@ -149,15 +149,6 @@ export const clickSortCraftSchedule = crafts => {
   };
 };
 
-// 白班：
-// 08:00-12:00
-// 13:30-17:30
-// 18:00-20:00
-// 夜班：
-// 20:00-00:00
-// 00:30-04:30
-// 04:30-07:00（加班情况）
-
 export const clickCalWorkHour = crafts => {
   return (dispatch, getState) => {
     const { data } = getState().CraftScheduleReducer;
@@ -194,10 +185,11 @@ export const clickCalWorkHour = crafts => {
 export const clickSubmitCraftSchedule = () => {
   return async (dispatch, getState) => {
     const { data, crafts, selected_material, dimension } = getState().CraftScheduleReducer;
+    const { username } = getState().HeaderReducer
     try {
       const params = {
         state: "下发加工",
-        craft_schedule_by: Cookies.get("CN"),
+        craft_schedule_by: username,
         attach_crafts: crafts,
         selected_material: { ...selected_material, ...dimension },
       };

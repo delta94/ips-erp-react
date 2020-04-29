@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+// import { useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import Paper from "@material-ui/core/Paper";
@@ -8,7 +8,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Icon from "@material-ui/core/Icon";
 import SearchBar from "material-ui-search-bar";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+// import { CopyToClipboard } from "react-copy-to-clipboard";
 // import { useDebouncedCallback } from "use-debounce";
 
 import {
@@ -16,8 +16,10 @@ import {
   GetInternalWorkOrderItem,
   PatchInternalWorkOrderItem,
 } from "../../actions/engineer_process_actions";
-import { enqueueSnackbar as enqueueSnackbarAction } from "../../actions/notify_actions";
-import { SUCCESS } from "../../utils/constants";
+// import { enqueueSnackbar as enqueueSnackbarAction } from "../../actions/notify_actions";
+// import { SUCCESS } from "../../utils/constants";
+
+const electron = window.require('electron')
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -43,8 +45,8 @@ const useStyle = makeStyles((theme) => ({
 
 function EngineerProcess(props) {
   const classes = useStyle();
-  const dispatch = useDispatch();
-  const enqueueSnackbar = (...args) => dispatch(enqueueSnackbarAction(...args));
+  // const dispatch = useDispatch();
+  // const enqueueSnackbar = (...args) => dispatch(enqueueSnackbarAction(...args));
 
   // vars from reducer
   const { search, data } = props;
@@ -113,11 +115,14 @@ function EngineerProcess(props) {
             <Typography>{data.submit_by}</Typography>
           </Grid>
           <Grid item xs={2}>
-            <CopyToClipboard text={data.cad_dir} className={classes.btn}>
-              <Button variant="contained" color="primary" onClick={() => enqueueSnackbar("复制成功! ", SUCCESS)}>
-                点击复制
+            {/* <CopyToClipboard text={data.cad_dir} className={classes.btn}> */}
+            <Button variant="contained" color="primary" className={classes.btn} onClick={() => { electron.shell.showItemInFolder('C:') }}>
+              点击打开
               </Button>
-            </CopyToClipboard>
+            {/* <Button variant="contained" color="primary" onClick={() => enqueueSnackbar("复制成功! ", SUCCESS)}>
+                点击复制
+              </Button> */}
+            {/* </CopyToClipboard> */}
           </Grid>
           <Grid item xs={1}>
             <Typography>{data.state}</Typography>

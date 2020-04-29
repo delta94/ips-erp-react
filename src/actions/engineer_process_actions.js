@@ -29,9 +29,10 @@ export const GetInternalWorkOrderItem = (item_id) => {
 };
 
 export const PatchInternalWorkOrderItem = (item_id) => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
+    const { username } = getState().HeaderReducer
     try {
-      const params = { state: "工程处理", process_by: Cookies.get("CN") };
+      const params = { state: "工程处理", process_by: username };
       const res = await PatchInternalWorkOrderItemAPI(item_id, params);
       const { data } = res;
       batch(() => {

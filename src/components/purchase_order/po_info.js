@@ -55,11 +55,9 @@ function POInfo(props) {
 
   useEffect(() => {
     GetCustomers();
-    return () => {};
   }, [GetCustomers]);
 
   return (
-    // <Container maxWidth="lg">
     <React.Fragment>
       <Paper className={classes.root}>
         <Grid container alignItems="center" justify="space-around">
@@ -83,7 +81,6 @@ function POInfo(props) {
                   </MenuItem>
                 ))}
               </Select>
-              {/* <FormHelperText>Label + placeholder</FormHelperText> */}
             </FormControl>
           </Grid>
           <Grid item xs={1}>
@@ -149,7 +146,7 @@ function POInfo(props) {
               />
             </MuiPickersUtilsProvider>
           </Grid>
-          <Grid item xs={2}>
+          {/* <Grid item xs={2}>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <KeyboardDatePicker
                 disableToolbar
@@ -165,7 +162,7 @@ function POInfo(props) {
                 }}
               />
             </MuiPickersUtilsProvider>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Paper>
       {!work_order_created && (
@@ -176,7 +173,6 @@ function POInfo(props) {
             style={{ justifyContent: "center" }}
             onClick={() => {
               PostInternalWorkOrder();
-              // ToggleState("work_order_created");
             }}
           >
             添加订单内容
@@ -184,7 +180,6 @@ function POInfo(props) {
         </Grid>
       )}
     </React.Fragment>
-    // </Container>
   );
 }
 

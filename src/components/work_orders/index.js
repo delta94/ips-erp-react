@@ -8,7 +8,6 @@ import { WORK_ORDER_STATE_FILTER } from "../../utils/constants";
 function WorkOrderStatus(props) {
   // vars from reducers
   const { data } = props;
-  console.log(data);
   // methods from actions
   const { GetInternalWorkOrdersItems } = props;
 

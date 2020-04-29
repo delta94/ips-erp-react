@@ -29,20 +29,20 @@ function Sidebar(props) {
   const classes = useStyles();
 
   // vars from reducers
-  const { openSidebar, sidebarItems } = props;
+  const { openSidebar, sidebarItems, department } = props;
 
   // methods from actions
   const { ToggleState, GetSidebarItems } = props;
 
   useEffect(() => {
     GetSidebarItems();
-    return () => {};
+    return () => { };
   }, [GetSidebarItems]);
   const list = () => (
     <div className={classes.list} role="presentation">
       <List>
         {sidebarItems.map((item) => {
-          if (item.allow_department.includes(Cookies.get("OU"))) {
+          if (item.allow_department.includes(department)) {
             return (
               <ListItem key={item.item} button onClick={() => ToggleState("openSidebar")}>
                 <Link to={item.url} className={classes.link}>

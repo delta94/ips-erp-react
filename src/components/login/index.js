@@ -102,7 +102,7 @@ function Login(props) {
                 helperText={error && password.length < 8 && "密码不能小于8位"}
                 onKeyPress={(e) => {
                   if (e.key === "Enter") {
-                    PostLogin();
+                    PostLogin(props.history);
                   }
                 }}
               />

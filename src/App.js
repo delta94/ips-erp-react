@@ -1,9 +1,12 @@
 import React, { useEffect } from "react";
+import { push } from 'connected-react-router'
+import { connect } from 'react-redux'
+import Cookies from 'js-cookie'
+import { ConnectedRouter } from 'connected-react-router'
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
-import Cookies from "js-cookie";
 import { SnackbarProvider } from "notistack";
 import { CssBaseline } from "@material-ui/core";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { Switch, Route } from "react-router";
 import Header from "./components/header";
 import Login from "./components/login";
 import PurchaseOrder from "./components/purchase_order";
@@ -47,18 +50,22 @@ const theme = createMuiTheme({
     },
   },
 });
-function App() {
+function App(props) {
+
+  const { history } = props
+
+  const { isAuthenticated } = props
+
   useEffect(() => {
-    if (!Cookies.get("CN")) {
-      if (window.location.pathname !== "/login") {
-        window.location.replace("/login");
-      }
+    if (!isAuthenticated) {
+      props.push("/login")
     }
-  });
+  })
 
   return (
-    <MuiThemeProvider theme={theme}>
-      <BrowserRouter>
+    <ConnectedRouter history={history}>
+      <MuiThemeProvider theme={theme}>
+        {/* <BrowserRouter> */}
         <SnackbarProvider
           anchorOrigin={{
             vertical: "top",
@@ -78,9 +85,21 @@ function App() {
             <Route exact path="/craft_schedule" component={CraftSchedule} />
           </Switch>
         </SnackbarProvider>
-      </BrowserRouter>
-    </MuiThemeProvider>
+        {/* </BrowserRouter> */}
+      </MuiThemeProvider>
+    </ConnectedRouter>
   );
-}
 
-export default App;
+
+}
+const mapStateToProps = ({ HeaderReducer }) => {
+  return {
+    isAuthenticated: HeaderReducer.isAuthenticated,
+  };
+};
+
+
+const mapDispatchToProps = dispatch => ({
+  push: (url) => dispatch(push(url))
+})
+export default connect(null, mapDispatchToProps)(App)

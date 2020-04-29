@@ -12,7 +12,9 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "axios": "^0.19.2",
+    "connected-react-router": "^6.8.0",
     "date-fns": "^2.11.0",
+    "history": "^4.10.1",
     "js-cookie": "^2.2.1",
     "material-table": "^1.57.2",
     "material-ui-search-bar": "^1.0.0-beta.14",
@@ -31,11 +33,18 @@
     "use-debounce": "^3.4.1",
     "xlsx": "^0.15.6"
   },
+  "homepage": "./",
+  "main": "src/electron-starter.js",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "SET BROWSER=none&&react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron": "electron .",
+    "dev": "nf start -p 3000",
+    "postinstall": "electron-builder install-app-deps",
+    "preelectron-pack": "npm run build",
+    "electron-pack": "electron-builder build -w"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -51,5 +60,35 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "electron": "^8.2.3",
+    "electron-builder": "^22.5.1",
+    "foreman": "^3.0.1",
+    "typescript": "^3.8.3"
+  },
+  "author": {
+    "name": "Your Name",
+    "email": "your.email@domain.com",
+    "url": "https://your-website.com"
+  },
+  "build": {
+    "appId": "com.my-website.my-app",
+    "productName": "MyApp",
+    "copyright": "Copyright © 2019 ${author}",
+    "mac": {
+      "category": "public.app-category.utilities"
+    },
+    "files": [
+      "src/electron-starter.js",
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "extraMetadata": {
+      "main": "src/electron-starter.js"
+    }
   }
 }

@@ -195,6 +195,7 @@ export const PostInternalWorkOrderItems = () => {
       delivery_dateline,
       cad_dir,
     } = state.POReducer;
+    const { username } = state.HeaderReducer
     let flag = true;
     work_order_items.forEach(ele => {
       for (let value of Object.values(ele)) {
@@ -210,7 +211,7 @@ export const PostInternalWorkOrderItems = () => {
         element.unit_price = parseFloat(element.unit_price);
         element.total_price = parseFloat(element.unit_price * element.qty);
         element.cad_dir = cad_dir;
-        element.submit_by = Cookies.get("CN");
+        element.submit_by = username;
         element.state = BU_PLACE_ORDER;
         element.internal_work_num = internal_work_num;
         element.customer = customer;

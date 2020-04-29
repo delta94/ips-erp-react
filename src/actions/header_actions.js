@@ -1,6 +1,8 @@
 import Cookies from "js-cookie";
+import { push } from 'connected-react-router'
 export const UPDATE_STATE = "HEADER/UPDATE_STATE";
 export const TOGGLE_STATE = "HEADER/TOGGLE_STATE";
+export const RESET_STATE = "HEADER/RESET_STATE"
 
 export const UpdateState = (name, value) => {
   return {
@@ -17,10 +19,16 @@ export const ToggleState = name => {
   };
 };
 
+export const resetState = () => {
+  return {
+    type: RESET_STATE
+  }
+}
+
 export const clickLogout = () => {
-  return () => {
-    Cookies.remove("CN");
-    Cookies.remove("OU");
-    window.location.replace("/login");
+  return (dispatch) => {
+    dispatch(resetState())
+    dispatch(push("/login"))
+    // window.location.replace("/login");
   };
 };
