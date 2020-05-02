@@ -19,7 +19,7 @@ import {
 // import { enqueueSnackbar as enqueueSnackbarAction } from "../../actions/notify_actions";
 // import { SUCCESS } from "../../utils/constants";
 
-const electron = window.require("electron");
+// const electron = window.require("electron");
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -115,21 +115,16 @@ function EngineerProcess(props) {
             <Typography>{data.submit_by}</Typography>
           </Grid>
           <Grid item xs={2}>
-            {/* <CopyToClipboard text={data.cad_dir} className={classes.btn}> */}
-            <Button
+            {/* <Button
               variant="contained"
               color="primary"
               className={classes.btn}
               onClick={() => {
-                electron.shell.showItemInFolder(data.cad_dir);
+                electron.shell.openItem(data.cad_dir);
               }}
             >
               点击打开
-            </Button>
-            {/* <Button variant="contained" color="primary" onClick={() => enqueueSnackbar("复制成功! ", SUCCESS)}>
-                点击复制
-              </Button> */}
-            {/* </CopyToClipboard> */}
+            </Button> */}
           </Grid>
           <Grid item xs={1}>
             <Typography>{data.state}</Typography>

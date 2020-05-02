@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { connect } from "react-redux";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
@@ -12,55 +13,32 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 
-const rows = [
-  [
-    1,
-    "WEDM",
-    "加工内容 测试内容 继续测试内容",
-    1,
-    10,
-    "PCS",
-    10,
-    "2020-04-22 10.30PM",
-    "2020-04-22 10.30PM",
-    "                  ",
-  ],
-];
-
 class ComponentToPrint extends React.Component {
   render() {
     return (
       <div>
         <Grid container name="title">
           <Grid item xs={4}>
-            <Barcode value="304598549582" width={3} format="CODE128" height={50} fontSize={10} />
+            <Barcode value={this.props.data.item_id} width={2} height={50} fontSize={18} />
           </Grid>
           <Grid item xs={2}></Grid>
           <Grid item xs={6}>
-            <Typography variant="h4">工件加工流程表SOP</Typography>
+            <Typography variant="h4">工艺流程表</Typography>
           </Grid>
         </Grid>
         <Grid container name="info">
           <Grid item xs={4}>
-            <Typography variant="h6">工号</Typography>
+            <Typography variant="h6">
+              交期: {new Date(this.props.data.internal_dateline).toLocaleString("zh-cn", { hour12: false })}
+            </Typography>
           </Grid>
           <Grid item xs={4}>
-            <Typography variant="h6">下单数量</Typography>
+            <Typography variant="h6">下单数量: {this.props.data.qty}</Typography>
           </Grid>
           <Grid item xs={4}>
-            <Typography variant="h6">发料签章</Typography>
-          </Grid>
-          <Grid item xs={4}>
-            <Typography variant="h6">材质</Typography>
-          </Grid>
-          <Grid item xs={4}>
-            <Typography variant="h6">表面处理</Typography>
-          </Grid>
-          <Grid item xs={4}>
-            <Typography variant="h6">膜厚</Typography>
-          </Grid>
-          <Grid item xs={4}>
-            <Typography variant="h5">厂内交期</Typography>
+            <Typography variant="h6">
+              材质( 硬度 ): {this.props.selected_material.name} ({this.props.selected_material.hardness})
+            </Typography>
           </Grid>
         </Grid>
         {/* <TableContainer style={{ border: "1px solid black" }}> */}
@@ -71,53 +49,43 @@ class ComponentToPrint extends React.Component {
         >
           <TableHead>
             <TableRow>
-              <TableCell colSpan={6} />
+              <TableCell colSpan={3} />
               <TableCell align="center" colSpan={3}>
                 预计工时
               </TableCell>
-              <TableCell align="center" colSpan={3}>
+              <TableCell align="center" colSpan={2}>
                 实际工时
               </TableCell>
-              <TableCell colSpan={3} />
+              <TableCell colSpan={2} />
             </TableRow>
             <TableRow>
               <TableCell>工序</TableCell>
-              <TableCell>加工部门</TableCell>
-              <TableCell>工艺内容</TableCell>
-              <TableCell>等级</TableCell>
+              <TableCell>部门</TableCell>
               <TableCell>数量</TableCell>
-              <TableCell>单位</TableCell>
-              <TableCell>总计</TableCell>
+              <TableCell>工时</TableCell>
               <TableCell>开始</TableCell>
               <TableCell>完成</TableCell>
               <TableCell>日期</TableCell>
-              <TableCell>时间</TableCell>
-              <TableCell>合计</TableCell>
+              <TableCell>日期</TableCell>
               <TableCell>加工者</TableCell>
-              <TableCell>组长</TableCell>
               <TableCell>品检</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map(row => (
-              <TableRow key={row[0]}>
+            {this.props.crafts.map(craft => (
+              <TableRow key={craft.id}>
                 <TableCell component="th" scope="row">
-                  {row[0]}
+                  {craft.seq}
                 </TableCell>
-                <TableCell>{row[1]}</TableCell>
-                <TableCell>{row[2]}</TableCell>
-                <TableCell>{row[3]}</TableCell>
-                <TableCell>{row[4]}</TableCell>
-                <TableCell>{row[5]}</TableCell>
-                <TableCell>{row[6]}</TableCell>
-                <TableCell>{row[7]}</TableCell>
-                <TableCell>{row[8]}</TableCell>
-                <TableCell>{row[9]}</TableCell>
-                <TableCell>{row[10]}</TableCell>
-                <TableCell>{row[11]}</TableCell>
-                <TableCell>{row[12]}</TableCell>
-                <TableCell>{row[13]}</TableCell>
-                <TableCell>{row[14]}</TableCell>
+                <TableCell>{craft.department}</TableCell>
+                <TableCell>{craft.qty}</TableCell>
+                <TableCell>{craft.estimate}</TableCell>
+                <TableCell>{craft.start_time.toLocaleString("zh-cn", { hour12: false })}</TableCell>
+                <TableCell>{craft.end_time.toLocaleString("zh-cn", { hour12: false })}</TableCell>
+                <TableCell></TableCell>
+                <TableCell></TableCell>
+                <TableCell></TableCell>
+                <TableCell></TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -127,7 +95,7 @@ class ComponentToPrint extends React.Component {
   }
 }
 
-const SOPForm = () => {
+const SOPForm = props => {
   const componentRef = useRef();
   return (
     <React.Fragment>
@@ -141,10 +109,18 @@ const SOPForm = () => {
       />
 
       <div style={{ display: "none" }}>
-        <ComponentToPrint ref={componentRef} />
+        <ComponentToPrint ref={componentRef} {...props} />
       </div>
     </React.Fragment>
   );
 };
 
-export default SOPForm;
+const mapStateToProps = ({ CraftScheduleReducer }) => {
+  return {
+    data: CraftScheduleReducer.data,
+    crafts: CraftScheduleReducer.crafts,
+    selected_material: CraftScheduleReducer.selected_material,
+  };
+};
+
+export default connect(mapStateToProps, null)(SOPForm);

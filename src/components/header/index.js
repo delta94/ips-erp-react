@@ -21,7 +21,7 @@ import { Link } from "react-router-dom";
 import { ToggleState, clickLogout, GetSidebarItems } from "../../actions/header_actions";
 // import { GetSidebarItems } from "../../actions/sidebar_actions";
 
-const drawerWidth = 240;
+const drawerWidth = 136;
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -67,7 +67,7 @@ const useStyles = makeStyles(theme => ({
     color: "rgba(0,0,0,0.87)",
   },
   listItem: {
-    paddingLeft: 30,
+    paddingLeft: 20,
   },
   title: {
     flexGrow: 1,

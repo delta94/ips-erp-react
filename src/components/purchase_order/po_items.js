@@ -18,8 +18,8 @@ import POImport from "./po_import";
 
 const useStyle = makeStyles(theme => ({
   root: {
-    // margin: 20
-    padding: 20,
+    margin: 10,
+    padding: 10,
   },
   tableHeader: {
     paddingTop: 10,
@@ -119,7 +119,7 @@ function POItems(props) {
             <TextField
               name="total_price"
               value={item.unit_price * item.qty ? item.unit_price * item.qty : ""}
-            // onChange={e => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
+              // onChange={e => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
             />
           </Grid>
           {/* <Grid item xs={2}>

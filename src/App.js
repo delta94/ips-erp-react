@@ -14,6 +14,7 @@ import PurchaseOrder from "./components/purchase_order";
 import WorkOrderStatus from "./components/work_orders";
 import EngineerProcess from "./components/engineer_process";
 import CraftSchedule from "./components/craft_schdeule";
+import RFQ from "./components/rfq";
 import Notify from "./components/notify";
 
 const defaultTheme = createMuiTheme();
@@ -31,6 +32,11 @@ const theme = createMuiTheme({
     MuiInput: {
       input: defaultTheme.typography.body2,
     },
+    MuiSelect: {
+      root: {
+        marginBottom: "-3px",
+      },
+    },
     MuiButton: {
       root: {
         padding: "4px 12px",
@@ -43,9 +49,12 @@ const theme = createMuiTheme({
         borderRight: "1px solid black",
         borderLeft: "1px solid black",
       },
+      sizeSmall: {
+        padding: 2,
+      },
     },
     MuiTableRow: {
-      head: {
+      root: {
         borderBottom: "1px solid black",
       },
     },
@@ -55,7 +64,7 @@ const theme = createMuiTheme({
 const useStyle = makeStyles(theme => ({
   content: {
     flexGrow: 1,
-    padding: theme.spacing(3),
+    // padding: theme.spacing(3),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -68,7 +77,7 @@ const useStyle = makeStyles(theme => ({
       duration: theme.transitions.duration.enteringScreen,
     }),
     // marginLeft: 0,
-    paddingLeft: 240,
+    paddingLeft: 136,
   },
   drawerHeader: {
     display: "flex",
@@ -116,6 +125,7 @@ function App(props) {
             <Switch>
               <Route exact path="/login" component={Login} />
               <Route exact path="/work_orders" component={WorkOrderStatus} />
+              <Route exact path="/rfq" component={RFQ} />
               <Route exact path="/po" component={PurchaseOrder} />
               <Route exact path="/engineer_process" component={EngineerProcess} />
               <Route exact path="/craft_schedule" component={CraftSchedule} />

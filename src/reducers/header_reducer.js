@@ -2,10 +2,9 @@ import { UPDATE_STATE, TOGGLE_STATE, RESET_STATE } from "../actions/header_actio
 
 const defaultState = {
   openSidebar: false,
-  username: "",
-  department: "",
-  // isAuthenticated: process.env.NODE_ENV === "development" ? true : false
-  isAuthenticated: false,
+  username: process.env.NODE_ENV === "development" ? "衡伟亮" : "",
+  department: process.env.NODE_ENV === "development" ? "IT" : "",
+  isAuthenticated: process.env.NODE_ENV === "development" ? true : false,
   sidebarItems: [],
 };
 
