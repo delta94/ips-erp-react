@@ -19,7 +19,7 @@ import {
 // import { enqueueSnackbar as enqueueSnackbarAction } from "../../actions/notify_actions";
 // import { SUCCESS } from "../../utils/constants";
 
-// const electron = window.require("electron");
+const electron = process.env.NODE_ENV === "development" ? null : window.require("electron");
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -114,18 +114,20 @@ function EngineerProcess(props) {
           <Grid item xs={1}>
             <Typography>{data.submit_by}</Typography>
           </Grid>
-          <Grid item xs={2}>
-            {/* <Button
-              variant="contained"
-              color="primary"
-              className={classes.btn}
-              onClick={() => {
-                electron.shell.openItem(data.cad_dir);
-              }}
-            >
-              点击打开
-            </Button> */}
-          </Grid>
+          {process.env.NODE_ENV !== "development" && (
+            <Grid item xs={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.btn}
+                onClick={() => {
+                  electron.shell.openItem(data.cad_dir);
+                }}
+              >
+                点击打开
+              </Button>
+            </Grid>
+          )}
           <Grid item xs={1}>
             <Typography>{data.state}</Typography>
           </Grid>
