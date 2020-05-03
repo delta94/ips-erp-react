@@ -1,5 +1,9 @@
-import { UPDATE_STATE } from "../actions/login_actions";
+import commonReducer from "./common_reducer";
 
+// const
+const LOGIN = "LOGIN";
+
+// default state
 const defaultState = {
   username: "",
   password: "",
@@ -8,13 +12,7 @@ const defaultState = {
 };
 
 const reducer = (state = defaultState, action) => {
-  let { name, value } = action;
-  switch (action.type) {
-    case UPDATE_STATE:
-      return { ...state, [name]: value };
-    default:
-      return state;
-  }
+  return commonReducer(LOGIN)(state, action, defaultState);
 };
 
 export { reducer };

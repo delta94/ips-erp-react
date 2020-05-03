@@ -1,73 +1,60 @@
 import { GetCustomersAPI, GetCurrencyAPI } from "../api";
-import { ERROR } from "../utils/constants";
-import { enqueueSnackbar } from "./notify_actions";
-export const UPDATE_STATE = "RFQ/UPDATE_STATE";
-export const RESET_STATE = "PO/RESET_INPUT";
-export const UPDATE_OBJECT_STATE = "RFQ/UPDATE_OBJECT_STATE";
-export const UPDATE_ARRAY_OBJECT_STATE = "RFQ/UPDATE_ARRAY_OBJECT_STATE";
-export const ADD_RFQ_ITEM = "RFQ/ADD_RFQ_ITEM";
+import action, { GetAPI } from "./common_actions";
 
-export const resetState = () => {
-  return {
-    type: RESET_STATE,
+// const
+const PREFIX = "RFQ";
+
+// from common action
+export const actions = action(PREFIX);
+export const { updateArrayObjectState, updateObjectState } = actions;
+
+export const updateCustomer = value => {
+  return (dispatch, getState) => {
+    const { rfq, customers } = getState().RFQReducer;
+    rfq["customer"] = value;
+    const currency = customers.find(el => el.internal === value).currency;
+    rfq["currency"] = currency;
+    dispatch(actions.updateState("rfq", rfq));
   };
 };
 
-export const updateState = (name, value) => {
-  return {
-    type: UPDATE_STATE,
-    name,
-    value,
-  };
-};
-
-export const updateObjectState = (name, key, value) => {
-  return {
-    type: UPDATE_OBJECT_STATE,
-    name,
-    key,
-    value,
-  };
-};
-
-export const updateArrayObjectState = (name, index, key, value) => {
-  return {
-    type: UPDATE_ARRAY_OBJECT_STATE,
-    name,
-    index,
-    key,
-    value,
+export const updateRFQItems = (index, key, value) => {
+  return (dispatch, getState) => {
+    const { rfq_items, currencies, rfq } = getState().RFQReducer;
+    let rfq_item = rfq_items[index];
+    rfq_item[key] = value;
+    const rate = currencies.find(el => el.name === rfq.currency).rate;
+    const unit_price = rfq_item.unit_price_foreign * rate;
+    const item_total = rfq_item.unit_price_foreign * rfq_item.qty * rate;
+    rfq_item["item_total"] = item_total % 1 === 0 ? item_total : parseFloat(item_total).toFixed(3);
+    rfq_item["unit_price"] = unit_price % 1 === 0 ? unit_price : parseFloat(unit_price).toFixed(3);
+    rfq_items[index] = rfq_item;
+    dispatch(actions.updateState("rfq_items", rfq_items));
   };
 };
 
 export const addRfqItem = () => {
-  return {
-    type: ADD_RFQ_ITEM,
-  };
-};
-export const GetAPI = (name, api) => {
-  return async dispatch => {
-    try {
-      const res = await api();
-      const { data } = res;
-      dispatch(updateState(name, data));
-    } catch (err) {
-      dispatch(enqueueSnackbar(err.message, ERROR));
-    }
-  };
-};
-
-export const GetCurrency = () => {
-  return async dispatch => {
-    dispatch(GetAPI("currencies", GetCurrencyAPI));
+  return (dispatch, getState) => {
+    let { rfq_items } = getState().RFQReducer;
+    const len = rfq_items.length;
+    let rfq_item = {
+      seq: len + 1,
+      item_id: "",
+      version: "",
+      qty: "",
+      unit: "",
+      unit_price_foreign: "",
+      item_total: "",
+      unit_price: "",
+      shipping_fee: "",
+    };
+    rfq_items.push(rfq_item);
+    dispatch(actions.updateState("rfq_items", rfq_items));
   };
 };
 
-export const GetCustomers = () => {
-  return async dispatch => {
-    dispatch(GetAPI("customers", GetCustomersAPI));
-  };
-};
+export const GetCurrency = () => GetAPI(actions)("currencies", GetCurrencyAPI);
+export const GetCustomers = () => GetAPI(actions)("customers", GetCustomersAPI);
 
 export const uploadFile = data => {
   return dispatch => {
@@ -81,9 +68,9 @@ export const uploadFile = data => {
         unit_price_foreign: item.price,
       };
     });
-    dispatch(updateState("rfq_items", rfq_items));
+    dispatch(actions.updateState("rfq_items", rfq_items));
     rfq_items.forEach((item, index) => {
-      dispatch(updateArrayObjectState("rfq_items", index, "seq", index + 1));
+      dispatch(updateRFQItems(index, "seq", index + 1));
     });
   };
 };

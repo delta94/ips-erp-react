@@ -1,139 +1,25 @@
 import { batch } from "react-redux";
 // for po_info.js
-import {
-  GetCustomersAPI,
-  GetPurchaserAPI,
-  GetCurrencyAPI,
-  PostInternalWorkOrderAPI,
-  PostInternalWorkOrderItemsAPI,
-  PrintLabelAPI,
-} from "../api";
+import { GetCustomersAPI, PostInternalWorkOrderAPI, PostInternalWorkOrderItemsAPI, PrintLabelAPI } from "../api";
 import { enqueueSnackbar } from "./notify_actions";
 import { SUCCESS, ERROR } from "../utils/constants";
-// for po_internal.js
-import { GetEmployeeAPI, GetShippingCompanyAPI, GetOutFactoryAPI, GetDeliverContactAPI } from "../api";
 import { BU_PLACE_ORDER } from "../utils/constants";
-export const UPDATE_STATE = "PO/UPDATE_STATE";
-export const TOGGLE_STATE = "PO/TOGGLE_STATE";
+import action, { GetAPI } from "./common_actions";
 export const UPDATE_WORK_ORDER_ITEM = "PO/UPDATE_WORK_ORDER_ITEM";
-export const ADD_WORK_ORDER_ITEM = "PO/ADD_WORK_ORDER_ITEM";
-export const RESET_STATE = "PO/RESET_INPUT";
 
-export const ResetState = () => {
-  return {
-    type: RESET_STATE,
-  };
-};
+// const
+const PREFIX = "PO";
 
-export const UpdateState = (name, value) => {
-  return {
-    type: UPDATE_STATE,
-    name,
-    value,
-  };
-};
+// from common action
+export const actions = action(PREFIX);
+export const { updateArrayObjectState, updateObjectState, updateState, resetState } = actions;
 
-export const ToggleState = name => {
-  return {
-    type: TOGGLE_STATE,
-    name,
-  };
-};
-
-export const GetCustomers = () => {
-  return async dispatch => {
-    try {
-      const res = await GetCustomersAPI();
-      const { data } = res;
-      dispatch(UpdateState("customers", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
-
-export const GetPurchaser = company => {
-  return async dispatch => {
-    try {
-      const res = await GetPurchaserAPI(company);
-      const { data } = res;
-      dispatch(UpdateState("purchasers", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
-
-export const GetCurrency = () => {
-  return async dispatch => {
-    try {
-      const res = await GetCurrencyAPI();
-      const { data } = res;
-      dispatch(UpdateState("currencies", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
-
-export const GetBUEmployee = () => {
-  return async dispatch => {
-    try {
-      const res = await GetEmployeeAPI("bu");
-      const { data } = res;
-      dispatch(UpdateState("buEmployees", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
-
-export const GetShippingCompany = () => {
-  return async dispatch => {
-    try {
-      const res = await GetShippingCompanyAPI();
-      const { data } = res;
-      dispatch(UpdateState("shippingCompanies", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
-
-export const GetOutFactory = () => {
-  return async dispatch => {
-    try {
-      const res = await GetOutFactoryAPI();
-      const { data } = res;
-      dispatch(UpdateState("outFactories", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
-
-export const GetDeliverContact = () => {
-  return async dispatch => {
-    try {
-      const res = await GetDeliverContactAPI();
-      const { data } = res;
-      dispatch(UpdateState("deliverContacts", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
+export const GetCustomers = () => GetAPI(actions)("customers", GetCustomersAPI);
 
 export const PostInternalWorkOrder = () => {
   return async (dispatch, getState) => {
     const state = getState();
-    const {
-      customer,
-      customer_po,
-      po_submit_date,
-      customer_dateline,
-      internal_dateline,
-    } = state.POReducer;
+    const { customer, customer_po, po_submit_date, customer_dateline, internal_dateline } = state.POReducer;
 
     const params = {
       customer,
@@ -148,11 +34,11 @@ export const PostInternalWorkOrder = () => {
       const res = await PostInternalWorkOrderAPI(params);
       const { data } = res;
       batch(() => {
-        dispatch(UpdateState("work_order_created", true));
-        dispatch(UpdateState("internal_work_num", data.internal_work_num));
-        dispatch(UpdateState("cad_dir", data.cad_dir));
+        dispatch(updateState("work_order_created", true));
+        dispatch(updateState("internal_work_num", data.internal_work_num));
+        dispatch(updateState("cad_dir", data.cad_dir));
         dispatch(
-          UpdateState("work_order_items", [
+          updateState("work_order_items", [
             { item_id: `${data.internal_work_num}-1`, item_num: "", unit: "", qty: "", unit_price: "" },
           ])
         );
@@ -173,8 +59,18 @@ export const UpdateWorkOrderItem = (index, name, value) => {
 };
 
 export const AddWorkOrderItem = () => {
-  return {
-    type: ADD_WORK_ORDER_ITEM,
+  return (dispatch, getState) => {
+    const { internal_work_num, work_order_items } = getState().POReducer;
+    const len = work_order_items.length;
+    const item = {
+      item_id: `${internal_work_num}-${len + 1}`,
+      item_num: "",
+      unit: "",
+      qty: "",
+      unit_price: "",
+    };
+    work_order_items.push(item);
+    dispatch(updateState("work_order_items", work_order_items));
   };
 };
 
@@ -191,7 +87,7 @@ export const PostInternalWorkOrderItems = () => {
       internal_dateline,
       cad_dir,
     } = state.POReducer;
-    const { username } = state.HeaderReducer
+    const { username } = state.HeaderReducer;
     let flag = true;
     work_order_items.forEach(ele => {
       for (let value of Object.values(ele)) {
@@ -222,7 +118,7 @@ export const PostInternalWorkOrderItems = () => {
         const res = await PostInternalWorkOrderItemsAPI(params);
         const { data } = res;
         batch(() => {
-          dispatch(ResetState());
+          dispatch(resetState());
           dispatch(enqueueSnackbar(data, SUCCESS));
         });
       } catch (err) {
@@ -259,7 +155,7 @@ export const PrintLabel = () => {
   };
 };
 
-export const UploadedFile = data => {
+export const uploadFile = data => {
   return (dispatch, getState) => {
     const state = getState();
     const { internal_work_num } = state.POReducer;
@@ -275,8 +171,8 @@ export const UploadedFile = data => {
     });
     total_price = work_order_items.reduce((acc, el) => acc + el.qty * el.unit_price, total_price);
     batch(() => {
-      dispatch(UpdateState("work_order_items", work_order_items));
-      dispatch(UpdateState("total_price", total_price));
+      dispatch(updateState("work_order_items", work_order_items));
+      dispatch(updateState("total_price", total_price));
     });
   };
 };

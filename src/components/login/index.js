@@ -1,12 +1,11 @@
 import React from "react";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
+import { Grid, Container, Paper, Typography, TextField, Button } from "@material-ui/core";
+import { updateState, PostLogin, ResetPwd } from "../../actions/login_actions";
 import Link from "@material-ui/core/Link";
-import { Grid, Container, Paper, Typography } from "@material-ui/core";
-import { TextField, Button } from "@material-ui/core";
-import { UpdateState, PostLogin, ResetPwd } from "../../actions/login_actions";
 
-const useStyle = makeStyles((theme) => ({
+const useStyle = makeStyles(theme => ({
   root: {
     marginTop: theme.spacing(10),
   },
@@ -17,7 +16,7 @@ function Login(props) {
   // vars from reducer
   const { username, password, error, reset } = props;
   // methods from actions
-  const { UpdateState, PostLogin, ResetPwd } = props;
+  const { updateState, PostLogin, ResetPwd } = props;
 
   const renderBtn = () => {
     if (reset) {
@@ -27,7 +26,7 @@ function Login(props) {
             <Link
               component="button"
               onClick={() => {
-                UpdateState("reset", false);
+                updateState("reset", false);
               }}
             >
               返回登陆
@@ -47,7 +46,7 @@ function Login(props) {
             <Link
               component="button"
               onClick={() => {
-                UpdateState("reset", true);
+                updateState("reset", true);
               }}
             >
               重置密码
@@ -82,7 +81,7 @@ function Login(props) {
               inputProps={{
                 "aria-label": "用户名",
               }}
-              onChange={(e) => UpdateState("username", e.target.value)}
+              onChange={e => updateState("username", e.target.value)}
               helperText={error && username.length < 3 && "用户名不能小于3位"}
             />
           </Grid>
@@ -98,9 +97,9 @@ function Login(props) {
                 inputProps={{
                   "aria-label": "密码",
                 }}
-                onChange={(e) => UpdateState("password", e.target.value)}
+                onChange={e => updateState("password", e.target.value)}
                 helperText={error && password.length < 8 && "密码不能小于8位"}
-                onKeyPress={(e) => {
+                onKeyPress={e => {
                   if (e.key === "Enter") {
                     PostLogin();
                   }
@@ -124,10 +123,4 @@ const mapStateToProps = ({ LoginReducer }) => {
   };
 };
 
-// const mapDispatchToprops = dispatch => ({
-//   UpdateState: (name, value) => {
-//     dispatch(UpdateState(name, value));
-//   }
-// });
-
-export default connect(mapStateToProps, { UpdateState, PostLogin, ResetPwd })(Login);
+export default connect(mapStateToProps, { updateState, PostLogin, ResetPwd })(Login);

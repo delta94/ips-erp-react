@@ -1,27 +1,23 @@
 import React, { useEffect } from "react";
-// import clsx from "clsx";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import Drawer from "@material-ui/core/Drawer";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
-import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
-// import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-// import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
+import {
+  Drawer,
+  AppBar,
+  Toolbar,
+  List,
+  Typography,
+  Divider,
+  IconButton,
+  ListItem,
+  ListItemText,
+} from "@material-ui/core";
+import { DRAWER_WIDTH } from "../../utils/constants";
+import MenuIcon from "@material-ui/icons/Menu";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
-import { ToggleState, clickLogout, GetSidebarItems } from "../../actions/header_actions";
-// import { GetSidebarItems } from "../../actions/sidebar_actions";
-
-const drawerWidth = 136;
+import { toggleState, clickLogout, GetSidebarItems } from "../../actions/header_actions";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,8 +30,8 @@ const useStyles = makeStyles(theme => ({
     }),
   },
   appBarShift: {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: drawerWidth,
+    width: `calc(100% - ${DRAWER_WIDTH}px)`,
+    marginLeft: DRAWER_WIDTH,
     transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
@@ -48,11 +44,11 @@ const useStyles = makeStyles(theme => ({
     display: "none",
   },
   drawer: {
-    width: drawerWidth,
+    width: DRAWER_WIDTH,
     flexShrink: 0,
   },
   drawerPaper: {
-    width: drawerWidth,
+    width: DRAWER_WIDTH,
   },
   drawerHeader: {
     display: "flex",
@@ -78,15 +74,14 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function Sidebar(props) {
+function Header(props) {
   // vars from reducers
   const { openSidebar, sidebarItems, department, isAuthenticated, username } = props;
 
   // methods from actions
-  const { ToggleState, GetSidebarItems, clickLogout } = props;
+  const { toggleState, GetSidebarItems, clickLogout } = props;
 
   useEffect(() => {
-    // console.log("ddd");
     if (isAuthenticated) {
       GetSidebarItems();
     }
@@ -132,7 +127,7 @@ function Sidebar(props) {
               // className={clsx(classes.menuButton, openSidebar && classes.hide)}
               color="inherit"
               aria-label="open drawer"
-              onClick={() => ToggleState("openSidebar")}
+              onClick={() => toggleState("openSidebar")}
               edge="start"
             >
               <MenuIcon />
@@ -162,9 +157,7 @@ function Sidebar(props) {
       <Drawer
         className={classes.drawer}
         variant="persistent"
-        // variant="permanent"
         anchor="left"
-        // style={{ display: openSidebar ? "block" : "none" }}
         open={openSidebar}
         classes={{
           paper: classes.drawerPaper,
@@ -182,14 +175,14 @@ function Sidebar(props) {
   );
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = ({ HeaderReducer }) => {
   return {
-    openSidebar: state.HeaderReducer.openSidebar,
-    sidebarItems: state.HeaderReducer.sidebarItems,
-    department: state.HeaderReducer.department,
-    isAuthenticated: state.HeaderReducer.isAuthenticated,
-    username: state.HeaderReducer.username,
+    openSidebar: HeaderReducer.openSidebar,
+    sidebarItems: HeaderReducer.sidebarItems,
+    department: HeaderReducer.department,
+    isAuthenticated: HeaderReducer.isAuthenticated,
+    username: HeaderReducer.username,
   };
 };
 
-export default connect(mapStateToProps, { ToggleState, GetSidebarItems, clickLogout })(Sidebar);
+export default connect(mapStateToProps, { toggleState, GetSidebarItems, clickLogout })(Header);

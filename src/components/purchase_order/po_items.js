@@ -1,22 +1,20 @@
 import React from "react";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
+import { Paper, Grid, Typography, TextField, Button } from "@material-ui/core";
+import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+
+import ImportBtn from "../common/import_btn";
 
 import {
   UpdateWorkOrderItem,
   AddWorkOrderItem,
   PostInternalWorkOrderItems,
   PrintLabel,
+  uploadFile,
 } from "../../actions/po_actions";
 
-import POImport from "./po_import";
-
-const useStyle = makeStyles(theme => ({
+const useStyle = makeStyles(() => ({
   root: {
     margin: 10,
     padding: 10,
@@ -32,9 +30,9 @@ const useStyle = makeStyles(theme => ({
 
 function POItems(props) {
   // vars from reducer
-  const { work_order_items, total_price } = props;
+  const { work_order_items, total_price, work_order_created } = props;
   // methods from actions
-  const { UpdateWorkOrderItem, AddWorkOrderItem, PostInternalWorkOrderItems, PrintLabel } = props;
+  const { UpdateWorkOrderItem, AddWorkOrderItem, PostInternalWorkOrderItems, PrintLabel, uploadFile } = props;
 
   const classes = useStyle();
   const renderTotal = () => {
@@ -116,57 +114,51 @@ function POItems(props) {
             />
           </Grid>
           <Grid item xs={1}>
-            <TextField
-              name="total_price"
-              value={item.unit_price * item.qty ? item.unit_price * item.qty : ""}
-              // onChange={e => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
-            />
+            <TextField name="total_price" value={item.unit_price * item.qty ? item.unit_price * item.qty : ""} />
           </Grid>
-          {/* <Grid item xs={2}>
-            <TextField
-              name="cad_dir"
-              value={work_order_items[0].cad_dir}
-              onChange={(e) => UpdateWorkOrderItem(index, e.target.name, e.target.value)}
-            />
-          </Grid> */}
         </Grid>
       );
     });
   };
   return (
-    <React.Fragment>
-      <Paper className={classes.root}>
-        {renderHeader()}
-        {renderItems()}
-        {renderTotal()}
-      </Paper>
-      <Grid container className={classes.root}>
-        <Grid item xs={8}></Grid>
-        <Grid item xs={1}>
-          <Button variant="contained" color="primary" onClick={() => AddWorkOrderItem()}>
-            添加
-          </Button>
-        </Grid>
-        <Grid item xs={1}>
-          <POImport />
-        </Grid>
-        <Grid item xs={1}>
-          <Button variant="contained" color="primary" onClick={() => PrintLabel()}>
-            打印标签
-          </Button>
-        </Grid>
-        <Grid item xs={1}>
-          <Button variant="contained" color="primary" onClick={() => PostInternalWorkOrderItems()}>
-            提交
-          </Button>
-        </Grid>
-      </Grid>
-    </React.Fragment>
+    <>
+      {work_order_created && (
+        <>
+          <Paper className={classes.root}>
+            {renderHeader()}
+            {renderItems()}
+            {renderTotal()}
+          </Paper>
+          <Grid container className={classes.root}>
+            <Grid item xs={8}></Grid>
+            <Grid item xs={1}>
+              <Button variant="contained" color="primary" onClick={() => AddWorkOrderItem()}>
+                添加
+              </Button>
+            </Grid>
+            <Grid item xs={1}>
+              <ImportBtn btnText="上传文件" startIcon={<CloudUploadIcon />} uploadFile={uploadFile} />
+            </Grid>
+            <Grid item xs={1}>
+              <Button variant="contained" color="primary" onClick={() => PrintLabel()}>
+                打印标签
+              </Button>
+            </Grid>
+            <Grid item xs={1}>
+              <Button variant="contained" color="primary" onClick={() => PostInternalWorkOrderItems()}>
+                提交
+              </Button>
+            </Grid>
+          </Grid>
+        </>
+      )}
+    </>
   );
 }
 
 const mapStateToProps = ({ POReducer }) => {
   return {
+    work_order_created: POReducer.work_order_created,
     work_order_items: POReducer.work_order_items,
     total_price: POReducer.total_price,
   };
@@ -177,4 +169,5 @@ export default connect(mapStateToProps, {
   AddWorkOrderItem,
   PostInternalWorkOrderItems,
   PrintLabel,
+  uploadFile,
 })(POItems);

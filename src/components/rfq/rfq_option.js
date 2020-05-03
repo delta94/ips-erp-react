@@ -1,13 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
-import Container from "@material-ui/core/Container";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import Checkbox from "@material-ui/core/Checkbox";
-import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Typography from "@material-ui/core/Typography";
+import { Container, Paper, Grid, Checkbox, TextField, Typography, FormControlLabel } from "@material-ui/core";
 
 import { updateObjectState } from "../../actions/rfq_actions";
 

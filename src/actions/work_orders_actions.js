@@ -1,28 +1,11 @@
-import { batch } from "react-redux";
 import { GetInternalWorkOrdersItemsAPI } from "../api";
-import { enqueueSnackbar } from "./notify_actions";
-import { SUCCESS, ERROR } from "../utils/constants";
-export const UPDATE_STATE = "WORK_ORDER/UPDATE_STATE";
+import action, { GetAPI } from "./common_actions";
 
-export const UpdateState = (name, value) => {
-  return {
-    type: UPDATE_STATE,
-    name,
-    value,
-  };
-};
+// const
+const PREFIX = "WORK_ORDERS";
 
-export const GetInternalWorkOrdersItems = () => {
-  return async (dispatch) => {
-    try {
-      const res = await GetInternalWorkOrdersItemsAPI();
-      const { data } = res;
-      batch(() => {
-        dispatch(UpdateState("data", data));
-        dispatch(enqueueSnackbar("加载成功! ", SUCCESS));
-      });
-    } catch (err) {
-      dispatch(enqueueSnackbar("加载失败! ", ERROR));
-    }
-  };
-};
+// from common action
+export const actions = action(PREFIX);
+
+export const GetInternalWorkOrdersItems = () =>
+  GetAPI(actions)("data", GetInternalWorkOrdersItemsAPI, null, null, true);

@@ -1,27 +1,18 @@
 import React from "react";
-// import { useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import Icon from "@material-ui/core/Icon";
+import { Paper, Grid, Button, Typography, Icon } from "@material-ui/core";
 import SearchBar from "material-ui-search-bar";
-// import { CopyToClipboard } from "react-copy-to-clipboard";
-// import { useDebouncedCallback } from "use-debounce";
 
 import {
-  UpdateState,
+  updateState,
   GetInternalWorkOrderItem,
   PatchInternalWorkOrderItem,
 } from "../../actions/engineer_process_actions";
-// import { enqueueSnackbar as enqueueSnackbarAction } from "../../actions/notify_actions";
-// import { SUCCESS } from "../../utils/constants";
 
 const electron = process.env.NODE_ENV === "development" ? null : window.require("electron");
 
-const useStyle = makeStyles(theme => ({
+const useStyle = makeStyles(() => ({
   root: {
     margin: "0 auto",
     marginTop: 10,
@@ -45,22 +36,12 @@ const useStyle = makeStyles(theme => ({
 
 function EngineerProcess(props) {
   const classes = useStyle();
-  // const dispatch = useDispatch();
-  // const enqueueSnackbar = (...args) => dispatch(enqueueSnackbarAction(...args));
 
   // vars from reducer
   const { search, data } = props;
 
   // methods from actions
-  const { UpdateState, GetInternalWorkOrderItem, PatchInternalWorkOrderItem } = props;
-  // const [debouncedCallback] = useDebouncedCallback(
-  //   // function
-  //   (value) => {
-  //     UpdateState("search", value);
-  //   },
-  //   // delay in ms
-  //   500
-  // );
+  const { updateState, GetInternalWorkOrderItem, PatchInternalWorkOrderItem } = props;
 
   const renderHeader = () => {
     if (data) {
@@ -156,9 +137,8 @@ function EngineerProcess(props) {
       <SearchBar
         className={classes.root}
         value={search}
-        // onChange={(e) => debouncedCallback(e)}
         placeholder="输入工号"
-        onChange={v => UpdateState("search", v)}
+        onChange={v => updateState("search", v)}
         onRequestSearch={() => GetInternalWorkOrderItem(search)}
       />
       <Paper className={classes.paperRoot}>
@@ -176,6 +156,6 @@ const mapStateToProps = ({ EngineerProcessReducer }) => {
   };
 };
 
-export default connect(mapStateToProps, { UpdateState, GetInternalWorkOrderItem, PatchInternalWorkOrderItem })(
+export default connect(mapStateToProps, { updateState, GetInternalWorkOrderItem, PatchInternalWorkOrderItem })(
   EngineerProcess
 );

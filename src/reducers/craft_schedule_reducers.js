@@ -1,10 +1,9 @@
-import {
-  UPDATE_STATE,
-  UPDATE_OBJECT_STATE,
-  UPDATE_ARRAY_OBJECT_STATE,
-  RESET_STATE,
-} from "../actions/craft_schedule_actions";
+import commonReducer from "./common_reducer";
 
+// const
+const PREFIX = "CRAFT_SCHEDULE";
+
+// default state
 const defaultState = {
   search: "",
   data: "",
@@ -15,31 +14,7 @@ const defaultState = {
 };
 
 const reducer = (state = defaultState, action) => {
-  let { name, index, key, value } = action;
-  switch (action.type) {
-    case UPDATE_STATE:
-      if (value instanceof Array) {
-        return { ...state, [name]: [...value] };
-      } else if (value instanceof Object) {
-        return { ...state, [name]: { ...value } };
-      } else {
-        return { ...state, [name]: value };
-      }
-    case UPDATE_OBJECT_STATE:
-      let obj = state[name];
-      obj[key] = value;
-      return { ...state, [name]: { ...obj } };
-    case UPDATE_ARRAY_OBJECT_STATE:
-      let item = state[name][index];
-      item[key] = value;
-      let arr = state[name];
-      arr[index] = item;
-      return { ...state, [name]: [...arr] };
-    case RESET_STATE:
-      return defaultState;
-    default:
-      return state;
-  }
+  return commonReducer(PREFIX)(state, action, defaultState);
 };
 
 export { reducer };
