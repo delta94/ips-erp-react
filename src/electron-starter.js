@@ -1,5 +1,5 @@
 const electron = require("electron");
-const { app, Tray, Menu } = require("electron");
+const { app, Tray, Menu, nativeImage } = require("electron");
 
 // Module to control application life.
 // const app = electron.app;
@@ -33,23 +33,21 @@ function createWindow() {
 
   mainWindow.removeMenu();
 
-  tray = new Tray("assets/win.ico"); // 坑①
+  const iconPath = path.join(__dirname, "/../assets/win.ico");
+
+  mainWindow.tray = new Tray(nativeImage.createFromPath(iconPath));
   // 右键菜单
   const contextMenu = Menu.buildFromTemplate([
-    // {
-    //   label: "微信",
-    //   role: "redo",
-    //   click: () => {
-    //     if (mainWindow) {
-    //       mainWindow.show();
-    //     }
-    //   },
-    // },
-    { label: "退出", role: "quit" },
+    {
+      label: "退出",
+      click: () => {
+        mainWindow.destroy();
+      },
+    },
   ]);
-  tray.setToolTip("ErP");
-  tray.setContextMenu(contextMenu);
-  tray.on("click", () => {
+  mainWindow.tray.setToolTip("ErP");
+  mainWindow.tray.setContextMenu(contextMenu);
+  mainWindow.tray.on("click", () => {
     // 监听单击做的时
     if (mainWindow.isVisible()) {
       mainWindow.hide();

@@ -83,7 +83,8 @@
     "files": [
       "src/electron-starter.js",
       "build/**/*",
-      "node_modules/**/*"
+      "node_modules/**/*",
+      "assets/*"
     ],
     "directories": {
       "buildResources": "assets"
