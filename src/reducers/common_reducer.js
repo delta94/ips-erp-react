@@ -13,6 +13,8 @@ const commonReducer = PREFIX => {
       case `${PREFIX}/${UPDATE_STATE}`:
         if (value instanceof Array) {
           return { ...state, [name]: [...value] };
+        } else if (value instanceof Date) {
+          return { ...state, [name]: value };
         } else if (value instanceof Object) {
           return { ...state, [name]: { ...value } };
         } else {
