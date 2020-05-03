@@ -111,7 +111,6 @@ export const GetAPI = action => (
         }
       });
     } catch (err) {
-      console.log(err);
       dispatch(enqueueSnackbar(errText, ERROR));
     }
   };
