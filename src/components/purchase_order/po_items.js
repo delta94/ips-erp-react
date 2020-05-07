@@ -1,18 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
-import { Paper, Grid, Typography, TextField, Button } from "@material-ui/core";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import { Paper, Grid, Typography, TextField } from "@material-ui/core";
+import POOperations from "./po_operations";
 
-import ImportBtn from "../common/import_btn";
-
-import {
-  UpdateWorkOrderItem,
-  AddWorkOrderItem,
-  PostInternalWorkOrderItems,
-  PrintLabel,
-  uploadFile,
-} from "../../actions/po_actions";
+import { UpdateWorkOrderItem } from "../../actions/po_actions";
 
 const useStyle = makeStyles(() => ({
   root: {
@@ -32,7 +24,7 @@ function POItems(props) {
   // vars from reducer
   const { work_order_items, total_price, work_order_created } = props;
   // methods from actions
-  const { UpdateWorkOrderItem, AddWorkOrderItem, PostInternalWorkOrderItems, PrintLabel, uploadFile } = props;
+  const { UpdateWorkOrderItem } = props;
 
   const classes = useStyle();
   const renderTotal = () => {
@@ -129,27 +121,7 @@ function POItems(props) {
             {renderItems()}
             {renderTotal()}
           </Paper>
-          <Grid container className={classes.root}>
-            <Grid item xs={8}></Grid>
-            <Grid item xs={1}>
-              <Button variant="contained" color="primary" onClick={() => AddWorkOrderItem()}>
-                添加
-              </Button>
-            </Grid>
-            <Grid item xs={1}>
-              <ImportBtn btnText="上传文件" startIcon={<CloudUploadIcon />} uploadFile={uploadFile} />
-            </Grid>
-            <Grid item xs={1}>
-              <Button variant="contained" color="primary" onClick={() => PrintLabel()}>
-                打印标签
-              </Button>
-            </Grid>
-            <Grid item xs={1}>
-              <Button variant="contained" color="primary" onClick={() => PostInternalWorkOrderItems()}>
-                提交
-              </Button>
-            </Grid>
-          </Grid>
+          <POOperations />
         </>
       )}
     </>
@@ -166,8 +138,4 @@ const mapStateToProps = ({ POReducer }) => {
 
 export default connect(mapStateToProps, {
   UpdateWorkOrderItem,
-  AddWorkOrderItem,
-  PostInternalWorkOrderItems,
-  PrintLabel,
-  uploadFile,
 })(POItems);

@@ -1,6 +1,13 @@
 import { batch } from "react-redux";
 // for po_info.js
-import { GetCustomersAPI, PostInternalWorkOrderAPI, PostInternalWorkOrderItemsAPI, PrintLabelAPI } from "../api";
+import {
+  GetCustomersAPI,
+  PostInternalWorkOrderAPI,
+  PostInternalWorkOrderItemsAPI,
+  PrintLabelAPI,
+  GetInternalWorkOrdersItemAPI,
+  PatchInternalWorkOrderItemAPI,
+} from "../api";
 import { enqueueSnackbar } from "./notify_actions";
 import { SUCCESS, ERROR } from "../utils/constants";
 import { BU_PLACE_ORDER } from "../utils/constants";
@@ -14,19 +21,22 @@ const PREFIX = "PO";
 export const actions = action(PREFIX);
 export const { updateArrayObjectState, updateObjectState, updateState, resetState } = actions;
 
+export const GetInternalWorkOrderItem = item_id =>
+  GetAPI(actions)("data", GetInternalWorkOrdersItemAPI, item_id, null, true, "读取工号成功! ");
+
 export const GetCustomers = () => GetAPI(actions)("customers", GetCustomersAPI);
 
 export const PostInternalWorkOrder = () => {
   return async (dispatch, getState) => {
     const state = getState();
-    const { customer, customer_po, po_submit_date, customer_dateline, internal_dateline } = state.POReducer;
+    const { customer, customer_po, po_submit_date, customer_dateline } = state.POReducer;
 
     const params = {
       customer,
       customer_po,
       po_submit_date,
       customer_dateline,
-      internal_dateline,
+      internal_dateline: new Date(new Date().setDate(customer_dateline.getDate() - 7)),
       state: BU_PLACE_ORDER,
     };
 
@@ -34,6 +44,7 @@ export const PostInternalWorkOrder = () => {
       const res = await PostInternalWorkOrderAPI(params);
       const { data } = res;
       batch(() => {
+        dispatch(updateState("new", false));
         dispatch(updateState("work_order_created", true));
         dispatch(updateState("internal_work_num", data.internal_work_num));
         dispatch(updateState("cad_dir", data.cad_dir));
@@ -74,6 +85,38 @@ export const AddWorkOrderItem = () => {
   };
 };
 
+export const newWorkOrder = () => {
+  return dispatch => {
+    batch(() => {
+      dispatch(resetState());
+      dispatch(GetCustomers());
+      dispatch(updateState("newOrder", false));
+    });
+  };
+};
+
+export const editInternalWorkOrderItem = () => {
+  return async (dispatch, getState) => {
+    const state = getState();
+    const { username } = state.HeaderReducer;
+    let { data: item } = state.POReducer;
+    delete item.internal_dateline;
+    delete item.po_submit_date;
+    delete item.customer_dateline;
+    item.qty = parseFloat(item.qty);
+    item.unit_price = parseFloat(item.unit_price);
+    item.submit_by = username;
+    try {
+      const { data } = await PatchInternalWorkOrderItemAPI(item.item_id, item);
+      batch(() => {
+        dispatch(updateState("data", data));
+        dispatch(enqueueSnackbar("修改成功! ", SUCCESS));
+      });
+    } catch (err) {
+      dispatch(enqueueSnackbar(err.message, ERROR));
+    }
+  };
+};
 export const PostInternalWorkOrderItems = () => {
   return async (dispatch, getState) => {
     const state = getState();
@@ -84,7 +127,6 @@ export const PostInternalWorkOrderItems = () => {
       customer_po,
       po_submit_date,
       customer_dateline,
-      internal_dateline,
       cad_dir,
     } = state.POReducer;
     const { username } = state.HeaderReducer;
@@ -110,7 +152,7 @@ export const PostInternalWorkOrderItems = () => {
         element.customer_po = customer_po;
         element.po_submit_date = po_submit_date;
         element.customer_dateline = customer_dateline;
-        element.internal_dateline = internal_dateline;
+        element.internal_dateline = new Date(new Date().setDate(customer_dateline.getDate() - 7));
         element.ng = false;
       });
       const params = { work_order_items };
@@ -118,7 +160,10 @@ export const PostInternalWorkOrderItems = () => {
         const res = await PostInternalWorkOrderItemsAPI(params);
         const { data } = res;
         batch(() => {
-          dispatch(resetState());
+          // dispatch(resetState());
+          const electron = process.env.NODE_ENV !== "development" && window.require("electron");
+          process.env.NODE_ENV !== "development" && electron.shell.openItem(cad_dir);
+          dispatch(updateState("newOrder", true));
           dispatch(enqueueSnackbar(data, SUCCESS));
         });
       } catch (err) {
@@ -133,13 +178,13 @@ export const PostInternalWorkOrderItems = () => {
 export const PrintLabel = () => {
   return async (dispatch, getState) => {
     const state = getState();
-    const { po_submit_date, internal_dateline, work_order_items } = state.POReducer;
+    const { po_submit_date, work_order_items, customer_dateline } = state.POReducer;
 
     const data = work_order_items.map(element => {
       return {
         item_id: element.item_id,
         po_submit_date: po_submit_date,
-        internal_dateline: internal_dateline,
+        internal_dateline: new Date(new Date().setDate(customer_dateline.getDate() - 7)),
         qty: element.qty,
         item_num: element.item_num,
         unit: element.unit,

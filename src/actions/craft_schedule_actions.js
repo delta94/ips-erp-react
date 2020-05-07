@@ -66,21 +66,45 @@ export const GetInternalWorkOrderItem = item_id =>
 
 export const GetMaterials = () => GetAPI(actions)("materials", GetMaterialsAPI, null, null, false);
 
-const formatCrafts = data => {
-  data.forEach(element => {
-    element.check = false;
-    element.seq = "";
-    element.qty = "";
-    element.unit = "";
-    element.level = "";
-    element.estimate = "";
-    element.start_time = "";
-    element.end_time = "";
-  });
-  console.log(data);
-};
+// const formatCrafts = data => {
+//   data.forEach(element => {
+//     element.check = false;
+//     element.seq = "";
+//     element.qty = "";
+//     element.unit = "";
+//     element.level = "";
+//     element.estimate = "";
+//     element.start_time = "";
+//     element.end_time = "";
+//   });
+//   console.log(data);
+// };
 
-export const GetCrafts = category => GetAPI(actions)("crafts", GetCraftsAPI, category, formatCrafts);
+// export const GetCrafts = category => GetAPI(actions)("crafts", GetCraftsAPI, category, formatCrafts);
+
+export const GetCrafts = category => {
+  return async (dispatch, getState) => {
+    const reducer = getState().CraftScheduleReducer;
+    const internal_work_order_item = reducer.data;
+    try {
+      const res = await GetCraftsAPI(category);
+      const { data } = res;
+      data.forEach(element => {
+        element.check = false;
+        element.seq = "";
+        element.qty = internal_work_order_item.qty;
+        element.unit = internal_work_order_item.unit;
+        element.level = "";
+        element.estimate = "";
+        element.start_time = "";
+        element.end_time = "";
+      });
+      dispatch(updateState("crafts", data));
+    } catch (err) {
+      dispatch(enqueueSnackbar(err.message, ERROR));
+    }
+  };
+};
 
 export const clickSortCraftSchedule = crafts => {
   return dispatch => {

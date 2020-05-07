@@ -7,7 +7,7 @@ const PREFIX = "HEADER";
 const defaultState = {
   openSidebar: false,
   username: process.env.NODE_ENV === "development" ? "衡伟亮" : "",
-  department: process.env.NODE_ENV === "development" ? "IT" : "",
+  department: process.env.NODE_ENV === "development" ? "IT部门" : "",
   isAuthenticated: process.env.NODE_ENV === "development" ? true : false,
   // username: "",
   // department: "",

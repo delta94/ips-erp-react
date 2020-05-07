@@ -8,4 +8,4 @@ export const ERROR = "error";
 export const WARNING = "warning";
 export const INFO = "info";
 
-export const DRAWER_WIDTH = 136;
+export const DRAWER_WIDTH = 240;

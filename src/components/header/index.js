@@ -6,16 +6,18 @@ import {
   Drawer,
   AppBar,
   Toolbar,
-  List,
+  // List,
   Typography,
   Divider,
   IconButton,
-  ListItem,
-  ListItemText,
+  // ListItem,
+  // ListItemText,
 } from "@material-ui/core";
 import { DRAWER_WIDTH } from "../../utils/constants";
 import MenuIcon from "@material-ui/icons/Menu";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+
+import Menu from "./menu";
 
 import { toggleState, clickLogout, GetSidebarItems } from "../../actions/header_actions";
 
@@ -88,27 +90,28 @@ function Header(props) {
     return () => {};
   }, [GetSidebarItems, isAuthenticated]);
 
-  const list = () => (
-    <div className={classes.list} role="presentation">
-      <List>
-        {sidebarItems.map(item => {
-          if (item.allow_department.includes(department)) {
-            return (
-              <ListItem key={item.item} button>
-                {/* <ListItem key={item.item} button onClick={() => ToggleState("openSidebar")}> */}
-                <Link to={item.url} className={classes.link}>
-                  <ListItemText primary={item.item} className={classes.listItem} />
-                </Link>
-              </ListItem>
-            );
-          } else {
-            return null;
-          }
-        })}
-      </List>
-      <Divider />
-    </div>
-  );
+  // const list = () => (
+  //   <div className={classes.list} role="presentation">
+  //     <List>
+  //       {sidebarItems.map(item => {
+  //         if (item.allow_department.includes(department)) {
+  //           return (
+  //             <ListItem key={item.item} button>
+  //               {/* <ListItem key={item.item} button onClick={() => ToggleState("openSidebar")}> */}
+  //               <Link to={item.url} className={classes.link}>
+  //                 <ListItemText primary={item.item} className={classes.listItem} />
+  //               </Link>
+  //             </ListItem>
+  //           );
+  //         } else {
+  //           return null;
+  //         }
+  //       })}
+  //     </List>
+  //     <Divider />
+  //   </div>
+  // );
+
   const classes = useStyles();
   const theme = useTheme();
 
@@ -169,7 +172,10 @@ function Header(props) {
           </IconButton> */}
         </div>
         <Divider />
-        {list()}
+        {/* {list()} */}
+        {/* https://medium.com/@modularcoder/reactjs-multi-level-sidebar-navigation-menu-with-typescrip-materialui-251943c12dda */}
+        {/* refer to this link */}
+        <Menu appMenuItems={sidebarItems} department={department} />
       </Drawer>
     </div>
   );

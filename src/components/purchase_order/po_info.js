@@ -40,7 +40,7 @@ function POInfo(props) {
     customer_po,
     po_submit_date,
     customer_dateline,
-    internal_dateline,
+    // internal_dateline,
     work_order_created,
   } = props;
 
@@ -132,8 +132,10 @@ function POInfo(props) {
                 margin="none"
                 label="厂内交期"
                 id="internal-dateline"
-                value={internal_dateline.setDate(customer_dateline.getDate() - 7)}
-                onChange={date => updateState("internal_dateline", date)}
+                readOnly
+                // value={internal_dateline.setDate(customer_dateline.getDate() - 7)}
+                value={new Date().setDate(customer_dateline.getDate() - 7)}
+                // onChange={date => updateState("internal_dateline", date)}
                 KeyboardButtonProps={{
                   "aria-label": "change date",
                 }}
@@ -167,7 +169,7 @@ const mapStateToProps = ({ POReducer }) => {
     customer_po: POReducer.customer_po,
     po_submit_date: POReducer.po_submit_date,
     customer_dateline: POReducer.customer_dateline,
-    internal_dateline: POReducer.internal_dateline,
+    // internal_dateline: POReducer.internal_dateline,
     work_order_created: POReducer.work_order_created,
   };
 };

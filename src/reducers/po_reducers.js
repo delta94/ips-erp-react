@@ -19,6 +19,9 @@ const defaultState = {
   // for po_items.js
   work_order_items: [],
   total_price: "",
+  newOrder: false,
+  search: "",
+  data: "",
 };
 
 const reducer = (state = defaultState, action) => {

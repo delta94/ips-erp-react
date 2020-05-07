@@ -7,7 +7,7 @@ if (process.env.REACT_APP_LOCATION === "ips") {
 } else if (process.env.REACT_APP_LOCATION === "wg") {
   url = `http://10.81.0.210:8080/api/v1`;
 } else {
-  url = `http://192.168.122.21:8080/api/v1`;
+  url = `http://192.168.0.54:8080/api/v1`;
 }
 
 // if (process.env.NODE_ENV !== "production") {
