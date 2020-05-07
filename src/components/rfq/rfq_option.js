@@ -41,6 +41,11 @@ const RFQOption = props => {
               }
               label="运费"
             />
+            <TextField
+              value={rfq.shipping_fee}
+              onChange={e => updateObjectState("rfq", "shipping_fee", e.target.value)}
+              disabled={!rfq.shipping_fee_apply}
+            />
           </Grid>
           <Grid item xs={4} align="center">
             <FormControlLabel

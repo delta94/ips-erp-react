@@ -17,6 +17,8 @@ import EngineerProcess from "./components/engineer_process";
 import CraftSchedule from "./components/craft_schdeule";
 import RFQ from "./components/rfq";
 import Notify from "./components/notify";
+import AdminCustomer from "./components/admin/customer";
+import AdminCurrency from "./components/admin/currency";
 import { DRAWER_WIDTH } from "./utils/constants";
 
 const defaultTheme = createMuiTheme();
@@ -139,7 +141,6 @@ function App(props) {
           <CssBaseline />
           <Notify />
           <Header />
-          {/* <Sidebar /> */}
           <div
             className={clsx(classes.content, {
               [classes.contentShift]: openSidebar,
@@ -147,6 +148,7 @@ function App(props) {
           >
             <div className={classes.drawerHeader} />
             <Switch>
+              <Route exact path="/" component={WorkOrderStatus} />
               <Route exact path="/login" component={Login} />
               <Route exact path="/work_orders" component={WorkOrderStatus} />
               <Route exact path="/rfq" component={RFQ} />
@@ -154,6 +156,8 @@ function App(props) {
               <Route exact path="/po_edit" component={PurchaseOrderEdit} />
               <Route exact path="/engineer_process" component={EngineerProcess} />
               <Route exact path="/craft_schedule" component={CraftSchedule} />
+              <Route exact path="/admin/customer" component={AdminCustomer} />
+              <Route exact path="/admin/currency" component={AdminCurrency} />
             </Switch>
           </div>
         </SnackbarProvider>

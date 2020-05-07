@@ -27,7 +27,7 @@ const RFQContent = props => {
         <Grid item xs={1}>
           <Typography color="primary">序号</Typography>
         </Grid>
-        <Grid item xs={rfq.shipping_fee_apply ? 4 : 5}>
+        <Grid item xs={5}>
           <Typography color="primary">图号</Typography>
         </Grid>
         <Grid item xs={1}>
@@ -48,11 +48,6 @@ const RFQContent = props => {
         <Grid item xs={1}>
           <Typography color="primary">单价 (RMB)</Typography>
         </Grid>
-        {rfq.shipping_fee_apply && (
-          <Grid item xs={1}>
-            <Typography color="primary">运费 (RMB)</Typography>
-          </Grid>
-        )}
       </>
     );
   };
@@ -64,7 +59,7 @@ const RFQContent = props => {
           <Grid item xs={1}>
             <Typography>{item.seq}</Typography>
           </Grid>
-          <Grid item xs={rfq.shipping_fee_apply ? 4 : 5}>
+          <Grid item xs={5}>
             <TextField
               fullWidth
               value={item.item_id}
@@ -101,15 +96,6 @@ const RFQContent = props => {
           <Grid item xs={1}>
             <Typography>{item.unit_price}</Typography>
           </Grid>
-          {rfq.shipping_fee_apply && (
-            <Grid item xs={1}>
-              <TextField
-                fullWidth
-                value={item.shipping_fee}
-                onChange={e => updateArrayObjectState("rfq_items", index, "shipping_fee", e.target.value)}
-              />
-            </Grid>
-          )}
         </React.Fragment>
       );
     });

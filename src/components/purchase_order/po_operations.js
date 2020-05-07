@@ -26,7 +26,6 @@ const useStyle = makeStyles(() => ({
     paddingBottom: 4,
   },
   clip: {
-    display: "none",
     height: 1,
     width: 1,
     borderWidth: 0,

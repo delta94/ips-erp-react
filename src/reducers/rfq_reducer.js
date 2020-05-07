@@ -16,6 +16,7 @@ const defaultState = {
     rfq_num: "",
     delivery_date: "",
     shipping_fee_apply: false,
+    shipping_fee: "",
     discount_rate_apply: false,
     discount_rate: "",
     remark: "",
