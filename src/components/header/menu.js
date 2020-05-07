@@ -45,39 +45,47 @@ const AppMenuItem = props => {
     setOpen(!open);
   }
 
-  const MenuItemRoot = (
-    // <ListItem component={!isExpandable ? NavLink : "div"} button onClick={handleClick}>
-    <AppMenuItemComponent link={props.link} onClick={handleClick}>
-      {/* Display an icon if any */}
-      {!!icon && (
-        <ListItemIcon>
-          {/* <Icon /> */}
-          <Icon>{icon}</Icon>
-        </ListItemIcon>
-      )}
-      <ListItemText primary={name} inset={!Icon} />
-      {/* Display the expand menu if the item has children */}
-      {isExpandable && !open && <IconExpandMore />}
-      {isExpandable && open && <IconExpandLess />}
-      {/* </ListItem> */}
-    </AppMenuItemComponent>
-  );
+  const MenuItemRoot = () => {
+    return (
+      // <ListItem component={!isExpandable ? NavLink : "div"} button onClick={handleClick}>
+      <AppMenuItemComponent link={props.link} onClick={handleClick}>
+        {/* Display an icon if any */}
+        {!!icon && (
+          <ListItemIcon>
+            {/* <Icon /> */}
+            <Icon>{icon}</Icon>
+          </ListItemIcon>
+        )}
+        <ListItemText primary={name} inset={!Icon} />
+        {/* Display the expand menu if the item has children */}
+        {isExpandable && !open && <IconExpandMore />}
+        {isExpandable && open && <IconExpandLess />}
+        {/* </ListItem> */}
+      </AppMenuItemComponent>
+    );
+  };
 
-  const MenuItemChildren = isExpandable ? (
-    <Collapse in={open} timeout="auto" unmountOnExit>
-      <Divider />
-      <List component="div" disablePadding>
-        {items.map((item, index) => (
-          <AppMenuItem {...item} key={index} />
-        ))}
-      </List>
-    </Collapse>
-  ) : null;
+  const MenuItemChildren = () => {
+    if (isExpandable) {
+      return (
+        <Collapse in={open} timeout="auto" unmountOnExit>
+          <Divider />
+          <List component="div" disablePadding>
+            {items.map((item, index) => (
+              <AppMenuItem {...item} key={index} />
+            ))}
+          </List>
+        </Collapse>
+      );
+    } else {
+      return null;
+    }
+  };
 
   return (
     <>
-      {MenuItemRoot}
-      {MenuItemChildren}
+      {MenuItemRoot()}
+      {MenuItemChildren()}
     </>
   );
 };
@@ -118,8 +126,9 @@ const AppMenu = props => {
       {appMenuItems.map((item, index) => {
         if (item.allow_department.includes(department)) {
           return <AppMenuItem {...item} key={index} />;
+        } else {
+          return null;
         }
-        return null;
       })}
     </List>
   );
