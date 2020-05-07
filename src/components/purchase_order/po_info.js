@@ -1,16 +1,11 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import { Paper, Grid, Button } from "@material-ui/core";
+import { Paper, Grid, Button, InputLabel, FormControl, MenuItem, TextField, Select } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import TextField from "@material-ui/core/TextField";
-import Select from "@material-ui/core/Select";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 
-import { GetCustomers, UpdateState, PostInternalWorkOrder } from "../../actions/po_actions";
+import { GetCustomers, updateState, PostInternalWorkOrder } from "../../actions/po_actions";
 
 const useStyles = makeStyles(theme => ({
   form150: {
@@ -45,12 +40,12 @@ function POInfo(props) {
     customer_po,
     po_submit_date,
     customer_dateline,
-    internal_dateline,
+    // internal_dateline,
     work_order_created,
   } = props;
 
   // methods from actions
-  const { GetCustomers, UpdateState, PostInternalWorkOrder } = props;
+  const { GetCustomers, updateState, PostInternalWorkOrder } = props;
 
   useEffect(() => {
     GetCustomers();
@@ -66,7 +61,7 @@ function POInfo(props) {
               <Select
                 value={customer}
                 onChange={e => {
-                  UpdateState("customer", e.target.value);
+                  updateState("customer", e.target.value);
                 }}
                 displayEmpty
                 className={classes.empty}
@@ -88,7 +83,7 @@ function POInfo(props) {
               <TextField
                 className={classes.empty}
                 value={customer_po}
-                onChange={e => UpdateState("customer_po", e.target.value)}
+                onChange={e => updateState("customer_po", e.target.value)}
               />
             </FormControl>
           </Grid>
@@ -103,7 +98,7 @@ function POInfo(props) {
                 label="下单日期"
                 value={po_submit_date}
                 id="po-submit-date"
-                onChange={date => UpdateState("po_submit_date", date)}
+                onChange={date => updateState("po_submit_date", date)}
                 KeyboardButtonProps={{
                   "aria-label": "change date",
                 }}
@@ -120,7 +115,7 @@ function POInfo(props) {
                 label="客户交期"
                 value={customer_dateline}
                 id="customer-dateline"
-                onChange={date => UpdateState("customer_dateline", date)}
+                onChange={date => updateState("customer_dateline", date)}
                 KeyboardButtonProps={{
                   "aria-label": "change date",
                 }}
@@ -137,8 +132,10 @@ function POInfo(props) {
                 margin="none"
                 label="厂内交期"
                 id="internal-dateline"
-                value={internal_dateline.setDate(customer_dateline.getDate() - 7)}
-                onChange={date => UpdateState("internal_dateline", date)}
+                readOnly
+                // value={internal_dateline.setDate(customer_dateline.getDate() - 7)}
+                value={new Date().setDate(customer_dateline.getDate() - 7)}
+                // onChange={date => updateState("internal_dateline", date)}
                 KeyboardButtonProps={{
                   "aria-label": "change date",
                 }}
@@ -172,9 +169,9 @@ const mapStateToProps = ({ POReducer }) => {
     customer_po: POReducer.customer_po,
     po_submit_date: POReducer.po_submit_date,
     customer_dateline: POReducer.customer_dateline,
-    internal_dateline: POReducer.internal_dateline,
+    // internal_dateline: POReducer.internal_dateline,
     work_order_created: POReducer.work_order_created,
   };
 };
 
-export default connect(mapStateToProps, { GetCustomers, UpdateState, PostInternalWorkOrder })(POInfo);
+export default connect(mapStateToProps, { GetCustomers, updateState, PostInternalWorkOrder })(POInfo);

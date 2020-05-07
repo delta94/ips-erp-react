@@ -5,50 +5,22 @@ import { enqueueSnackbar } from "./notify_actions";
 import { GetInternalWorkOrdersItemAPI, GetMaterialsAPI, GetCraftsAPI, PatchInternalWorkOrderItemAPI } from "../api";
 import { propComparator } from "../utils/commons";
 import { SUCCESS, ERROR } from "../utils/constants";
-export const UPDATE_STATE = "CRAFT_SCHEDULE/UPDATE_STATE";
-export const UPDATE_OBJECT_STATE = "CRAFT_SCHEDULE/UPDATE_OBJECT_STATE";
-export const UPDATE_ARRAY_OBJECT_STATE = "CRAFT_SCHEDULE/UPDATE_ARRAY_OBJECT_STATE";
-export const RESET_STATE = "CRAFT_SCHEDULE/RESET_STATE";
+import action, { GetAPI } from "./common_actions";
 
-export const UpdateState = (name, value) => {
-  return {
-    type: UPDATE_STATE,
-    name,
-    value,
-  };
-};
+// const
+const PREFIX = "CRAFT_SCHEDULE";
 
-export const UpdateObjectState = (name, key, value) => {
-  return {
-    type: UPDATE_OBJECT_STATE,
-    name,
-    key,
-    value,
-  };
-};
+// from common action
+export const actions = action(PREFIX);
+export const { updateArrayObjectState, updateObjectState, updateState } = actions;
 
-export const UpdateArrayObjectState = (name, index, key, value) => {
-  return {
-    type: UPDATE_ARRAY_OBJECT_STATE,
-    name,
-    index,
-    key,
-    value,
-  };
-};
-
-export const resetState = () => {
-  return {
-    type: RESET_STATE,
-  };
-};
 export const updateSelectMaterial = name => {
   return (dispatch, getState) => {
     const state = getState();
     const { materials } = state.CraftScheduleReducer;
     const selected_material = materials.filter(el => el.name === name)[0];
     batch(() => {
-      dispatch(UpdateState("selected_material", selected_material));
+      dispatch(actions.updateState("selected_material", selected_material));
       dispatch(GetCrafts(selected_material.category));
     });
   };
@@ -85,54 +57,49 @@ export const clickSeqCheckbox = id => {
         }
       }
     });
-    dispatch(UpdateState("crafts", crafts));
-  };
-};
-export const GetInternalWorkOrderItem = item_id => {
-  return async dispatch => {
-    try {
-      const res = await GetInternalWorkOrdersItemAPI(item_id);
-      const { data } = res;
-      batch(() => {
-        dispatch(UpdateState("data", data));
-        dispatch(enqueueSnackbar("读取工号成功! ", SUCCESS));
-      });
-    } catch (err) {
-      dispatch(enqueueSnackbar(err.message, ERROR));
-    }
+    dispatch(actions.updateState("crafts", crafts));
   };
 };
 
-export const GetMaterials = () => {
-  return async dispatch => {
-    try {
-      const res = await GetMaterialsAPI();
-      const { data } = res;
-      batch(() => {
-        dispatch(UpdateState("materials", data));
-      });
-    } catch (err) {
-      dispatch(enqueueSnackbar(err.message, ERROR));
-    }
-  };
-};
+export const GetInternalWorkOrderItem = item_id =>
+  GetAPI(actions)("data", GetInternalWorkOrdersItemAPI, item_id, null, true, "读取工号成功! ");
+
+export const GetMaterials = () => GetAPI(actions)("materials", GetMaterialsAPI, null, null, false);
+
+// const formatCrafts = data => {
+//   data.forEach(element => {
+//     element.check = false;
+//     element.seq = "";
+//     element.qty = "";
+//     element.unit = "";
+//     element.level = "";
+//     element.estimate = "";
+//     element.start_time = "";
+//     element.end_time = "";
+//   });
+//   console.log(data);
+// };
+
+// export const GetCrafts = category => GetAPI(actions)("crafts", GetCraftsAPI, category, formatCrafts);
 
 export const GetCrafts = category => {
   return async (dispatch, getState) => {
+    const reducer = getState().CraftScheduleReducer;
+    const internal_work_order_item = reducer.data;
     try {
       const res = await GetCraftsAPI(category);
       const { data } = res;
       data.forEach(element => {
         element.check = false;
         element.seq = "";
-        element.qty = "";
-        element.unit = "";
+        element.qty = internal_work_order_item.qty;
+        element.unit = internal_work_order_item.unit;
         element.level = "";
         element.estimate = "";
         element.start_time = "";
         element.end_time = "";
       });
-      dispatch(UpdateState("crafts", data));
+      dispatch(updateState("crafts", data));
     } catch (err) {
       dispatch(enqueueSnackbar(err.message, ERROR));
     }
@@ -143,7 +110,7 @@ export const clickSortCraftSchedule = crafts => {
   return dispatch => {
     const data = crafts.filter(el => el.check);
     data.sort(propComparator("seq"));
-    dispatch(UpdateState("crafts", data));
+    dispatch(actions.updateState("crafts", data));
   };
 };
 
@@ -172,11 +139,7 @@ export const clickCalWorkHour = crafts => {
       );
       element.end_time = new Date(end_time);
     });
-    // crafts.forEach(el => {
-    //   el.start_time = el.start_time.toLocaleString();
-    //   el.end_time = el.end_time.toLocaleString();
-    // });
-    dispatch(UpdateState("crafts", crafts));
+    dispatch(actions.updateState("crafts", crafts));
   };
 };
 
@@ -199,7 +162,7 @@ export const clickSubmitCraftSchedule = () => {
       const res = await PatchInternalWorkOrderItemAPI(data.item_id, params);
       console.log(res);
       batch(() => {
-        dispatch(resetState());
+        dispatch(actions.resetState());
         dispatch(enqueueSnackbar("下发加工成功! ", SUCCESS));
       });
     } catch (err) {

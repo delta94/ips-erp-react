@@ -11,20 +11,21 @@ import Header from "./components/header";
 // import Sidebar from "./components/sidebar";
 import Login from "./components/login";
 import PurchaseOrder from "./components/purchase_order";
+import PurchaseOrderEdit from "./components/purchase_order/po_edit";
 import WorkOrderStatus from "./components/work_orders";
 import EngineerProcess from "./components/engineer_process";
 import CraftSchedule from "./components/craft_schdeule";
 import RFQ from "./components/rfq";
 import Notify from "./components/notify";
+import { DRAWER_WIDTH } from "./utils/constants";
 
 const defaultTheme = createMuiTheme();
 const theme = createMuiTheme({
-  //    MuiTypography: {
-  //    content: {
-  //         fontSize: '14px',
-  //         fontWeight: 'bold',
-  //       }
-  //  },
+  // props: {
+  //   MuiListItem: {
+  //     disableRipple: true,
+  //   },
+  // },
   typography: {
     body1: defaultTheme.typography.body2,
   },
@@ -58,6 +59,29 @@ const theme = createMuiTheme({
         borderBottom: "1px solid black",
       },
     },
+    MuiExpansionPanel: {
+      root: {
+        "&$expanded": {
+          margin: 0,
+        },
+      },
+    },
+    MuiExpansionPanelSummary: {
+      root: {
+        padding: 0,
+        "&$expanded": {
+          minHeight: 0,
+        },
+      },
+      content: {
+        margin: 0,
+        padding: 0,
+        "&$expanded": {
+          margin: 0,
+          minHeight: 0,
+        },
+      },
+    },
   },
 });
 
@@ -77,7 +101,7 @@ const useStyle = makeStyles(theme => ({
       duration: theme.transitions.duration.enteringScreen,
     }),
     // marginLeft: 0,
-    paddingLeft: 136,
+    paddingLeft: DRAWER_WIDTH,
   },
   drawerHeader: {
     display: "flex",
@@ -127,6 +151,7 @@ function App(props) {
               <Route exact path="/work_orders" component={WorkOrderStatus} />
               <Route exact path="/rfq" component={RFQ} />
               <Route exact path="/po" component={PurchaseOrder} />
+              <Route exact path="/po_edit" component={PurchaseOrderEdit} />
               <Route exact path="/engineer_process" component={EngineerProcess} />
               <Route exact path="/craft_schedule" component={CraftSchedule} />
             </Switch>

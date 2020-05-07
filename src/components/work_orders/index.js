@@ -23,12 +23,12 @@ function WorkOrderStatus(props) {
           {
             title: "下单日期",
             field: "po_submit_date",
-            render: (rowData) => <div>{rowData.po_submit_date.split("T")[0]}</div>,
+            render: rowData => <div>{rowData.po_submit_date.split("T")[0]}</div>,
           },
           {
             title: "厂内交期",
             field: "internal_dateline",
-            render: (rowData) => <div>{rowData.internal_dateline.split("T")[0]}</div>,
+            render: rowData => <div>{rowData.internal_dateline.split("T")[0]}</div>,
           },
           {
             title: "下单人",
@@ -57,7 +57,7 @@ function WorkOrderStatus(props) {
             lastTooltip: "最后页",
           },
         }}
-        data={data}
+        data={data ? data : []}
         // detailPanel={rowData => {
         //   return rowData.work_order_items.map(item => {
         //     return (
@@ -67,7 +67,7 @@ function WorkOrderStatus(props) {
         //     );
         //   });
         // }}
-        title="订单管理"
+        title="工号管理"
       />
     </div>
   );

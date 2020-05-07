@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography, Grid, Paper, TextField } from "@material-ui/core";
 
-import { updateArrayObjectState } from "../../actions/rfq_actions";
+import { updateArrayObjectState, updateRFQItems } from "../../actions/rfq_actions";
 
 const useStyle = makeStyles(() => ({
   root: {
@@ -19,7 +19,7 @@ const RFQContent = props => {
   const { rfq, rfq_items } = props;
 
   // methods from actions
-  const { updateArrayObjectState } = props;
+  const { updateArrayObjectState, updateRFQItems } = props;
 
   const renderHeader = () => {
     return (
@@ -79,11 +79,7 @@ const RFQContent = props => {
             />
           </Grid>
           <Grid item xs={1}>
-            <TextField
-              fullWidth
-              value={item.qty}
-              onChange={e => updateArrayObjectState("rfq_items", index, "qty", e.target.value)}
-            />
+            <TextField fullWidth value={item.qty} onChange={e => updateRFQItems(index, "qty", e.target.value)} />
           </Grid>
           <Grid item xs={1}>
             <TextField
@@ -96,28 +92,17 @@ const RFQContent = props => {
             <TextField
               fullWidth
               value={item.unit_price_foreign}
-              onChange={e => updateArrayObjectState("rfq_items", index, "unit_price_foreign", e.target.value)}
+              onChange={e => updateRFQItems(index, "unit_price_foreign", e.target.value)}
             />
           </Grid>
           <Grid item xs={1}>
-            {/* <TextField
-              fullWidth
-              value={item.item_total}
-              onChange={e => updateArrayObjectState("rfq_items", index, "item_total", e.target.value)}
-            /> */}
             <Typography>{item.item_total}</Typography>
           </Grid>
           <Grid item xs={1}>
-            {/* <TextField
-              fullWidth
-              value={item.unit_price}
-              onChange={e => updateArrayObjectState("rfq_items", index, "unit_price", e.target.value)}
-            /> */}
             <Typography>{item.unit_price}</Typography>
           </Grid>
           {rfq.shipping_fee_apply && (
             <Grid item xs={1}>
-              {/* <Typography>{item.shipping_fee}</Typography> */}
               <TextField
                 fullWidth
                 value={item.shipping_fee}
@@ -151,8 +136,4 @@ const mapStateToProps = ({ RFQReducer }) => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  updateArrayObjectState: (name, index, key, value) => dispatch(updateArrayObjectState(name, index, key, value)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(RFQContent);
+export default connect(mapStateToProps, { updateRFQItems, updateArrayObjectState })(RFQContent);

@@ -2,13 +2,9 @@ import React from "react";
 import clsx from "clsx";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import Checkbox from "@material-ui/core/Checkbox";
-import TextField from "@material-ui/core/TextField";
+import { Grid, Typography, Checkbox, Paper, TextField } from "@material-ui/core";
 
-import { clickSeqCheckbox, UpdateArrayObjectState } from "../../actions/craft_schedule_actions";
+import { clickSeqCheckbox, updateArrayObjectState } from "../../actions/craft_schedule_actions";
 
 const useStyle = makeStyles(theme => ({
   root: { margin: 10 },
@@ -61,7 +57,7 @@ function CraftList(props) {
   const { data, crafts } = props;
 
   // methods from actions
-  const { clickSeqCheckbox, UpdateArrayObjectState } = props;
+  const { clickSeqCheckbox, updateArrayObjectState } = props;
   const renderHeader = () => {
     return (
       <Grid container justify="space-around" spacing={2} className={classes.gridRoot}>
@@ -143,7 +139,7 @@ function CraftList(props) {
               className={classes.gridItemAlign}
               value={craft.description}
               size="small"
-              onChange={e => UpdateArrayObjectState("crafts", index, "description", e.target.value)}
+              onChange={e => updateArrayObjectState("crafts", index, "description", e.target.value)}
             />
           </Grid>
           <Grid item xs={2}>
@@ -153,7 +149,7 @@ function CraftList(props) {
                   <TextField
                     disabled={!craft.check}
                     value={craft.level}
-                    onChange={e => UpdateArrayObjectState("crafts", index, "level", e.target.value)}
+                    onChange={e => updateArrayObjectState("crafts", index, "level", e.target.value)}
                     className={clsx(classes.gridItemAlign, classes.narrowTextInput)}
                     size="small"
                   />
@@ -163,7 +159,7 @@ function CraftList(props) {
                 <TextField
                   disabled={!craft.check}
                   value={craft.qty}
-                  onChange={e => UpdateArrayObjectState("crafts", index, "qty", e.target.value)}
+                  onChange={e => updateArrayObjectState("crafts", index, "qty", e.target.value)}
                   className={clsx(classes.gridItemAlign, classes.narrowTextInput)}
                   size="small"
                 />
@@ -172,7 +168,7 @@ function CraftList(props) {
                 <TextField
                   disabled={!craft.check}
                   value={craft.unit}
-                  onChange={e => UpdateArrayObjectState("crafts", index, "unit", e.target.value)}
+                  onChange={e => updateArrayObjectState("crafts", index, "unit", e.target.value)}
                   className={clsx(classes.gridItemAlign, classes.narrowTextInput)}
                   size="small"
                 />
@@ -183,7 +179,7 @@ function CraftList(props) {
             <TextField
               disabled={!craft.check}
               value={craft.estimate}
-              onChange={e => UpdateArrayObjectState("crafts", index, "estimate", e.target.value)}
+              onChange={e => updateArrayObjectState("crafts", index, "estimate", e.target.value)}
               className={clsx(classes.gridItemAlign, classes.narrowTextInput)}
               size="small"
             />
@@ -217,4 +213,4 @@ const mapStateToProps = ({ CraftScheduleReducer }) => {
   };
 };
 
-export default connect(mapStateToProps, { clickSeqCheckbox, UpdateArrayObjectState })(CraftList);
+export default connect(mapStateToProps, { clickSeqCheckbox, updateArrayObjectState })(CraftList);

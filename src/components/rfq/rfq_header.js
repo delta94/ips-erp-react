@@ -1,18 +1,11 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
-// import Button from "@material-ui/core/Button";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import TextField from "@material-ui/core/TextField";
-import Select from "@material-ui/core/Select";
+import { Paper, Grid, InputLabel, MenuItem, FormControl, TextField, Select } from "@material-ui/core";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 
-import { GetCustomers, GetCurrency, updateObjectState } from "../../actions/rfq_actions";
+import { GetCustomers, GetCurrency, updateObjectState, updateCustomer } from "../../actions/rfq_actions";
 
 const useStyles = makeStyles(theme => ({
   form150: {
@@ -45,7 +38,7 @@ const RFQHeader = props => {
   const { customers, rfq } = props;
 
   // methods from actions
-  const { GetCustomers, updateObjectState, GetCurrency } = props;
+  const { GetCustomers, updateObjectState, GetCurrency, updateCustomer } = props;
 
   useEffect(() => {
     GetCustomers();
@@ -60,7 +53,7 @@ const RFQHeader = props => {
             <InputLabel shrink>客户代码</InputLabel>
             <Select
               value={rfq.customer}
-              onChange={e => updateObjectState("rfq", "customer", e.target.value)}
+              onChange={e => updateCustomer(e.target.value)}
               displayEmpty
               className={classes.empty}
             >
@@ -132,14 +125,6 @@ const RFQHeader = props => {
             />
           </FormControl>
         </Grid>
-        {/* <Grid item xs={2}>
-              <Button size="small" color="primary" fullWidth variant="contained">
-                创建文件夹
-              </Button>
-              <Button size="small" color="primary" fullWidth variant="contained">
-                保存
-              </Button>
-            </Grid> */}
       </Grid>
     </Paper>
   );
@@ -152,10 +137,4 @@ const mapStateToProps = ({ RFQReducer }) => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  GetCustomers: () => dispatch(GetCustomers()),
-  updateObjectState: (name, key, value) => dispatch(updateObjectState(name, key, value)),
-  GetCurrency: () => dispatch(GetCurrency()),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(RFQHeader);
+export default connect(mapStateToProps, { updateCustomer, updateObjectState, GetCurrency, GetCustomers })(RFQHeader);

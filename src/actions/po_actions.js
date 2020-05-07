@@ -2,145 +2,41 @@ import { batch } from "react-redux";
 // for po_info.js
 import {
   GetCustomersAPI,
-  GetPurchaserAPI,
-  GetCurrencyAPI,
   PostInternalWorkOrderAPI,
   PostInternalWorkOrderItemsAPI,
   PrintLabelAPI,
+  GetInternalWorkOrdersItemAPI,
+  PatchInternalWorkOrderItemAPI,
 } from "../api";
 import { enqueueSnackbar } from "./notify_actions";
 import { SUCCESS, ERROR } from "../utils/constants";
-// for po_internal.js
-import { GetEmployeeAPI, GetShippingCompanyAPI, GetOutFactoryAPI, GetDeliverContactAPI } from "../api";
 import { BU_PLACE_ORDER } from "../utils/constants";
-export const UPDATE_STATE = "PO/UPDATE_STATE";
-export const TOGGLE_STATE = "PO/TOGGLE_STATE";
+import action, { GetAPI } from "./common_actions";
 export const UPDATE_WORK_ORDER_ITEM = "PO/UPDATE_WORK_ORDER_ITEM";
-export const ADD_WORK_ORDER_ITEM = "PO/ADD_WORK_ORDER_ITEM";
-export const RESET_STATE = "PO/RESET_INPUT";
 
-export const ResetState = () => {
-  return {
-    type: RESET_STATE,
-  };
-};
+// const
+const PREFIX = "PO";
 
-export const UpdateState = (name, value) => {
-  return {
-    type: UPDATE_STATE,
-    name,
-    value,
-  };
-};
+// from common action
+export const actions = action(PREFIX);
+export const { updateArrayObjectState, updateObjectState, updateState, resetState } = actions;
 
-export const ToggleState = name => {
-  return {
-    type: TOGGLE_STATE,
-    name,
-  };
-};
+export const GetInternalWorkOrderItem = item_id =>
+  GetAPI(actions)("data", GetInternalWorkOrdersItemAPI, item_id, null, true, "读取工号成功! ");
 
-export const GetCustomers = () => {
-  return async dispatch => {
-    try {
-      const res = await GetCustomersAPI();
-      const { data } = res;
-      dispatch(UpdateState("customers", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
-
-export const GetPurchaser = company => {
-  return async dispatch => {
-    try {
-      const res = await GetPurchaserAPI(company);
-      const { data } = res;
-      dispatch(UpdateState("purchasers", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
-
-export const GetCurrency = () => {
-  return async dispatch => {
-    try {
-      const res = await GetCurrencyAPI();
-      const { data } = res;
-      dispatch(UpdateState("currencies", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
-
-export const GetBUEmployee = () => {
-  return async dispatch => {
-    try {
-      const res = await GetEmployeeAPI("bu");
-      const { data } = res;
-      dispatch(UpdateState("buEmployees", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
-
-export const GetShippingCompany = () => {
-  return async dispatch => {
-    try {
-      const res = await GetShippingCompanyAPI();
-      const { data } = res;
-      dispatch(UpdateState("shippingCompanies", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
-
-export const GetOutFactory = () => {
-  return async dispatch => {
-    try {
-      const res = await GetOutFactoryAPI();
-      const { data } = res;
-      dispatch(UpdateState("outFactories", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
-
-export const GetDeliverContact = () => {
-  return async dispatch => {
-    try {
-      const res = await GetDeliverContactAPI();
-      const { data } = res;
-      dispatch(UpdateState("deliverContacts", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
+export const GetCustomers = () => GetAPI(actions)("customers", GetCustomersAPI);
 
 export const PostInternalWorkOrder = () => {
   return async (dispatch, getState) => {
     const state = getState();
-    const {
-      customer,
-      customer_po,
-      po_submit_date,
-      customer_dateline,
-      internal_dateline,
-    } = state.POReducer;
+    const { customer, customer_po, po_submit_date, customer_dateline } = state.POReducer;
 
     const params = {
       customer,
       customer_po,
       po_submit_date,
       customer_dateline,
-      internal_dateline,
+      internal_dateline: new Date(new Date().setDate(customer_dateline.getDate() - 7)),
       state: BU_PLACE_ORDER,
     };
 
@@ -148,11 +44,12 @@ export const PostInternalWorkOrder = () => {
       const res = await PostInternalWorkOrderAPI(params);
       const { data } = res;
       batch(() => {
-        dispatch(UpdateState("work_order_created", true));
-        dispatch(UpdateState("internal_work_num", data.internal_work_num));
-        dispatch(UpdateState("cad_dir", data.cad_dir));
+        dispatch(updateState("new", false));
+        dispatch(updateState("work_order_created", true));
+        dispatch(updateState("internal_work_num", data.internal_work_num));
+        dispatch(updateState("cad_dir", data.cad_dir));
         dispatch(
-          UpdateState("work_order_items", [
+          updateState("work_order_items", [
             { item_id: `${data.internal_work_num}-1`, item_num: "", unit: "", qty: "", unit_price: "" },
           ])
         );
@@ -173,11 +70,53 @@ export const UpdateWorkOrderItem = (index, name, value) => {
 };
 
 export const AddWorkOrderItem = () => {
-  return {
-    type: ADD_WORK_ORDER_ITEM,
+  return (dispatch, getState) => {
+    const { internal_work_num, work_order_items } = getState().POReducer;
+    const len = work_order_items.length;
+    const item = {
+      item_id: `${internal_work_num}-${len + 1}`,
+      item_num: "",
+      unit: "",
+      qty: "",
+      unit_price: "",
+    };
+    work_order_items.push(item);
+    dispatch(updateState("work_order_items", work_order_items));
   };
 };
 
+export const newWorkOrder = () => {
+  return dispatch => {
+    batch(() => {
+      dispatch(resetState());
+      dispatch(GetCustomers());
+      dispatch(updateState("newOrder", false));
+    });
+  };
+};
+
+export const editInternalWorkOrderItem = () => {
+  return async (dispatch, getState) => {
+    const state = getState();
+    const { username } = state.HeaderReducer;
+    let { data: item } = state.POReducer;
+    delete item.internal_dateline;
+    delete item.po_submit_date;
+    delete item.customer_dateline;
+    item.qty = parseFloat(item.qty);
+    item.unit_price = parseFloat(item.unit_price);
+    item.submit_by = username;
+    try {
+      const { data } = await PatchInternalWorkOrderItemAPI(item.item_id, item);
+      batch(() => {
+        dispatch(updateState("data", data));
+        dispatch(enqueueSnackbar("修改成功! ", SUCCESS));
+      });
+    } catch (err) {
+      dispatch(enqueueSnackbar(err.message, ERROR));
+    }
+  };
+};
 export const PostInternalWorkOrderItems = () => {
   return async (dispatch, getState) => {
     const state = getState();
@@ -188,10 +127,9 @@ export const PostInternalWorkOrderItems = () => {
       customer_po,
       po_submit_date,
       customer_dateline,
-      internal_dateline,
       cad_dir,
     } = state.POReducer;
-    const { username } = state.HeaderReducer
+    const { username } = state.HeaderReducer;
     let flag = true;
     work_order_items.forEach(ele => {
       for (let value of Object.values(ele)) {
@@ -214,7 +152,7 @@ export const PostInternalWorkOrderItems = () => {
         element.customer_po = customer_po;
         element.po_submit_date = po_submit_date;
         element.customer_dateline = customer_dateline;
-        element.internal_dateline = internal_dateline;
+        element.internal_dateline = new Date(new Date().setDate(customer_dateline.getDate() - 7));
         element.ng = false;
       });
       const params = { work_order_items };
@@ -222,7 +160,10 @@ export const PostInternalWorkOrderItems = () => {
         const res = await PostInternalWorkOrderItemsAPI(params);
         const { data } = res;
         batch(() => {
-          dispatch(ResetState());
+          // dispatch(resetState());
+          const electron = process.env.NODE_ENV !== "development" && window.require("electron");
+          process.env.NODE_ENV !== "development" && electron.shell.openItem(cad_dir);
+          dispatch(updateState("newOrder", true));
           dispatch(enqueueSnackbar(data, SUCCESS));
         });
       } catch (err) {
@@ -237,13 +178,13 @@ export const PostInternalWorkOrderItems = () => {
 export const PrintLabel = () => {
   return async (dispatch, getState) => {
     const state = getState();
-    const { po_submit_date, internal_dateline, work_order_items } = state.POReducer;
+    const { po_submit_date, work_order_items, customer_dateline } = state.POReducer;
 
     const data = work_order_items.map(element => {
       return {
         item_id: element.item_id,
         po_submit_date: po_submit_date,
-        internal_dateline: internal_dateline,
+        internal_dateline: new Date(new Date().setDate(customer_dateline.getDate() - 7)),
         qty: element.qty,
         item_num: element.item_num,
         unit: element.unit,
@@ -259,7 +200,7 @@ export const PrintLabel = () => {
   };
 };
 
-export const UploadedFile = data => {
+export const uploadFile = data => {
   return (dispatch, getState) => {
     const state = getState();
     const { internal_work_num } = state.POReducer;
@@ -275,8 +216,8 @@ export const UploadedFile = data => {
     });
     total_price = work_order_items.reduce((acc, el) => acc + el.qty * el.unit_price, total_price);
     batch(() => {
-      dispatch(UpdateState("work_order_items", work_order_items));
-      dispatch(UpdateState("total_price", total_price));
+      dispatch(updateState("work_order_items", work_order_items));
+      dispatch(updateState("total_price", total_price));
     });
   };
 };

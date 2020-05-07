@@ -1,46 +1,19 @@
 import { push } from "connected-react-router";
 import { GetSidebarItemsAPI } from "../api";
-export const UPDATE_STATE = "HEADER/UPDATE_STATE";
-export const TOGGLE_STATE = "HEADER/TOGGLE_STATE";
-export const RESET_STATE = "HEADER/RESET_STATE";
+import action, { GetAPI } from "./common_actions";
 
-export const UpdateState = (name, value) => {
-  return {
-    type: UPDATE_STATE,
-    name,
-    value,
-  };
-};
+// const
+const PREFIX = "HEADER";
 
-export const ToggleState = name => {
-  return {
-    type: TOGGLE_STATE,
-    name,
-  };
-};
-
-export const resetState = () => {
-  return {
-    type: RESET_STATE,
-  };
-};
+// from common action
+export const actions = action(PREFIX);
+export const { toggleState } = actions;
 
 export const clickLogout = () => {
   return dispatch => {
-    dispatch(resetState());
+    dispatch(actions.resetState());
     dispatch(push("/login"));
-    // window.location.replace("/login");
   };
 };
 
-export const GetSidebarItems = () => {
-  return async dispatch => {
-    try {
-      const res = await GetSidebarItemsAPI();
-      const { data } = res;
-      dispatch(UpdateState("sidebarItems", data));
-    } catch (error) {
-      console.log(error);
-    }
-  };
-};
+export const GetSidebarItems = () => GetAPI(actions)("sidebarItems", GetSidebarItemsAPI);

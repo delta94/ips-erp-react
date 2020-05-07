@@ -1,18 +1,16 @@
-import { UPDATE_STATE } from "../actions/engineer_process_actions";
+import commonReducer from "./common_reducer";
 
+// const
+const PREFIX = "ENGINEER_PROCESS";
+
+// default state
 const defaultState = {
   search: "",
   data: "",
 };
 
 const reducer = (state = defaultState, action) => {
-  let { name, value } = action;
-  switch (action.type) {
-    case UPDATE_STATE:
-      return { ...state, [name]: value };
-    default:
-      return state;
-  }
+  return commonReducer(PREFIX)(state, action, defaultState);
 };
 
 export { reducer };

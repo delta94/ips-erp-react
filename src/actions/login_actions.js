@@ -1,20 +1,18 @@
 import { batch } from "react-redux";
-import { push } from 'connected-react-router'
+import { push } from "connected-react-router";
 import { PostLoginAPI, ResetPwdAPI } from "../api";
-import { UpdateState as HeaderUpdateState } from "./header_actions";
+import { actions as headerActions } from "./header_actions";
 import { enqueueSnackbar } from "./notify_actions";
-
 import { ERROR, SUCCESS } from "../utils/constants";
+import action from "./common_actions";
 
-export const UPDATE_STATE = "LOGIN/UPDATE_STATE";
+// const
+const LOGIN = "LOGIN";
 
-export const UpdateState = (name, value) => {
-  return {
-    type: UPDATE_STATE,
-    name,
-    value,
-  };
-};
+// from common action
+const actions = action(LOGIN);
+const headerUpdateState = headerActions.updateState;
+export const { updateState } = actions;
 
 export const PostLogin = () => {
   return async (dispatch, getState) => {
@@ -22,24 +20,20 @@ export const PostLogin = () => {
     const { username, password } = state.LoginReducer;
 
     if (username.length < 3 || password.length < 8) {
-      dispatch(UpdateState("error", true));
+      dispatch(updateState("error", true));
     } else {
       try {
         const res = await PostLoginAPI({ username: username, password: password });
         const { data } = res;
         batch(() => {
-          // Cookies.set("CN", data.CN, { 'samesite': 'strict' });
-          // Cookies.set("OU", data.OU, { 'samesite': 'strict' });
-          dispatch(UpdateState("username", ""));
-          dispatch(UpdateState("password", ""));
-          dispatch(UpdateState("error", false));
-          dispatch(HeaderUpdateState("username", data.CN));
-          dispatch(HeaderUpdateState("department", data.OU));
-          dispatch(HeaderUpdateState("isAuthenticated", true));
-          dispatch(push("/"))
+          dispatch(updateState("username", ""));
+          dispatch(updateState("password", ""));
+          dispatch(updateState("error", false));
+          dispatch(headerUpdateState("username", data.CN));
+          dispatch(headerUpdateState("department", data.OU));
+          dispatch(headerUpdateState("isAuthenticated", true));
+          dispatch(push("/"));
         });
-        // window.location.replace("/");
-        // window.location.replace("/");
       } catch (error) {
         dispatch(enqueueSnackbar(error.message, ERROR));
       }
@@ -52,7 +46,7 @@ export const ResetPwd = () => {
     const state = getState();
     const { username } = state.LoginReducer;
     if (username.length < 3) {
-      dispatch(UpdateState("error", true));
+      dispatch(updateState("error", true));
     } else {
       try {
         const res = await ResetPwdAPI({ username: username });

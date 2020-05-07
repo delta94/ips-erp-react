@@ -1,17 +1,9 @@
 import React, { useRef } from "react";
 import { connect } from "react-redux";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
+import { Grid, Typography, Button, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import PrintIcon from "@material-ui/icons/Print";
 import ReactToPrint from "react-to-print";
 import Barcode from "react-barcode";
-
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
 
 class ComponentToPrint extends React.Component {
   render() {
@@ -41,7 +33,6 @@ class ComponentToPrint extends React.Component {
             </Typography>
           </Grid>
         </Grid>
-        {/* <TableContainer style={{ border: "1px solid black" }}> */}
         <Table
           size="small"
           aria-label="a dense table"
