@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
@@ -78,17 +78,10 @@ const useStyles = makeStyles(theme => ({
 
 function Header(props) {
   // vars from reducers
-  const { openSidebar, sidebarItems, department, isAuthenticated, username } = props;
+  const { openSidebar, department, isAuthenticated, username } = props;
 
   // methods from actions
-  const { toggleState, GetSidebarItems, clickLogout } = props;
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      GetSidebarItems();
-    }
-    return () => {};
-  }, [GetSidebarItems, isAuthenticated]);
+  const { toggleState, clickLogout } = props;
 
   // const list = () => (
   //   <div className={classes.list} role="presentation">
@@ -175,7 +168,7 @@ function Header(props) {
         {/* {list()} */}
         {/* https://medium.com/@modularcoder/reactjs-multi-level-sidebar-navigation-menu-with-typescrip-materialui-251943c12dda */}
         {/* refer to this link */}
-        <Menu appMenuItems={sidebarItems} department={department} />
+        <Menu />
       </Drawer>
     </div>
   );
@@ -184,7 +177,6 @@ function Header(props) {
 const mapStateToProps = ({ HeaderReducer }) => {
   return {
     openSidebar: HeaderReducer.openSidebar,
-    sidebarItems: HeaderReducer.sidebarItems,
     department: HeaderReducer.department,
     isAuthenticated: HeaderReducer.isAuthenticated,
     username: HeaderReducer.username,

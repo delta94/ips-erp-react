@@ -1,4 +1,5 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useEffect } from "react";
+import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Icon from "@material-ui/core/Icon";
 
@@ -13,6 +14,8 @@ import Collapse from "@material-ui/core/Collapse";
 
 import IconExpandLess from "@material-ui/icons/ExpandLess";
 import IconExpandMore from "@material-ui/icons/ExpandMore";
+
+import { GetSidebarItems } from "../../actions/header_actions";
 
 const AppMenuItemComponent = props => {
   const { className, onClick, link, children } = props;
@@ -82,40 +85,22 @@ const AppMenuItem = props => {
   );
 };
 
-// const appMenuItems = [
-//   {
-//     name: "工号状态",
-//     link: "/work_orders",
-//     allow_department: ["IT", "管理层"],
-//     icon: "dashboard",
-//   },
-//   {
-//     name: "下单操作",
-//     allow_department: ["IT", "管理层"],
-//     icon: "dashboard",
-//     items: [
-//       {
-//         name: "业务下单",
-//         link: "/work_orders",
-//         icon: "dashboard",
-//       },
-//     ],
-//   },
-// ];
-
-// const department = "IT";
 const AppMenu = props => {
-  const { appMenuItems, department } = props;
   const classes = useStyles();
 
+  const { sidebarItems, department, isAuthenticated } = props;
+  const { GetSidebarItems } = props;
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      GetSidebarItems();
+    }
+    return () => {};
+  }, [GetSidebarItems, isAuthenticated]);
+
   return (
-    // <List component="nav" className={classes.appMenu} disablePadding>
-    //   {appMenuItems.map((item, index) => (
-    //     <AppMenuItem {...item} key={index} />
-    //   ))}
-    // </List>
     <List component="nav" className={classes.appMenu} disablePadding>
-      {appMenuItems.map((item, index) => {
+      {sidebarItems.map((item, index) => {
         if (item.allow_department.includes(department)) {
           return <AppMenuItem {...item} key={index} />;
         }
@@ -136,4 +121,12 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default AppMenu;
+const mapStateToProps = ({ HeaderReducer }) => {
+  return {
+    sidebarItems: HeaderReducer.sidebarItems,
+    department: HeaderReducer.department,
+    isAuthenticated: HeaderReducer.isAuthenticated,
+  };
+};
+
+export default connect(mapStateToProps, { GetSidebarItems })(AppMenu);
