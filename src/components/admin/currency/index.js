@@ -39,15 +39,15 @@ const Currency = () => {
               className="full-width"
               value={data.rate}
               onChange={value => {
-                let index = currencies.findIndex(s => s.id === data.id);
+                let index = currencies.findIndex(s => s._id === data._id);
                 data.rate = value;
                 currencies[index] = data;
                 setCurrencies([...currencies]);
               }}
               onPressEnter={async () => {
-                let index = currencies.findIndex(s => s.id === data.id);
+                let index = currencies.findIndex(s => s._id === data._id);
                 data.edit = false;
-                const res = await PatchItemAPI(data.id, "currencies", { rate: data.rate });
+                const res = await PatchItemAPI(data._id, "currencies", { rate: data.rate });
                 console.log(res);
                 currencies[index] = data;
                 openNotification();
@@ -73,7 +73,7 @@ const Currency = () => {
                 shape="round"
                 icon={<EditOutlined />}
                 onClick={() => {
-                  let index = currencies.findIndex(s => s.id === data.id);
+                  let index = currencies.findIndex(s => s._id === data._id);
                   data.edit = true;
                   currencies[index] = data;
                   setCurrencies([...currencies]);
@@ -85,9 +85,9 @@ const Currency = () => {
                 shape="round"
                 icon={<SaveOutlined />}
                 onClick={async () => {
-                  let index = currencies.findIndex(s => s.id === data.id);
+                  let index = currencies.findIndex(s => s._id === data._id);
                   data.edit = false;
-                  const res = await PatchItemAPI(data.id, "currencies", { rate: parseFloat(data.rate) });
+                  const res = await PatchItemAPI(data._id, "currencies", { rate: parseFloat(data.rate) });
                   console.log(res);
                   currencies[index] = data;
                   setCurrencies([...currencies]);
@@ -102,9 +102,9 @@ const Currency = () => {
               shape="round"
               icon={<DeleteOutlined />}
               onClick={async () => {
-                const res = await RemoveItemAPI(data.id, "currencies");
+                const res = await RemoveItemAPI(data._id, "currencies");
                 console.log(res);
-                let newCurrencies = currencies.filter(s => s.id !== data.id);
+                let newCurrencies = currencies.filter(s => s._id !== data._id);
                 setCurrencies([...newCurrencies]);
               }}
             />
@@ -161,7 +161,7 @@ const Currency = () => {
           <Button onClick={() => setVisible(true)}>添加新货币</Button>
         </Col>
       </Row>
-      <Table rowKey="id" columns={columns} dataSource={currencies} style={{ padding: "16px 0" }} />
+      <Table rowKey="_id" columns={columns} dataSource={currencies} style={{ padding: "16px 0" }} />
       <Modal title="新货币信息" visible={visible} onCancel={() => setVisible(false)} footer={null} destroyOnClose>
         <Form {...layout} name="basic" form={form}>
           <Form.Item label="货币" name="name" rules={[{ required: true, message: "请输入货币名称" }]}>
