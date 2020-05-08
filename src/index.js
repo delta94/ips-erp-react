@@ -1,7 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
-import "element-theme-default";
+import zhCN from "antd/es/locale/zh_CN";
+import { ConfigProvider } from "antd";
 
 import { Provider } from "react-redux";
 // import store from "./store";
@@ -13,7 +14,9 @@ const store = configureStore();
 
 ReactDOM.render(
   <Provider store={store}>
-    <App history={history} />
+    <ConfigProvider locale={zhCN}>
+      <App history={history} />
+    </ConfigProvider>
   </Provider>,
   document.getElementById("root")
 );

@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import "./App.css";
 import clsx from "clsx";
 import { push } from "connected-react-router";
 import { connect } from "react-redux";

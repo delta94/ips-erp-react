@@ -78,3 +78,31 @@ export const GetMaterialsAPI = async () => {
 export const GetCraftsAPI = async params => {
   return await axios.get(`/crafts?category=${params}`);
 };
+
+export const PatchItemAPI = async (item_id, collection, params) => {
+  return await axios
+    .patch(`/patch_item/${item_id}?collection=${collection}`, params)
+    .then(res => res)
+    .catch(err => console.log(err));
+};
+
+export const RemoveItemAPI = async (item_id, collection) => {
+  return await axios
+    .delete(`/remove_item/${item_id}?collection=${collection}`)
+    .then(res => res)
+    .catch(err => console.log(err));
+};
+
+export const InsertItemAPI = async (collection, params) => {
+  return await axios
+    .post(`/insert_item?collection=${collection}`, params)
+    .then(res => res)
+    .catch(err => console.log(err));
+};
+
+export const GetItemsAPI = async collection => {
+  return await axios
+    .get(`/get_items?collection=${collection}`)
+    .then(res => res)
+    .catch(err => console.log(err));
+};
