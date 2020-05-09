@@ -6,6 +6,7 @@ export const UPDATE_OBJECT_STATE = "UPDATE_OBJECT_STATE";
 export const UPDATE_ARRAY_OBJECT_STATE = "UPDATE_ARRAY_OBJECT_STATE";
 export const TOGGLE_STATE = "TOGGLE_STATE";
 export const RESET_STATE = "RESET_STATE";
+export const NOTIFICATION = "NOTIFICATION";
 
 // https://medium.com/@regalius/writing-reusable-redux-like-a-boss-d3780e7ecbf0
 // code taken from here. thanks to the author
@@ -38,6 +39,12 @@ const updateState = prefix => (name, value) => {
     type: typeGenerator(prefix, UPDATE_STATE),
     name,
     value,
+  };
+};
+
+const notify = prefix => () => {
+  return {
+    type: typeGenerator(prefix, NOTIFICATION),
   };
 };
 
@@ -82,6 +89,7 @@ const action = (prefix, params) =>
       toggleState,
       updateArrayObjectState,
       resetState,
+      notify,
     },
     params
   );

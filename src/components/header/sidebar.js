@@ -1,79 +1,72 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import Typography from "@material-ui/core/Typography";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { ListItem, ListItemText, ListItemIcon } from "@material-ui/core";
-import { Link } from "react-router-dom";
-import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
+import React, { useEffect } from "react";
+import { createFromIconfontCN } from "@ant-design/icons";
+import { Menu } from "antd";
+import { connect } from "react-redux";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    width: "100%",
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
-    fontWeight: theme.typography.fontWeightRegular,
-  },
-  link: {
-    textDecoration: "none",
-    color: "rgba(0,0,0,0.87)",
-  },
-  listItem: {
-    paddingLeft: 20,
-  },
-}));
+import { NavLink } from "react-router-dom";
 
-export default function SimpleExpansionPanel() {
-  const classes = useStyles();
+import { GetSidebarItems, clickLogout } from "../../actions/header_actions";
+const IconFont = createFromIconfontCN({
+  scriptUrl: "//at.alicdn.com/t/font_1807831_b5n855l0bav.js",
+});
+
+const { SubMenu } = Menu;
+
+const AppMenu = props => {
+  const { sidebarItems, department, isAuthenticated } = props;
+  const { GetSidebarItems, clickLogout } = props;
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      GetSidebarItems();
+    }
+    return () => {};
+  }, [GetSidebarItems, isAuthenticated]);
 
   return (
-    <div className={classes.root}>
-      <ExpansionPanel square>
-        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
-          <ListItem>
-            <ListItemIcon>
-              <ShoppingBasketIcon />
-            </ListItemIcon>
-            <ListItemText primary="下单操作" />
-          </ListItem>
-        </ExpansionPanelSummary>
-        <ListItem button>
-          <ListItemIcon>
-            <ShoppingBasketIcon />
-          </ListItemIcon>
-          <Link to="/" className={classes.link}>
-            <ListItemText primary="下单" />
-          </Link>
-        </ListItem>
-      </ExpansionPanel>
-      <ExpansionPanel square>
-        <ExpansionPanelSummary aria-controls="panel1a-content" id="panel1a-header">
-          <ListItem>
-            <ListItemIcon>
-              <ShoppingBasketIcon />
-            </ListItemIcon>
-            <Link to="/" className={classes.link}>
-              <ListItemText primary="下单" />
-            </Link>
-          </ListItem>
-        </ExpansionPanelSummary>
-      </ExpansionPanel>
-      <ExpansionPanel square>
-        <ExpansionPanelSummary aria-controls="panel1a-content" id="panel1a-header">
-          <ListItem>
-            <ListItemIcon>
-              <ShoppingBasketIcon />
-            </ListItemIcon>
-            <Link to="/" className={classes.link}>
-              <ListItemText primary="下单" />
-            </Link>
-          </ListItem>
-        </ExpansionPanelSummary>
-      </ExpansionPanel>
-    </div>
+    <Menu theme="dark" defaultSelectedKeys={["1"]} mode="inline">
+      {sidebarItems.map(item => {
+        if (item.allow_department.includes(department)) {
+          if (item.link) {
+            return (
+              <Menu.Item style={{ marginTop: 0 }} key={item.name}>
+                <IconFont type={item.icon} />
+                <NavLink to={item.link} className="nav-text"></NavLink>
+                {item.name}
+              </Menu.Item>
+            );
+          } else {
+            return (
+              <SubMenu key={item.name} title={item.name} icon={<IconFont type={item.icon} />}>
+                {/* <IconFont type={item.icon} /> */}
+                {item.items.map(subitem => (
+                  <Menu.Item style={{ marginTop: 0 }} key={subitem.link}>
+                    <IconFont type={subitem.icon} />
+                    <NavLink to={subitem.link} className="nav-text"></NavLink>
+                    {subitem.name}
+                  </Menu.Item>
+                ))}
+              </SubMenu>
+            );
+          }
+        }
+        return null;
+      })}
+
+      <Menu.Item style={{ marginTop: 0 }} onClick={clickLogout}>
+        <IconFont type="icon-kehu" />
+        登出
+      </Menu.Item>
+    </Menu>
   );
-}
+};
+
+const mapStateToProps = ({ HeaderReducer }) => {
+  return {
+    sidebarItems: HeaderReducer.sidebarItems,
+    department: HeaderReducer.department,
+    isAuthenticated: HeaderReducer.isAuthenticated,
+  };
+};
+
+export default connect(mapStateToProps, { GetSidebarItems, clickLogout })(AppMenu);

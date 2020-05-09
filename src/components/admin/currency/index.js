@@ -163,7 +163,26 @@ const Currency = () => {
       </Row>
       <Table rowKey="_id" columns={columns} dataSource={currencies} style={{ padding: "16px 0" }} />
       <Modal title="新货币信息" visible={visible} onCancel={() => setVisible(false)} footer={null} destroyOnClose>
-        <Form {...layout} name="basic" form={form}>
+        <Form
+          {...layout}
+          name="basic"
+          form={form}
+          onFinish={async values => {
+            const res = await InsertItemAPI("currencies", values);
+            if (res) {
+              GetItemsAPI("currencies")
+                .then(res => {
+                  res.data.forEach(element => {
+                    element.edit = false;
+                  });
+                  setCurrencies(res.data);
+                  setOrgCurrencies(res.data);
+                })
+                .catch(err => console.log(err));
+              setVisible(false);
+            }
+          }}
+        >
           <Form.Item label="货币" name="name" rules={[{ required: true, message: "请输入货币名称" }]}>
             <Input />
           </Form.Item>
@@ -172,27 +191,7 @@ const Currency = () => {
             <InputNumber className="full-width" />
           </Form.Item>
           <Form.Item {...tailLayout}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="full-width"
-              onClick={async () => {
-                const currency = form.getFieldsValue(["name", "rate"]);
-                const res = await InsertItemAPI("currencies", currency);
-                if (res) {
-                  GetItemsAPI("currencies")
-                    .then(res => {
-                      res.data.forEach(element => {
-                        element.edit = false;
-                      });
-                      setCurrencies(res.data);
-                      setOrgCurrencies(res.data);
-                    })
-                    .catch(err => console.log(err));
-                  setVisible(false);
-                }
-              }}
-            >
+            <Button type="primary" htmlType="submit" className="full-width">
               提交
             </Button>
           </Form.Item>
