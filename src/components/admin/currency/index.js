@@ -1,27 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col } from "antd";
-import { Table, Tag, Space, Card, Input, message, Button, Tooltip, notification, Modal, InputNumber } from "antd";
+import { Table, Tag, Space, Card, Input, Button, Tooltip, Modal, InputNumber } from "antd";
 import { Form } from "antd";
 import { EditOutlined, DeleteOutlined, SaveOutlined, SearchOutlined } from "@ant-design/icons";
 
+import { openNotification } from "../../../utils/commons";
 import { GetItemsAPI, PatchItemAPI, RemoveItemAPI, InsertItemAPI } from "../../../api";
+import { ERROR, SUCCESS } from "../../../utils/constants";
 
 const Currency = () => {
-  const success = () => {
-    message.success("This is a success message");
-  };
-
-  const openNotification = () => {
-    notification.open({
-      message: "Notification Title",
-      description:
-        "This is the content of the notification. This is the content of the notification. This is the content of the notification.",
-      onClick: () => {
-        console.log("Notification Clicked!");
-      },
-    });
-  };
-
   const columns = [
     {
       title: "货币",
@@ -45,14 +32,7 @@ const Currency = () => {
                 setCurrencies([...currencies]);
               }}
               onPressEnter={async () => {
-                let index = currencies.findIndex(s => s._id === data._id);
-                data.edit = false;
-                const res = await PatchItemAPI(data._id, "currencies", { rate: data.rate });
-                console.log(res);
-                currencies[index] = data;
-                openNotification();
-                // success();
-                setCurrencies([...currencies]);
+                patchCurrency(data);
               }}
             />
           ) : (
@@ -85,12 +65,7 @@ const Currency = () => {
                 shape="round"
                 icon={<SaveOutlined />}
                 onClick={async () => {
-                  let index = currencies.findIndex(s => s._id === data._id);
-                  data.edit = false;
-                  const res = await PatchItemAPI(data._id, "currencies", { rate: parseFloat(data.rate) });
-                  console.log(res);
-                  currencies[index] = data;
-                  setCurrencies([...currencies]);
+                  patchCurrency(data);
                 }}
               />
             )}
@@ -103,7 +78,7 @@ const Currency = () => {
               icon={<DeleteOutlined />}
               onClick={async () => {
                 const res = await RemoveItemAPI(data._id, "currencies");
-                console.log(res);
+                openNotification(SUCCESS, res.message);
                 let newCurrencies = currencies.filter(s => s._id !== data._id);
                 setCurrencies([...newCurrencies]);
               }}
@@ -128,7 +103,7 @@ const Currency = () => {
   const [search, setSearch] = useState("");
   const [form] = Form.useForm();
 
-  useEffect(() => {
+  const GetCurrencies = () => {
     GetItemsAPI("currencies")
       .then(res => {
         res.data.forEach(element => {
@@ -138,6 +113,19 @@ const Currency = () => {
         setOrgCurrencies(res.data);
       })
       .catch(err => console.log(err));
+  };
+
+  const patchCurrency = async data => {
+    let index = currencies.findIndex(s => s._id === data._id);
+    data.edit = false;
+    const res = await PatchItemAPI(data._id, "currencies", { rate: data.rate });
+    currencies[index] = data;
+    openNotification(SUCCESS, res.message);
+    setCurrencies([...currencies]);
+  };
+
+  useEffect(() => {
+    GetCurrencies();
   }, []);
   return (
     <Card>
@@ -170,16 +158,11 @@ const Currency = () => {
           onFinish={async values => {
             const res = await InsertItemAPI("currencies", values);
             if (res) {
-              GetItemsAPI("currencies")
-                .then(res => {
-                  res.data.forEach(element => {
-                    element.edit = false;
-                  });
-                  setCurrencies(res.data);
-                  setOrgCurrencies(res.data);
-                })
-                .catch(err => console.log(err));
+              GetCurrencies();
+              openNotification(SUCCESS, res.message);
               setVisible(false);
+            } else {
+              openNotification(ERROR, res.message);
             }
           }}
         >
@@ -191,7 +174,7 @@ const Currency = () => {
             <InputNumber className="full-width" />
           </Form.Item>
           <Form.Item {...tailLayout}>
-            <Button type="primary" htmlType="submit" className="full-width">
+            <Button type="primary" htmlType="submit" block>
               提交
             </Button>
           </Form.Item>

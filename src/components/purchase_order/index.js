@@ -1,14 +1,19 @@
 import React from "react";
-import POInfo from "./po_info";
-import POItems from "./po_items";
+import { Card } from "antd";
+import PurchaseOrderHeader from "./header";
+import PurchaseOrderInfo from "./info";
+import PurchaseOrderContent from "./content";
+import PurchaseOrderOperation from "./operations";
 
-function PurchaseOrder() {
+const PurchaseOrder = () => {
   return (
-    <React.Fragment>
-      <POInfo />
-      <POItems />
-    </React.Fragment>
+    <Card>
+      <PurchaseOrderHeader />
+      <PurchaseOrderInfo />
+      <PurchaseOrderContent />
+      <PurchaseOrderOperation />
+    </Card>
   );
-}
+};
 
 export default PurchaseOrder;

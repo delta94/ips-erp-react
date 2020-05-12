@@ -1,126 +1,61 @@
-import React from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
-import { makeStyles } from "@material-ui/core/styles";
-import { Grid, Container, Paper, Typography, TextField, Button } from "@material-ui/core";
-import { updateState, PostLogin, ResetPwd } from "../../actions/login_actions";
-import Link from "@material-ui/core/Link";
+import { PostLogin, ResetPwd } from "../../actions/login_actions";
 
-const useStyle = makeStyles(theme => ({
-  root: {
-    marginTop: theme.spacing(10),
-  },
-}));
-function Login(props) {
-  const classes = useStyle();
+import { Form, Input, Button } from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { Typography } from "antd";
 
-  // vars from reducer
-  const { username, password, error, reset } = props;
+const { Title } = Typography;
+
+const Login = props => {
+  const [reset, setReset] = useState(false);
+
   // methods from actions
-  const { updateState, PostLogin, ResetPwd } = props;
+  const { PostLogin, ResetPwd } = props;
 
-  const renderBtn = () => {
-    if (reset) {
-      return (
-        <React.Fragment>
-          <Grid item xs={8}>
-            <Link
-              component="button"
-              onClick={() => {
-                updateState("reset", false);
-              }}
-            >
-              返回登陆
-            </Link>
-          </Grid>
-          <Grid item xs={8}>
-            <Button variant="contained" fullWidth color="primary" onClick={() => ResetPwd()}>
-              提交
-            </Button>
-          </Grid>
-        </React.Fragment>
-      );
+  const onFinish = values => {
+    if (!reset) {
+      PostLogin(values);
     } else {
-      return (
-        <React.Fragment>
-          <Grid item xs={8}>
-            <Link
-              component="button"
-              onClick={() => {
-                updateState("reset", true);
-              }}
-            >
-              重置密码
-            </Link>
-          </Grid>
-          <Grid item xs={8}>
-            <Button variant="contained" fullWidth color="primary" onClick={() => PostLogin()}>
-              登录
-            </Button>
-          </Grid>
-        </React.Fragment>
-      );
+      ResetPwd(values);
     }
   };
 
-  return (
-    <Container maxWidth="xs" classes={{ root: classes.root }}>
-      <Paper>
-        <Grid container spacing={4} justify="center">
-          <Grid item xs={8}>
-            <Typography variant="h4" component="h4" align="center" color="primary">
-              欢迎回来
-            </Typography>
-          </Grid>
-          <Grid item xs={8}>
-            <TextField
-              error={username.length < 3 && error}
-              value={username}
-              fullWidth
-              label="用户名"
-              required
-              inputProps={{
-                "aria-label": "用户名",
-              }}
-              onChange={e => updateState("username", e.target.value)}
-              helperText={error && username.length < 3 && "用户名不能小于3位"}
-            />
-          </Grid>
-          {!reset && (
-            <Grid item xs={8}>
-              <TextField
-                error={password.length < 8 && error}
-                value={password}
-                fullWidth
-                label="密码"
-                type="password"
-                required
-                inputProps={{
-                  "aria-label": "密码",
-                }}
-                onChange={e => updateState("password", e.target.value)}
-                helperText={error && password.length < 8 && "密码不能小于8位"}
-                onKeyPress={e => {
-                  if (e.key === "Enter") {
-                    PostLogin();
-                  }
-                }}
-              />
-            </Grid>
-          )}
-          {renderBtn()}
-        </Grid>
-      </Paper>
-    </Container>
-  );
-}
-
-const mapStateToProps = ({ LoginReducer }) => {
-  return {
-    username: LoginReducer.username,
-    password: LoginReducer.password,
-    error: LoginReducer.error,
-    reset: LoginReducer.reset,
+  const layout = {
+    wrapperCol: { offset: 6, span: 12 },
   };
+
+  const titleLayout = {
+    wrapperCol: { offset: 10 },
+  };
+
+  return (
+    <Form name="normal_login" className="login-form" initialValues={{ remember: true }} onFinish={onFinish} {...layout}>
+      <Form.Item {...titleLayout}>
+        <Title level={2}>{!reset ? "欢迎回来" : "充值密码"}</Title>
+      </Form.Item>
+      <Form.Item name="username" rules={[{ required: true, message: "请输入用户名!" }]}>
+        <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="用户名" />
+      </Form.Item>
+      {!reset && (
+        <Form.Item name="password" rules={[{ required: true, message: "请输入密码!" }]}>
+          <Input prefix={<LockOutlined className="site-form-item-icon" />} type="password" placeholder="密码" />
+        </Form.Item>
+      )}
+      <Form.Item>
+        <Button type="link" onClick={() => setReset(!reset)}>
+          {!reset ? "重置密码" : "返回登录"}
+        </Button>
+      </Form.Item>
+
+      <Form.Item>
+        <Button type="primary" htmlType="submit" block>
+          {!reset ? "登录" : "提交"}
+        </Button>
+      </Form.Item>
+    </Form>
+  );
 };
 
-export default connect(mapStateToProps, { updateState, PostLogin, ResetPwd })(Login);
+export default connect(null, { PostLogin, ResetPwd })(Login);

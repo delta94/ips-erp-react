@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col } from "antd";
-import { Table, Tag, Space, Card, Input, message, Button, Tooltip, notification, Modal, InputNumber } from "antd";
+import { Table, Tag, Space, Card, Input, Button, Tooltip, notification, Modal, InputNumber } from "antd";
 import { Form } from "antd";
 import { EditOutlined, DeleteOutlined, SaveOutlined, SearchOutlined } from "@ant-design/icons";
 
 import { GetCurrencyAPI, PatchItemAPI, RemoveItemAPI, InsertItemAPI } from "../../../api";
 
 const Currency = () => {
-  const success = () => {
-    message.success("This is a success message");
-  };
-
   const openNotification = () => {
     notification.open({
       message: "Notification Title",
@@ -175,7 +171,7 @@ const Currency = () => {
             <Button
               type="primary"
               htmlType="submit"
-              className="full-width"
+              block
               onClick={async () => {
                 const currency = form.getFieldsValue(["name", "rate"]);
                 const res = await InsertItemAPI("currencies", currency);

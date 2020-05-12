@@ -1,4 +1,12 @@
+import { notification } from "antd";
 import differenceInMinutes from "date-fns/differenceInMinutes";
+
+export const openNotification = (type, msg) => {
+  notification[type]({
+    message: msg,
+  });
+};
+
 export const propComparator = key => {
   return function compare(a, b) {
     if (a[key] < b[key]) {

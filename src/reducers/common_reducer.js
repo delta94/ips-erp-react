@@ -1,4 +1,3 @@
-import { notification } from "antd";
 import {
   UPDATE_STATE,
   UPDATE_OBJECT_STATE,
@@ -7,24 +6,14 @@ import {
   TOGGLE_STATE,
   NOTIFICATION,
 } from "../actions/common_actions";
-
-const openNotification = () => {
-  notification.open({
-    message: "Notification Title",
-    description:
-      "This is the content of the notification. This is the content of the notification. This is the content of the notification.",
-    onClick: () => {
-      console.log("Notification Clicked!");
-    },
-  });
-};
+import { openNotification } from "../utils/commons";
 
 const commonReducer = PREFIX => {
   return (state, action, defaultState) => {
     let { name, index, key, value } = action;
     switch (action.type) {
       case `${PREFIX}/${NOTIFICATION}`:
-        openNotification();
+        openNotification(name, value);
         return { ...state };
       case `${PREFIX}/${UPDATE_STATE}`:
         if (value instanceof Array) {

@@ -1,10 +1,18 @@
-@import "~antd/dist/antd.css";
+/* @import "~antd/dist/antd.css"; */
 
 /* .ant-btn-primary {
   background-color: green;
 } */
 
 .full-width {
+  width: 100%;
+}
+
+#full-width {
+  width: 100%;
+}
+
+.full-width-upload > .ant-upload-select.ant-upload-select-text {
   width: 100%;
 }
 
@@ -36,4 +44,23 @@
   .anticon,
 .ant-menu-inline-collapsed > .ant-menu-submenu > .ant-menu-submenu-title .anticon {
   padding-right: 60px;
+}
+
+.editable-cell {
+  position: relative;
+}
+
+.editable-cell-value-wrap {
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+.editable-row:hover .editable-cell-value-wrap {
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  padding: 4px 11px;
+}
+
+[data-theme="dark"] .editable-row:hover .editable-cell-value-wrap {
+  border: 1px solid #434343;
 }

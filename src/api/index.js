@@ -101,8 +101,22 @@ export const InsertItemAPI = async (collection, params) => {
 };
 
 export const GetItemsAPI = async collection => {
-  return await axios
-    .get(`/get_items?collection=${collection}`)
-    .then(res => res)
-    .catch(err => console.log(err));
+  return await axios.get(`/get_items?collection=${collection}`);
+};
+
+// migration to antd
+export const GetWorkOrderAPI = async queryParams => {
+  return await axios.get(`/work_order?${queryParams}`);
+};
+
+export const PostWorkOrderAPI = async params => {
+  return await axios.post(`/work_order`, params);
+};
+
+export const PatchWorkOrderAPI = async (id, params) => {
+  return await axios.patch(`/work_order/${id}`, params);
+};
+
+export const PostRFQAPI = async params => {
+  return await axios.post(`/rfq`, params);
 };

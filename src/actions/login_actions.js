@@ -43,7 +43,7 @@ export const ResetPwd = params => {
       });
     } catch (err) {
       // dispatch(enqueueSnackbar(err.message, ERROR));
-      dispatch(notify());
+      dispatch(notify(ERROR, err.message));
     }
   };
 };

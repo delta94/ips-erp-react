@@ -1,82 +1,84 @@
-import React, { useEffect } from "react";
-import { connect } from "react-redux";
-import MaterialTable from "material-table";
+import React, { useState, useEffect } from "react";
+import { Card, Input, Row, Col, Table } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
+import moment from "moment";
 
-import { GetInternalWorkOrdersItems } from "../../actions/work_orders_actions";
-import { WORK_ORDER_STATE_FILTER } from "../../utils/constants";
+import { GetWorkOrderAPI } from "../../api";
 
-function WorkOrderStatus(props) {
-  // vars from reducers
-  const { data } = props;
-  // methods from actions
-  const { GetInternalWorkOrdersItems } = props;
+function NestedTable() {
+  const [workOrders, setWorkOrders] = useState([]);
+  const [orgData, setOrgData] = useState([]);
+  const [search, setSearch] = useState("");
+  const GetWorkOrder = expr => {
+    GetWorkOrderAPI(`work_order_state=加工中&internal_deadline=${expr}&internal_deadline=${new Date().toISOString()}`)
+      .then(res => {
+        res.data.forEach(element => {
+          element.days = moment(element.internal_deadline).diff(moment(), "days");
+        });
+        setOrgData(res.data);
+        setWorkOrders(res.data);
+      })
+      .catch(err => console.log(err));
+  };
 
   useEffect(() => {
-    GetInternalWorkOrdersItems();
-  }, [GetInternalWorkOrdersItems]);
+    GetWorkOrder("$lte");
+  }, []);
+  const expandedRowRender = props => {
+    const columns = [
+      { title: "小工号", dataIndex: "sub_work_order_num", key: "sub_work_order_num" },
+      // { title: "完成率", dataIndex: "name", key: "name" },
+      { title: "当前部门", dataIndex: "current_department", key: "current_department" },
+      { title: "状态", dataIndex: "process_state", key: "process_state" },
+    ];
+
+    return <Table rowKey="sub_work_order_num" columns={columns} dataSource={props} pagination={false} />;
+  };
+
+  const columns = [
+    { title: "工号", dataIndex: "work_order_num", key: "work_order_num" },
+    {
+      title: "厂内交期",
+      dataIndex: "internal_deadline",
+      key: "internal_deadline",
+      render: value => <>{value.split("T")[0]}</>,
+    },
+    { title: "剩余天数", dataIndex: "days", key: "days" },
+  ];
+
   return (
-    <div style={{ maxWidth: "100%" }}>
-      <MaterialTable
-        columns={[
-          { title: "工号", field: "item_id" },
-          // { title: "PO#", field: "customer_po" },
-          {
-            title: "下单日期",
-            field: "po_submit_date",
-            render: rowData => <div>{rowData.po_submit_date.split("T")[0]}</div>,
-          },
-          {
-            title: "厂内交期",
-            field: "internal_dateline",
-            render: rowData => <div>{rowData.internal_dateline.split("T")[0]}</div>,
-          },
-          {
-            title: "下单人",
-            field: "submit_by",
-          },
-          {
-            title: "处理人",
-            field: "process_by",
-          },
-          { title: "状态", field: "state", lookup: WORK_ORDER_STATE_FILTER },
-        ]}
-        options={{ pageSize: 10, filtering: true }}
-        localization={{
-          body: {
-            emptyDataSourceMessage: "无",
-          },
-          toolbar: {
-            searchTooltip: "搜索",
-            searchPlaceholder: "搜索",
-          },
-          pagination: {
-            labelRowsSelect: "行每页",
-            firstTooltip: "第一页",
-            previousTooltip: "上一页",
-            nextTooltip: "下一页",
-            lastTooltip: "最后页",
-          },
-        }}
-        data={data ? data : []}
-        // detailPanel={rowData => {
-        //   return rowData.work_order_items.map(item => {
-        //     return (
-        //       <div>
-        //         {item.item_id} : {item.state}
-        //       </div>
-        //     );
-        //   });
-        // }}
-        title="工号管理"
+    <Card>
+      <Row>
+        <Col offset={12} span={12}>
+          <Input
+            value={search}
+            placeholder="输入大工号"
+            suffix={<SearchOutlined style={{ color: "rgba(0,0,0,.45)" }} />}
+            onChange={e => {
+              setSearch(e.target.value);
+              let data = orgData.filter(s => s.work_order_num.toLowerCase().includes(e.target.value.toLowerCase()));
+              setWorkOrders([...data]);
+            }}
+          />
+        </Col>
+      </Row>
+      <Table
+        rowKey="id"
+        style={{ paddingTop: 10 }}
+        className="components-table-demo-nested"
+        columns={columns}
+        expandable={{ expandedRowRender: record => expandedRowRender(record.work_order_items) }}
+        dataSource={workOrders}
       />
-    </div>
+      {/* <Table
+        style={{ paddingTop: 10 }}
+        className="components-table-demo-nested"
+        columns={columns}
+        expandable={{ expandedRowRender }}
+        dataSource={data}
+      /> */}
+    </Card>
   );
 }
 
-const mapStateToProps = ({ WorkOrderReducer }) => {
-  return {
-    data: WorkOrderReducer.data,
-  };
-};
-
-export default connect(mapStateToProps, { GetInternalWorkOrdersItems })(WorkOrderStatus);
+export default NestedTable;

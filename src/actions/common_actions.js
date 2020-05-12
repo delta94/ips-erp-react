@@ -1,6 +1,6 @@
 import { batch } from "react-redux";
-import { enqueueSnackbar } from "./notify_actions";
 import { SUCCESS, ERROR } from "../utils/constants";
+import { GetItemsAPI } from "../api";
 export const UPDATE_STATE = "UPDATE_STATE";
 export const UPDATE_OBJECT_STATE = "UPDATE_OBJECT_STATE";
 export const UPDATE_ARRAY_OBJECT_STATE = "UPDATE_ARRAY_OBJECT_STATE";
@@ -42,9 +42,11 @@ const updateState = prefix => (name, value) => {
   };
 };
 
-const notify = prefix => () => {
+const notify = prefix => (name, value) => {
   return {
     type: typeGenerator(prefix, NOTIFICATION),
+    name,
+    value,
   };
 };
 
@@ -115,11 +117,31 @@ export const GetAPI = action => (
       batch(() => {
         dispatch(action.updateState(name, data));
         if (notify) {
-          dispatch(enqueueSnackbar(successText, SUCCESS));
+          dispatch(action.notify(SUCCESS, successText));
         }
       });
     } catch (err) {
-      dispatch(enqueueSnackbar(errText, ERROR));
+      dispatch(action.notify(ERROR, errText));
+    }
+  };
+};
+
+export const GetItems = action => (name, notify = false, successText = "加载成功! ", optional) => {
+  return async dispatch => {
+    try {
+      const res = await GetItemsAPI(name);
+      const { data } = res;
+      if (optional) {
+        optional(data);
+      }
+      batch(() => {
+        dispatch(action.updateState(name, data));
+        if (notify) {
+          dispatch(action.notify(SUCCESS, successText));
+        }
+      });
+    } catch (err) {
+      dispatch(action.notify(ERROR, err.message));
     }
   };
 };
