@@ -5,7 +5,7 @@ import moment from "moment";
 const PREFIX = "PO";
 
 // default state
-const defaultState = {
+const defaultState = () => ({
   // migration to antd
   query_type: "",
   work_order: {
@@ -24,10 +24,10 @@ const defaultState = {
   editing: false,
   total_price: "",
   reedit: false,
-};
+});
 
-const reducer = (state = defaultState, action) => {
-  return commonReducer(PREFIX)(state, action, defaultState);
+const reducer = (state = defaultState(), action) => {
+  return commonReducer(PREFIX)(state, action, defaultState());
 };
 
 export { reducer };
