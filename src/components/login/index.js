@@ -27,13 +27,13 @@ const Login = props => {
   };
 
   const titleLayout = {
-    wrapperCol: { offset: 10 },
+    wrapperCol: { offset: 11 },
   };
 
   return (
     <Form name="normal_login" className="login-form" initialValues={{ remember: true }} onFinish={onFinish} {...layout}>
       <Form.Item {...titleLayout}>
-        <Title level={2}>{!reset ? "欢迎回来" : "充值密码"}</Title>
+        <Title level={2}>{!reset ? "欢迎回来" : "重置密码"}</Title>
       </Form.Item>
       <Form.Item name="username" rules={[{ required: true, message: "请输入用户名!" }]}>
         <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="用户名" />

@@ -126,10 +126,10 @@ export const GetAPI = action => (
   };
 };
 
-export const GetItems = action => (name, notify = false, successText = "加载成功! ", optional) => {
+export const GetItems = action => (name, query, notify = false, successText = "加载成功! ", optional) => {
   return async dispatch => {
     try {
-      const res = await GetItemsAPI(name);
+      const res = await GetItemsAPI(name, query);
       const { data } = res;
       if (optional) {
         optional(data);

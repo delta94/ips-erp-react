@@ -10,11 +10,11 @@ import PurchaseOrder from "./components/purchase_order";
 import WorkOrderStatus from "./components/work_orders";
 import EngineerProcess from "./components/engineer_process";
 import CraftSchedule from "./components/craft_schdeule";
-import RFQ from "./components/rfq/rfq";
 import AdminCustomer from "./components/admin/customer";
 import AdminCurrency from "./components/admin/currency";
 
 import { Layout, Breadcrumb } from "antd";
+import RFQRoutes from "./routes/rfq_routes";
 
 const { Content, Footer, Sider } = Layout;
 
@@ -51,10 +51,10 @@ function App(props) {
               </Breadcrumb>
             )}
             <Switch>
+              <RFQRoutes />
               <Route exact path="/" component={WorkOrderStatus} />
               <Route exact path="/login" component={Login} />
               <Route exact path="/work_orders" component={WorkOrderStatus} />
-              <Route exact path="/rfq" component={RFQ} />
               <Route exact path="/po" component={PurchaseOrder} />
               {/* <Route exact path="/po_edit" component={PurchaseOrderEdit} /> */}
               <Route exact path="/engineer_process" component={EngineerProcess} />

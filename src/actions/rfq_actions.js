@@ -1,4 +1,4 @@
-import { GetCustomersAPI, GetCurrencyAPI, PostRFQAPI } from "../api";
+import { GetCustomersAPI, GetCurrencyAPI, PostRFQAPI, PatchItemAPI } from "../api";
 import action, { GetAPI, GetItems } from "./common_actions";
 import { ERROR, SUCCESS, INFO } from "../utils/constants";
 import { batch } from "react-redux";
@@ -8,10 +8,12 @@ const PREFIX = "RFQ";
 
 // from common action
 export const actions = action(PREFIX);
-export const { updateArrayObjectState, updateObjectState, notify, resetState } = actions;
+export const { updateArrayObjectState, updateObjectState, notify, resetState, updateState } = actions;
 
 export const GetCustomers = () => GetItems(actions)("customers");
 export const GetCurrency = () => GetItems(actions)("currencies");
+
+export const GetRFQs = query => GetItems(actions)("rfqs", query);
 
 export const updateCustomer = value => {
   return (dispatch, getState) => {
@@ -19,7 +21,7 @@ export const updateCustomer = value => {
     rfq["customer"] = value;
     const currency = customers.find(el => el.internal === value).currency;
     rfq["currency"] = currency;
-    dispatch(actions.updateState("rfq", rfq));
+    dispatch(updateState("rfq", rfq));
   };
 };
 
@@ -31,18 +33,38 @@ export const updateRFQItems = (seq, key, value) => {
     let rfq_item = rfq_items[index];
     rfq_item[key] = value;
     const rate = currencies.find(el => el.name === rfq.currency).rate;
-    const unit_price_rmb = rfq_item.unit_price_foreign * rate;
+    // const unit_price_rmb = rfq_item.unit_price_foreign * rate;
+    const unit_price_foreign = Math.round(rfq_item.unit_price_rmb / rate);
     let total_price = 0;
     if (discount_rate) {
-      total_price = rfq_item.unit_price_foreign * rfq_item.qty * rate * ((100 - discount_rate) / 100);
+      total_price = unit_price_foreign * rfq_item.qty * ((100 - discount_rate) / 100);
     } else {
-      total_price = rfq_item.unit_price_foreign * rfq_item.qty * rate;
+      total_price = unit_price_foreign * rfq_item.qty;
     }
-    rfq_item["total_price"] = total_price % 1 === 0 ? total_price : parseFloat(parseFloat(total_price).toFixed(3));
-    rfq_item["unit_price_rmb"] =
-      unit_price_rmb % 1 === 0 ? unit_price_rmb : parseFloat(parseFloat(unit_price_rmb).toFixed(3));
+    rfq_item["total_price"] = total_price;
+    rfq_item["unit_price_foreign"] = unit_price_foreign;
     rfq_items[index] = rfq_item;
-    dispatch(actions.updateState("rfq_items", rfq_items));
+    dispatch(updateState("rfq_items", rfq_items));
+  };
+};
+
+export const updateRFQ = () => {
+  return (dispatch, getState) => {
+    let { rfq, rfq_items, currencies } = getState().RFQReducer;
+    const rate = currencies.find(el => el.name === rfq.currency).rate;
+    const { shipping_fee, discount_rate } = rfq;
+    rfq_items.forEach(element => {
+      if (element.unit_price_foreign !== 0) {
+        if (discount_rate) {
+          element.unit_price_foreign = Math.round(
+            ((element.unit_price_rmb + shipping_fee) / rate) * ((100 - discount_rate) / 100)
+          );
+        } else {
+          element.unit_price_foreign = Math.round((element.unit_price_rmb + shipping_fee) / rate);
+        }
+      }
+    });
+    dispatch(updateState("rfq_items", rfq_items));
   };
 };
 
@@ -56,12 +78,10 @@ export const addRfqItem = () => {
       version: "",
       qty: "",
       unit: "",
-      unit_price_foreign: "",
-      total_price_: "",
-      unit_price_rmb: "",
+      remark: "",
     };
     rfq_items.push(rfq_item);
-    dispatch(actions.updateState("rfq_items", rfq_items));
+    dispatch(updateState("rfq_items", rfq_items));
   };
 };
 
@@ -74,13 +94,10 @@ export const uploadFile = data => {
         version: item.version,
         qty: item.qty,
         unit: item.unit,
-        unit_price_foreign: item.unit_price_foreign,
+        remark: item.remark,
       };
     });
-    dispatch(actions.updateState("rfq_items", rfq_items));
-    rfq_items.forEach((item, index) => {
-      dispatch(updateRFQItems(index + 1, "qty", item.qty));
-    });
+    dispatch(updateState("rfq_items", rfq_items));
   };
 };
 
@@ -100,8 +117,26 @@ export const PostRFQ = () => {
     const { rfq, rfq_items } = getState().RFQReducer;
     PostRFQAPI({ ...rfq, rfq_items })
       .then(() => {
-        dispatch(notify(SUCCESS, "初次报价成功! "));
+        dispatch(notify(SUCCESS, "保存成功! "));
       })
       .catch(err => dispatch(notify(ERROR, err.message)));
+  };
+};
+
+export const PatchRFQ = () => {
+  return (dispatch, getState) => {
+    let { rfq, rfq_items } = getState().RFQReducer;
+    rfq_items.forEach(element => {
+      if (element.unit_price_rmb !== 0) {
+        rfq.price_set = true;
+      }
+    });
+    const { _id, ...new_rfq } = rfq;
+    PatchItemAPI(_id, "rfqs", { ...new_rfq, rfq_items })
+      .then(() => {
+        GetRFQs();
+        dispatch(notify(SUCCESS, "保存成功! "));
+      })
+      .catch(err => console.log(err));
   };
 };

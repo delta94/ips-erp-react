@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "description": "ERP system for ipsmold",
-  "dependencies": {},
+  "dependencies": {
+    "antd": "^4.2.0"
+  },
   "homepage": "./",
   "main": "src/electron-starter.js",
   "scripts": {
@@ -60,6 +62,7 @@
     "react": "^16.13.1",
     "react-app-rewired": "^2.1.6",
     "react-barcode": "^1.4.0",
+    "react-csv": "^2.0.3",
     "react-dom": "^16.13.0",
     "react-hot-loader": "^4.12.21",
     "react-redux": "^7.2.0",

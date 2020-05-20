@@ -39,13 +39,16 @@ const PREFIX = "RFQ";
 const defaultState = () => ({
   customers: [],
   currencies: [],
+  rfqs: [],
   rfq: {
     customer: "",
     currency: "",
     email_rfq_num: "",
     email_rfq_date: moment(),
     rfq_num: "",
-    delivery_date: "",
+    customer_name: "",
+    // delivery_date: "",
+    price_set: false,
     shipping_fee_apply: false,
     shipping_fee: 0,
     discount_rate_apply: false,
@@ -62,8 +65,11 @@ const defaultState = () => ({
       unit_price_foreign: "",
       total_price: "",
       unit_price_rmb: "",
+      remark: "",
     },
   ],
+  query_type: "",
+  showContent: false,
 });
 
 const reducer = (state = defaultState(), action) => {

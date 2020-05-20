@@ -1,18 +1,19 @@
 import React from "react";
-import RFQHeader from "./rfq_header";
-import RFQContent from "./rfq_content";
-import RFQOption from "./rfq_option";
-import RFQOperations from "./rfq_operations";
+import { Card } from "antd";
+import RFQHeader from "./header";
+import RFQOPtion from "./option";
+import RFQContent from "./content";
+import RFQOperation from "./operation";
 
-function RFQ(props) {
+const RFQ = () => {
   return (
-    <>
+    <Card>
       <RFQHeader />
-      <RFQOption />
+      <RFQOPtion />
       <RFQContent />
-      <RFQOperations />
-    </>
+      <RFQOperation />
+    </Card>
   );
-}
+};
 
 export default RFQ;

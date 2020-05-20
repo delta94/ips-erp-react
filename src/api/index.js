@@ -100,7 +100,10 @@ export const InsertItemAPI = async (collection, params) => {
     .catch(err => console.log(err));
 };
 
-export const GetItemsAPI = async collection => {
+export const GetItemsAPI = async (collection, query) => {
+  if (query) {
+    return await axios.get(`/get_items?collection=${collection}&query=${query}`);
+  }
   return await axios.get(`/get_items?collection=${collection}`);
 };
 
