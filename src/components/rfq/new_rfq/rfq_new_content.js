@@ -64,7 +64,7 @@ const RFQContent = props => {
       ...col,
       onCell: record => ({
         record,
-        inputType: col.dataIndex === "age" ? "number" : "text",
+        inputType: col.dataIndex === "qty" ? "number" : "text",
         dataIndex: col.dataIndex,
         title: col.title,
         fix: col.fix ? true : false,
