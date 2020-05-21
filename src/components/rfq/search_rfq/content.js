@@ -5,23 +5,33 @@ import { Table, Divider, Col, Row } from "antd";
 const RFQContent = props => {
   const [items, setItems] = useState([]);
   // vars from reducers
-  const { rfqs } = props;
+  const { rfqs, query_type } = props;
 
   useEffect(() => {
     if (rfqs !== null) {
       // setRfq(rfqs[0]);
       // setItems(rfqs[0].rfq_items);
-      let i = rfqs.map(item => {
-        return item.rfq_items.map(el => {
-          el.email_rfq_date = item.email_rfq_date.split("T")[0];
-          el.email_rfq_num = item.email_rfq_num;
-          // el.currency = item.currency;
-          el.unit_price_foreign = `${el.unit_price_foreign} ${item.currency}`;
-          return el;
+      if (query_type === "email_rfq_num") {
+        let i = rfqs.map(item => {
+          return item.rfq_items.map(el => {
+            el.email_rfq_date = item.email_rfq_date.split("T")[0];
+            el.email_rfq_num = item.email_rfq_num;
+            // el.currency = item.currency;
+            el.unit_price_foreign = `${el.unit_price_foreign} ${item.currency}`;
+            return el;
+          });
         });
-      });
-      i = i.flat();
-      setItems(i);
+        i = i.flat();
+        setItems(i);
+      } else {
+        let i = rfqs.map(item => {
+          item.rfq_items.email_rfq_date = item.email_rfq_date.split("T")[0];
+          item.rfq_items.email_rfq_num = item.email_rfq_num;
+          item.rfq_items.unit_price_foreign = `${item.rfq_items.unit_price_foreign} ${item.currency}`;
+          return item.rfq_items;
+        });
+        setItems([...i]);
+      }
     }
     return () => {
       setItems([]);
@@ -76,6 +86,7 @@ const RFQContent = props => {
 const mapStateToProps = ({ RFQReducer }) => {
   return {
     rfqs: RFQReducer.rfqs,
+    query_type: RFQReducer.query_type,
   };
 };
 

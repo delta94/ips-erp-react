@@ -1,21 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Table, Divider, Col, Row, Button } from "antd";
 import { CSVLink } from "react-csv";
 import { PatchRFQ } from "../../../actions/rfq_actions";
 
-const csvData = [
-  ["firstname", "lastname", "email"],
-  ["Ahmed", "Tomi", "ah@smthing.co.com"],
-  ["Raed", "Labes", "rl@smthing.co.com"],
-  ["Yezzi", "Min l3b", "ymin@cocococo.com"],
-];
-
 const RFQContent = props => {
+  const [csvData, setCsvData] = useState([]);
   // vars from reducers
   const { rfq, rfq_items } = props;
 
   const { PatchRFQ } = props;
+
+  const generateCSVData = () => {
+    let data = rfq_items.map(el => [el.seq, el.part_number, el.qty, el.unit, el.unit_price_foreign]);
+    data.unshift(["序号", "图号", "数量", "单位", "单价"]);
+    return data;
+  };
+
+  useEffect(() => {
+    setCsvData(generateCSVData());
+  }, []);
 
   const columns = [
     {
@@ -68,14 +72,14 @@ const RFQContent = props => {
             footer={() => (
               <Row>
                 <Col offset={18}>
-                  <div>合计金额: 40</div>
+                  <div>合计金额: {rfq_items.reduce((acc, el) => acc + el.total_price, 0)}</div>
                 </Col>
               </Row>
             )}
           />
           <Row gutter={16}>
             <Col span={2}>
-              <CSVLink data={csvData}>
+              <CSVLink data={csvData} filename={`${rfq.email_rfq_num}.csv`}>
                 <Button>导出Excel</Button>
               </CSVLink>
             </Col>

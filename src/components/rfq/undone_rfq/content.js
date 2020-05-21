@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect, useDispatch } from "react-redux";
 import { Table, Input, InputNumber, Row, Col, Button, Checkbox, Descriptions } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import { updateRFQItems, updateObjectState, PatchRFQ, updateState, GetRFQs } from "../../../actions/rfq_actions";
+import {
+  updateRFQItems,
+  updateObjectState,
+  PatchRFQ,
+  updateState,
+  GetRFQs,
+  MatchRFQPrice,
+} from "../../../actions/rfq_actions";
 
 const EditableCell = ({ edit, dataIndex, title, inputType, record, index, children, ...restProps }) => {
   // const inputNode =
@@ -38,7 +45,7 @@ const EditableCell = ({ edit, dataIndex, title, inputType, record, index, childr
 
 const RFQUndoneContent = props => {
   const { rfq, rfq_items } = props;
-  const { updateObjectState, PatchRFQ, updateState, GetRFQs } = props;
+  const { updateObjectState, PatchRFQ, updateState, GetRFQs, MatchRFQPrice } = props;
   const columns = [
     {
       title: "序号",
@@ -83,6 +90,13 @@ const RFQUndoneContent = props => {
       edit: true,
     },
   ];
+
+  useEffect(() => {
+    MatchRFQPrice(
+      rfq_items.map(el => el.part_number),
+      rfq_items
+    );
+  }, []);
 
   const mergedColumns = columns.map(col => {
     return {
@@ -154,4 +168,6 @@ const mapStateToProps = ({ RFQReducer }) => {
   };
 };
 
-export default connect(mapStateToProps, { updateObjectState, PatchRFQ, updateState, GetRFQs })(RFQUndoneContent);
+export default connect(mapStateToProps, { updateObjectState, PatchRFQ, updateState, GetRFQs, MatchRFQPrice })(
+  RFQUndoneContent
+);

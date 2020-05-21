@@ -1,6 +1,6 @@
 import { batch } from "react-redux";
 import { SUCCESS, ERROR } from "../utils/constants";
-import { GetItemsAPI } from "../api";
+import { GetItemsAPI, GetItemsPipelineAPI } from "../api";
 export const UPDATE_STATE = "UPDATE_STATE";
 export const UPDATE_OBJECT_STATE = "UPDATE_OBJECT_STATE";
 export const UPDATE_ARRAY_OBJECT_STATE = "UPDATE_ARRAY_OBJECT_STATE";
@@ -130,6 +130,26 @@ export const GetItems = action => (name, query, notify = false, successText = "�
   return async dispatch => {
     try {
       const res = await GetItemsAPI(name, query);
+      const { data } = res;
+      if (optional) {
+        optional(data);
+      }
+      batch(() => {
+        dispatch(action.updateState(name, data));
+        if (notify) {
+          dispatch(action.notify(SUCCESS, successText));
+        }
+      });
+    } catch (err) {
+      dispatch(action.notify(ERROR, err.message));
+    }
+  };
+};
+
+export const GetItemsPipeline = action => (name, query, notify = false, successText = "加载成功! ", optional) => {
+  return async dispatch => {
+    try {
+      const res = await GetItemsPipelineAPI(name, query);
       const { data } = res;
       if (optional) {
         optional(data);

@@ -1,5 +1,5 @@
-import { GetCustomersAPI, GetCurrencyAPI, PostRFQAPI, PatchItemAPI } from "../api";
-import action, { GetAPI, GetItems } from "./common_actions";
+import { GetCustomersAPI, GetCurrencyAPI, PostRFQAPI, PatchItemAPI, MatchRFQPriceAPI } from "../api";
+import action, { GetAPI, GetItems, GetItemsPipelinem, GetItemsPipeline } from "./common_actions";
 import { ERROR, SUCCESS, INFO } from "../utils/constants";
 import { batch } from "react-redux";
 
@@ -14,6 +14,7 @@ export const GetCustomers = () => GetItems(actions)("customers");
 export const GetCurrency = () => GetItems(actions)("currencies");
 
 export const GetRFQs = query => GetItems(actions)("rfqs", query);
+export const GetRFQsPipeline = query => GetItemsPipeline(actions)("rfqs", query);
 
 export const updateCustomer = value => {
   return (dispatch, getState) => {
@@ -59,8 +60,11 @@ export const updateRFQ = () => {
           element.unit_price_foreign = Math.round(
             ((element.unit_price_rmb + shipping_fee) / rate) * ((100 - discount_rate) / 100)
           );
+
+          element.total_price = element.unit_price_foreign * element.qty;
         } else {
           element.unit_price_foreign = Math.round((element.unit_price_rmb + shipping_fee) / rate);
+          element.total_price = element.unit_price_foreign * element.qty;
         }
       }
     });
@@ -138,5 +142,23 @@ export const PatchRFQ = () => {
         dispatch(notify(SUCCESS, "保存成功! "));
       })
       .catch(err => console.log(err));
+  };
+};
+
+export const MatchRFQPrice = (partNumbers, rfq_items) => {
+  return dispatch => {
+    const query = partNumbers.reduce((acc, el) => acc + `&part_numbers=${el}`, "");
+    MatchRFQPriceAPI(query)
+      .then(res => {
+        rfq_items.forEach(element => {
+          res.data.forEach(el => {
+            if (element.part_number === el.part_number) {
+              element.unit_price_rmb = el.unit_price_rmb;
+            }
+          });
+        });
+        dispatch(updateState("rfq_items", rfq_items));
+      })
+      .catch(err => err.message);
   };
 };

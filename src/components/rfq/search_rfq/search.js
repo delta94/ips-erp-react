@@ -2,7 +2,9 @@ import React from "react";
 import { connect } from "react-redux";
 import { Col, Row, Input, Select, Divider } from "antd";
 
-import { updateState, GetRFQs } from "../../../actions/rfq_actions";
+import { updateState, GetRFQs, GetRFQsPipeline } from "../../../actions/rfq_actions";
+
+import { GetItemsPipelineAPI } from "../../../api/";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -19,7 +21,7 @@ const PurchaseOrderHeader = props => {
   const { query_type } = props;
 
   // methods from actions
-  const { updateState, GetRFQs } = props;
+  const { updateState, GetRFQs, GetRFQsPipeline } = props;
 
   const onSearch = value => {
     let query;
@@ -30,14 +32,27 @@ const PurchaseOrderHeader = props => {
         delivery_date: { $ne: 0 },
         price_set: true,
       });
+      GetRFQs(query);
     } else {
-      query = JSON.stringify({
-        rfq_items: { $elemMatch: { part_number: value } },
-        delivery_date: { $ne: 0 },
-        price_set: true,
-      });
+      query = JSON.stringify([
+        {
+          $unwind: {
+            path: "$rfq_items",
+            preserveNullAndEmptyArrays: false,
+          },
+        },
+        {
+          $match: {
+            "rfq_items.part_number": value,
+            price_set: true,
+            delivery_date: {
+              $ne: 0,
+            },
+          },
+        },
+      ]);
+      GetRFQsPipeline(query);
     }
-    GetRFQs(query);
   };
   return (
     <>
@@ -71,4 +86,4 @@ const mapStateToProps = ({ RFQReducer }) => {
   };
 };
 
-export default connect(mapStateToProps, { updateState, GetRFQs })(PurchaseOrderHeader);
+export default connect(mapStateToProps, { updateState, GetRFQs, GetRFQsPipeline })(PurchaseOrderHeader);

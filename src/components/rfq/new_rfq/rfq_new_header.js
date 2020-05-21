@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { Divider, Row, Col, Select, Input, DatePicker } from "antd";
 import { GetCustomers, updateObjectState, GetCurrency, updateCustomer } from "../../../actions/rfq_actions";
+import moment from "moment";
 const { Option } = Select;
 
 const RFQNewHeader = props => {
@@ -45,7 +46,7 @@ const RFQNewHeader = props => {
           <DatePicker
             placeholder="日期"
             className="full-width"
-            value={rfq.email_rfq_date}
+            value={moment(rfq.email_rfq_date)}
             onChange={date => updateObjectState("rfq", "email_rfq_date", date)}
           />
         </Col>

@@ -51,9 +51,8 @@ function App(props) {
               </Breadcrumb>
             )}
             <Switch>
-              <RFQRoutes />
-              <Route exact path="/" component={WorkOrderStatus} />
               <Route exact path="/login" component={Login} />
+              <Route exact path="/" component={WorkOrderStatus} />
               <Route exact path="/work_orders" component={WorkOrderStatus} />
               <Route exact path="/po" component={PurchaseOrder} />
               {/* <Route exact path="/po_edit" component={PurchaseOrderEdit} /> */}
@@ -61,6 +60,7 @@ function App(props) {
               <Route exact path="/craft_schedule" component={CraftSchedule} />
               <Route exact path="/admin/customer" component={AdminCustomer} />
               <Route exact path="/admin/currency" component={AdminCurrency} />
+              <RFQRoutes />
             </Switch>
           </Content>
           <Footer style={{ textAlign: "center" }}>IPSMOLD ErP ©2020 Created by wudaown</Footer>

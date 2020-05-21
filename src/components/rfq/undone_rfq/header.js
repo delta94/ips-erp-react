@@ -15,6 +15,7 @@ const RFQUndoneHeader = props => {
       return "单价";
     }
   };
+
   useEffect(() => {
     GetRFQs(JSON.stringify({ $or: [{ delivery_date: 0 }, { price_set: false }] }));
     GetCurrency();
