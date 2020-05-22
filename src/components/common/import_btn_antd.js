@@ -13,7 +13,7 @@ export const openNotification = (type, msg) => {
 };
 
 export default function ImportBtn(props) {
-  const { btnText, uploadFile, ...rest } = props;
+  const { btnText, uploadFile, form, ...rest } = props;
 
   const options = {
     // 这里我们只接受excel2007以后版本的文件，accept就是指定文件选择框的文件类型
@@ -48,7 +48,7 @@ export default function ImportBtn(props) {
           }
           // 最终获取到并且格式化后的 json 数据
           openNotification(SUCCESS, "上传成功! ");
-          uploadFile(data);
+          uploadFile(data, form);
         } catch (e) {
           // 这里可以抛出文件类型错误不正确的相关提示
           openNotification(ERROR, e);

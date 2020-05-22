@@ -88,18 +88,28 @@ export const addRfqItem = () => {
   };
 };
 
-export const uploadFile = data => {
+export const uploadFile = (data, form) => {
   return dispatch => {
-    const rfq_items = data.map(item => {
-      return {
-        seq: item["#"],
-        part_number: item.part_number,
-        qty: item.qty,
-        unit: item.unit,
-        remark: item.remark,
-      };
-    });
+    let rfq_items = [];
+    for (let index = 1; index <= data.length; index++) {
+      rfq_items.push({
+        seq: index,
+        part_number: "",
+        qty: "",
+        unit: "",
+        unit_price_foreign: 0,
+        total_price: 0,
+        unit_price_rmb: 0,
+        remark: "",
+      });
+    }
     dispatch(updateState("rfq_items", rfq_items));
+    for (let index = 0; index < data.length; index++) {
+      for (let key in data[index]) {
+        let n = `${index + 1}-${key}`;
+        form.setFieldsValue({ [n]: data[index][key] });
+      }
+    }
   };
 };
 
@@ -114,9 +124,9 @@ export const newRFQ = () => {
   };
 };
 
-export const PostRFQ = () => {
+export const PostRFQ = rfq_items => {
   return (dispatch, getState) => {
-    const { rfq, rfq_items } = getState().RFQReducer;
+    const { rfq } = getState().RFQReducer;
     PostRFQAPI({ ...rfq, rfq_items })
       .then(res => {
         const electron = process.env.NODE_ENV !== "development" && window.require("electron");
@@ -150,14 +160,21 @@ export const MatchRFQPrice = (partNumbers, rfq_items) => {
     const query = partNumbers.reduce((acc, el) => acc + `&part_numbers=${el}`, "");
     MatchRFQPriceAPI(query)
       .then(res => {
+        let msg = ``;
         rfq_items.forEach(element => {
           res.data.forEach(el => {
             if (element.part_number === el.part_number) {
+              msg += `${element.part_number} 有报价记录: ${el.unit_price_rmb} RMB\n`;
               element.unit_price_rmb = el.unit_price_rmb;
             }
           });
         });
-        dispatch(updateState("rfq_items", rfq_items));
+        batch(() => {
+          dispatch(updateState("rfq_items", rfq_items));
+          if (msg) {
+            dispatch(notify(INFO, msg));
+          }
+        });
       })
       .catch(err => err.message);
   };

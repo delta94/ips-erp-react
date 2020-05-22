@@ -68,3 +68,7 @@
 div.ant-input-number-handler-wrap {
   display: none;
 }
+
+div.ant-table-container > div > table > tbody > tr > td {
+  padding: 4px;
+}
