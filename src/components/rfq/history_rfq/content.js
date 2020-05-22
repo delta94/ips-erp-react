@@ -62,6 +62,7 @@ const RFQContent = props => {
           <Table
             rowKey="seq"
             bordered
+            pagination={false}
             dataSource={rfq_items}
             columns={columns}
             rowClassName="editable-row"
@@ -72,8 +73,19 @@ const RFQContent = props => {
                 </Col>
               </Row>
             )}
+            style={{ paddingBottom: "16px" }}
           />
           <Row gutter={16}>
+            <Col span={2}>
+              <Button
+                onClick={() => {
+                  const electron = process.env.NODE_ENV !== "development" && window.require("electron");
+                  process.env.NODE_ENV !== "development" && electron.shell.openItem(rfq.rfq_folder);
+                }}
+              >
+                打开文件夹
+              </Button>
+            </Col>
             <Col span={2}>
               <CSVLink data={csvData} filename={`${rfq.email_rfq_num}.csv`}>
                 <Button>导出Excel</Button>

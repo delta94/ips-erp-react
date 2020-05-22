@@ -65,6 +65,7 @@ function NestedTable() {
       <Table
         rowKey="id"
         style={{ paddingTop: 10 }}
+        pagination={false}
         className="components-table-demo-nested"
         columns={columns}
         expandable={{ expandedRowRender: record => expandedRowRender(record.work_order_items) }}

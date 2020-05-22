@@ -8,6 +8,9 @@ const RFQUndoneHeader = props => {
   const { GetRFQs, updateState, GetCurrency } = props;
 
   const determineUndonePart = record => {
+    if (!record.delivery_date && !record.price_set) {
+      return "交期和单价";
+    }
     if (!record.delivery_date) {
       return "交期";
     }
@@ -41,7 +44,7 @@ const RFQUndoneHeader = props => {
     },
     { title: "未完成项", render: record => <div>{determineUndonePart(record)}</div> },
   ];
-  return <Table rowKey="_id" columns={columns} dataSource={rfqs}></Table>;
+  return <Table pagination={false} rowKey="_id" columns={columns} dataSource={rfqs}></Table>;
 };
 
 const mapStateToProps = ({ RFQReducer }) => {

@@ -74,7 +74,14 @@ const RFQContent = props => {
       <Divider orientation="left" style={{ color: "#333", fontWeight: "normal" }}>
         搜索结果
       </Divider>
-      <Table rowKey="seq" bordered dataSource={items} columns={columns} rowClassName="editable-row" />
+      <Table
+        pagination={false}
+        rowKey="seq"
+        bordered
+        dataSource={items}
+        columns={columns}
+        rowClassName="editable-row"
+      />
     </>
   );
 };

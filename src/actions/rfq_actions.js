@@ -118,7 +118,9 @@ export const PostRFQ = () => {
   return (dispatch, getState) => {
     const { rfq, rfq_items } = getState().RFQReducer;
     PostRFQAPI({ ...rfq, rfq_items })
-      .then(() => {
+      .then(res => {
+        const electron = process.env.NODE_ENV !== "development" && window.require("electron");
+        process.env.NODE_ENV !== "development" && electron.shell.openItem(res.data.rfq_folder);
         dispatch(notify(SUCCESS, "保存成功! "));
       })
       .catch(err => dispatch(notify(ERROR, err.message)));

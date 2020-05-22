@@ -28,7 +28,7 @@ export const RFQOption = props => {
                 size="small"
                 formatter={value => value && `¥${value}`}
                 parser={value => value && value.replace("¥", "")}
-                value={rfq.shipping_fee}
+                value={rfq.shipping_fee === 0 ? "" : rfq.shipping_fee}
                 onChange={value => {
                   updateObjectState("rfq", "shipping_fee", value);
                   updateRFQ();
@@ -55,7 +55,7 @@ export const RFQOption = props => {
                 max={100}
                 formatter={value => value && `${value}%`}
                 parser={value => value && value.replace("%", "")}
-                value={rfq.discount_rate}
+                value={rfq.discount_rate === 0 ? "" : rfq.discount_rate}
                 onChange={value => {
                   updateObjectState("rfq", "discount_rate", value);
                   updateRFQ();

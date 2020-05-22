@@ -91,6 +91,7 @@ const RFQContent = props => {
               cell: EditableCell,
             },
           }}
+          pagination={false}
           bordered
           dataSource={rfq_items}
           columns={mergedColumns}

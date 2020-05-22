@@ -82,6 +82,7 @@ const RFQContent = props => {
             },
           }}
           bordered
+          pagination={false}
           dataSource={rfq_items}
           columns={mergedColumns}
           rowClassName="editable-row"

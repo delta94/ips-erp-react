@@ -43,7 +43,7 @@ const PurchaseOrderHeader = props => {
         },
         {
           $match: {
-            "rfq_items.part_number": value,
+            "rfq_items.part_number": { $regex: value, $options: "$i" },
             price_set: true,
             delivery_date: {
               $ne: 0,

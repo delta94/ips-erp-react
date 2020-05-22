@@ -111,6 +111,7 @@ const PurchaseOrderContent = props => {
             订单内容
           </Divider>
           <Table
+            pagination={false}
             rowKey="sub_work_order_num"
             size="small"
             rowSelection={rowSelection}

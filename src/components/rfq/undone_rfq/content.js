@@ -34,7 +34,7 @@ const EditableCell = ({ edit, dataIndex, title, inputType, record, index, childr
       return (
         <InputNumber
           disabled={record.no_price}
-          value={record[dataIndex]}
+          value={record[dataIndex] === 0 ? "" : record[dataIndex]}
           onChange={value => dispatch(updateRFQItems(record.seq, dataIndex, value))}
         />
       );
@@ -131,13 +131,14 @@ const RFQUndoneContent = props => {
             <Descriptions.Item label="邮件/RFQ">{rfq.email_rfq_num}</Descriptions.Item>
             <Descriptions.Item label="交期(不含运输)">
               <InputNumber
-                value={rfq.delivery_date}
+                value={rfq.delivery_date === 0 ? "" : rfq.delivery_date}
                 onChange={value => updateObjectState("rfq", "delivery_date", value)}
               />
             </Descriptions.Item>
           </Descriptions>
           <Table
             rowKey="seq"
+            pagination={false}
             columns={mergedColumns}
             components={{
               body: {
@@ -145,8 +146,19 @@ const RFQUndoneContent = props => {
               },
             }}
             dataSource={rfq_items}
+            style={{ paddingBottom: "16px" }}
           />
-          <Row gutter={[16, 16]}>
+          <Row gutter={16}>
+            <Col>
+              <Button
+                onClick={() => {
+                  const electron = process.env.NODE_ENV !== "development" && window.require("electron");
+                  process.env.NODE_ENV !== "development" && electron.shell.openItem(rfq.rfq_folder);
+                }}
+              >
+                打开文件夹
+              </Button>
+            </Col>
             <Col>
               <Button onClick={PatchRFQ}>保存</Button>
             </Col>

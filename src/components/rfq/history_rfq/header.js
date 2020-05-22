@@ -31,7 +31,7 @@ const RFQHistoryHeader = props => {
       ),
     },
   ];
-  return <Table rowKey="_id" columns={columns} dataSource={rfqs}></Table>;
+  return <Table pagination={false} rowKey="_id" columns={columns} dataSource={rfqs}></Table>;
 };
 
 const mapStateToProps = ({ RFQReducer }) => {

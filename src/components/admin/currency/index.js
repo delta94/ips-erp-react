@@ -129,7 +129,7 @@ const Currency = () => {
   }, []);
   return (
     <Card>
-      <Row gutter={16}>
+      <Row gutter={[16, 16]}>
         <Col span={12}>
           <Input
             placeholder="搜索货币"
@@ -149,7 +149,7 @@ const Currency = () => {
           <Button onClick={() => setVisible(true)}>添加新货币</Button>
         </Col>
       </Row>
-      <Table rowKey="_id" columns={columns} dataSource={currencies} style={{ padding: "16px 0" }} />
+      <Table rowKey="_id" columns={columns} dataSource={currencies} />
       <Modal title="新货币信息" visible={visible} onCancel={() => setVisible(false)} footer={null} destroyOnClose>
         <Form
           {...layout}
