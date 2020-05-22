@@ -26,7 +26,6 @@ const PREFIX = "RFQ";
 //     {
 //       seq: 1,
 //       part_number: "",
-//       version: "",
 //       qty: "",
 //       unit: "",
 //       unit_price_foreign: "",
@@ -59,12 +58,11 @@ const defaultState = () => ({
     {
       seq: 1,
       part_number: "",
-      version: "",
       qty: "",
       unit: "",
-      unit_price_foreign: "",
-      total_price: "",
-      unit_price_rmb: "",
+      unit_price_foreign: 0,
+      total_price: 0,
+      unit_price_rmb: 0,
       remark: "",
     },
   ],

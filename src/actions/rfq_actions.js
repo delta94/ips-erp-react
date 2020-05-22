@@ -79,7 +79,6 @@ export const addRfqItem = () => {
     let rfq_item = {
       seq: len + 1,
       part_number: "",
-      version: "",
       qty: "",
       unit: "",
       remark: "",
@@ -95,7 +94,6 @@ export const uploadFile = data => {
       return {
         seq: item["#"],
         part_number: item.part_number,
-        version: item.version,
         qty: item.qty,
         unit: item.unit,
         remark: item.remark,

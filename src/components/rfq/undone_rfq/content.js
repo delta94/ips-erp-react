@@ -56,10 +56,6 @@ const RFQUndoneContent = props => {
       dataIndex: "part_number",
     },
     {
-      title: "版本",
-      dataIndex: "version",
-    },
-    {
       title: "数量",
       dataIndex: "qty",
     },
