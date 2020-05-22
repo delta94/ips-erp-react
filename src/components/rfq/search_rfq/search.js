@@ -26,13 +26,18 @@ const PurchaseOrderHeader = props => {
   const onSearch = value => {
     let query;
     if (query_type === "email_rfq_num") {
-      query = JSON.stringify({
-        email_rfq_num: value,
-
-        delivery_date: { $ne: 0 },
-        price_set: true,
-      });
-      GetRFQs(query);
+      query = JSON.stringify([
+        {
+          $match: {
+            email_rfq_num: { $regex: value, $options: "$i" },
+            price_set: true,
+            delivery_date: {
+              $ne: 0,
+            },
+          },
+        },
+      ]);
+      GetRFQsPipeline(query);
     } else {
       query = JSON.stringify([
         {
