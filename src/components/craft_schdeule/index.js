@@ -1,18 +1,16 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
+import { Paper, Grid, Typography } from "@material-ui/core";
 import SearchBar from "material-ui-search-bar";
 
 import Material from "./material";
 import CraftList from "./craft_list";
 import CraftOperations from "./craft_operations";
 
-import { UpdateState, GetInternalWorkOrderItem } from "../../actions/craft_schedule_actions";
+import { updateState, GetInternalWorkOrderItem } from "../../actions/craft_schedule_actions";
 
-const useStyle = makeStyles(theme => ({
+const useStyle = makeStyles(() => ({
   root: {
     margin: "0 auto",
     marginTop: 10,
@@ -41,7 +39,7 @@ function EngineerProcess(props) {
   const { search, data } = props;
 
   // methods from actions
-  const { UpdateState, GetInternalWorkOrderItem } = props;
+  const { updateState, GetInternalWorkOrderItem } = props;
 
   const renderHeader = () => {
     if (data) {
@@ -124,9 +122,8 @@ function EngineerProcess(props) {
       <SearchBar
         className={classes.root}
         value={search}
-        // onChange={(e) => debouncedCallback(e)}
         placeholder="输入工号"
-        onChange={v => UpdateState("search", v)}
+        onChange={v => updateState("search", v)}
         onRequestSearch={() => GetInternalWorkOrderItem(search)}
       />
       <Paper className={classes.paperRoot}>
@@ -147,4 +144,4 @@ const mapStateToProps = ({ CraftScheduleReducer }) => {
   };
 };
 
-export default connect(mapStateToProps, { UpdateState, GetInternalWorkOrderItem })(EngineerProcess);
+export default connect(mapStateToProps, { updateState, GetInternalWorkOrderItem })(EngineerProcess);

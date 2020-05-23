@@ -78,3 +78,56 @@ export const GetMaterialsAPI = async () => {
 export const GetCraftsAPI = async params => {
   return await axios.get(`/crafts?category=${params}`);
 };
+
+export const PatchItemAPI = async (item_id, collection, params) => {
+  return await axios
+    .patch(`/patch_item/${item_id}?collection=${collection}`, params)
+    .then(res => res)
+    .catch(err => console.log(err));
+};
+
+export const RemoveItemAPI = async (item_id, collection) => {
+  return await axios
+    .delete(`/remove_item/${item_id}?collection=${collection}`)
+    .then(res => res)
+    .catch(err => console.log(err));
+};
+
+export const InsertItemAPI = async (collection, params) => {
+  return await axios
+    .post(`/insert_item?collection=${collection}`, params)
+    .then(res => res)
+    .catch(err => console.log(err));
+};
+
+export const GetItemsAPI = async (collection, query) => {
+  if (query) {
+    return await axios.get(`/get_items?collection=${collection}&query=${query}`);
+  }
+  return await axios.get(`/get_items?collection=${collection}`);
+};
+
+export const GetItemsPipelineAPI = async (collection, query) => {
+  return await axios.get(`/get_items_pipeline?collection=${collection}&query=${query}`);
+};
+
+// migration to antd
+export const GetWorkOrderAPI = async queryParams => {
+  return await axios.get(`/work_order?${queryParams}`);
+};
+
+export const PostWorkOrderAPI = async params => {
+  return await axios.post(`/work_order`, params);
+};
+
+export const PatchWorkOrderAPI = async (id, params) => {
+  return await axios.patch(`/work_order/${id}`, params);
+};
+
+export const PostRFQAPI = async params => {
+  return await axios.post(`/rfq`, params);
+};
+
+export const MatchRFQPriceAPI = async query => {
+  return await axios.get(`/rfq_match?${query}`);
+};

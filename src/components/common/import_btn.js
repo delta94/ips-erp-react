@@ -1,25 +1,24 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { connect, batch } from "react-redux";
+import { batch } from "react-redux";
 import { Button } from "@material-ui/core";
 
 import * as XLSX from "xlsx";
 
-import { UploadedFile } from "../../actions/po_actions";
 import { enqueueSnackbar as enqueueSnackbarAction } from "../../actions/notify_actions";
+import { ERROR, SUCCESS } from "../../utils/constants";
 
-function POImport(props) {
+export default function ImportBtn(props) {
+  const { btnText, uploadFile, startIcon } = props;
   const dispatch = useDispatch();
   const enqueueSnackbar = (...args) => dispatch(enqueueSnackbarAction(...args));
-  // methods from actions
-  const { UploadedFile } = props;
   // non redux actions
-  const onImportExcel = (file) => {
+  const onImportExcel = file => {
     // 获取上传的文件对象
     const { files } = file.target;
     // 通过FileReader对象读取文件
     const fileReader = new FileReader();
-    fileReader.onload = (event) => {
+    fileReader.onload = event => {
       try {
         const { result } = event.target;
         // 以二进制流方式读取得到整份excel表格对象
@@ -37,12 +36,12 @@ function POImport(props) {
         }
         // 最终获取到并且格式化后的 json 数据
         batch(() => {
-          enqueueSnackbar("上传成功! ", "success");
-          UploadedFile(data);
+          enqueueSnackbar("上传成功! ", SUCCESS);
+          uploadFile(data);
         });
       } catch (e) {
         // 这里可以抛出文件类型错误不正确的相关提示
-        enqueueSnackbar("文件类型不正确！", "success");
+        enqueueSnackbar("文件类型不正确！", ERROR);
       }
     };
     // 以二进制方式打开文件
@@ -52,12 +51,10 @@ function POImport(props) {
     <React.Fragment>
       <input value="" type="file" accept=".xlsx, .xls" onChange={onImportExcel} hidden id="btn-file" />
       <label htmlFor="btn-file">
-        <Button variant="contained" color="primary" component="span">
-          上传文件
+        <Button variant="contained" color="primary" component="span" startIcon={startIcon}>
+          {btnText}
         </Button>
       </label>
     </React.Fragment>
   );
 }
-
-export default connect(null, { UploadedFile })(POImport);

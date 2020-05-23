@@ -1,255 +1,74 @@
-import Cookies from "js-cookie";
 import { batch } from "react-redux";
+import moment from "moment";
 // for po_info.js
 import {
   GetCustomersAPI,
-  GetPurchaserAPI,
-  GetCurrencyAPI,
   PostInternalWorkOrderAPI,
   PostInternalWorkOrderItemsAPI,
   PrintLabelAPI,
+  GetInternalWorkOrdersItemAPI,
+  PatchInternalWorkOrderItemAPI,
+  GetWorkOrderAPI,
+  PostWorkOrderAPI,
+  PatchWorkOrderAPI,
 } from "../api";
 import { enqueueSnackbar } from "./notify_actions";
-import { SUCCESS, ERROR } from "../utils/constants";
-// for po_internal.js
-import { GetEmployeeAPI, GetShippingCompanyAPI, GetOutFactoryAPI, GetDeliverContactAPI } from "../api";
-import { BU_PLACE_ORDER } from "../utils/constants";
-export const UPDATE_STATE = "PO/UPDATE_STATE";
-export const TOGGLE_STATE = "PO/TOGGLE_STATE";
-export const UPDATE_WORK_ORDER_ITEM = "PO/UPDATE_WORK_ORDER_ITEM";
-export const ADD_WORK_ORDER_ITEM = "PO/ADD_WORK_ORDER_ITEM";
-export const RESET_STATE = "PO/RESET_INPUT";
+import { SUCCESS, ERROR, INFO } from "../utils/constants";
+import action, { GetAPI, GetItems } from "./common_actions";
 
-export const ResetState = () => {
-  return {
-    type: RESET_STATE,
-  };
-};
+// const
+const PREFIX = "PO";
 
-export const UpdateState = (name, value) => {
-  return {
-    type: UPDATE_STATE,
-    name,
-    value,
-  };
-};
+// from common action
+export const actions = action(PREFIX);
+export const { updateArrayObjectState, updateObjectState, updateState, resetState, notify } = actions;
 
-export const ToggleState = name => {
-  return {
-    type: TOGGLE_STATE,
-    name,
-  };
-};
+export const GetCustomers = () => GetItems(actions)("customers");
+export const GetWorkOrderStates = () => GetItems(actions)("work_order_states");
 
-export const GetCustomers = () => {
-  return async dispatch => {
-    try {
-      const res = await GetCustomersAPI();
-      const { data } = res;
-      dispatch(UpdateState("customers", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
-
-export const GetPurchaser = company => {
-  return async dispatch => {
-    try {
-      const res = await GetPurchaserAPI(company);
-      const { data } = res;
-      dispatch(UpdateState("purchasers", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
-
-export const GetCurrency = () => {
-  return async dispatch => {
-    try {
-      const res = await GetCurrencyAPI();
-      const { data } = res;
-      dispatch(UpdateState("currencies", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
-
-export const GetBUEmployee = () => {
-  return async dispatch => {
-    try {
-      const res = await GetEmployeeAPI("bu");
-      const { data } = res;
-      dispatch(UpdateState("buEmployees", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
-
-export const GetShippingCompany = () => {
-  return async dispatch => {
-    try {
-      const res = await GetShippingCompanyAPI();
-      const { data } = res;
-      dispatch(UpdateState("shippingCompanies", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
-
-export const GetOutFactory = () => {
-  return async dispatch => {
-    try {
-      const res = await GetOutFactoryAPI();
-      const { data } = res;
-      dispatch(UpdateState("outFactories", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
-
-export const GetDeliverContact = () => {
-  return async dispatch => {
-    try {
-      const res = await GetDeliverContactAPI();
-      const { data } = res;
-      dispatch(UpdateState("deliverContacts", data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-};
-
-export const PostInternalWorkOrder = () => {
-  return async (dispatch, getState) => {
-    const state = getState();
-    const {
-      customer,
-      customer_po,
-      po_submit_date,
-      customer_dateline,
-      internal_dateline,
-      delivery_dateline,
-    } = state.POReducer;
-
-    const params = {
-      customer,
-      customer_po,
-      po_submit_date,
-      customer_dateline,
-      internal_dateline,
-      delivery_dateline,
-      state: BU_PLACE_ORDER,
-    };
-
-    try {
-      const res = await PostInternalWorkOrderAPI(params);
-      const { data } = res;
-      batch(() => {
-        dispatch(UpdateState("work_order_created", true));
-        dispatch(UpdateState("internal_work_num", data.internal_work_num));
-        dispatch(UpdateState("cad_dir", data.cad_dir));
-        dispatch(
-          UpdateState("work_order_items", [
-            { item_id: `${data.internal_work_num}-1`, item_num: "", unit: "", qty: "", unit_price: "" },
-          ])
-        );
-      });
-    } catch (err) {
-      dispatch(enqueueSnackbar(err.message, ERROR));
-    }
-  };
-};
-
-export const UpdateWorkOrderItem = (index, name, value) => {
-  return {
-    type: UPDATE_WORK_ORDER_ITEM,
-    index,
-    name,
-    value,
-  };
-};
-
-export const AddWorkOrderItem = () => {
-  return {
-    type: ADD_WORK_ORDER_ITEM,
-  };
-};
-
-export const PostInternalWorkOrderItems = () => {
-  return async (dispatch, getState) => {
-    const state = getState();
-    const {
-      work_order_items,
-      internal_work_num,
-      customer,
-      customer_po,
-      po_submit_date,
-      customer_dateline,
-      internal_dateline,
-      delivery_dateline,
-      cad_dir,
-    } = state.POReducer;
-    let flag = true;
-    work_order_items.forEach(ele => {
-      for (let value of Object.values(ele)) {
-        if (value === "") {
-          flag = false;
-          return flag;
-        }
-      }
+export const UpdateWorkOrderItem = (identifier, name, value) => {
+  return (dispatch, getState) => {
+    let { work_order_items } = getState().POReducer;
+    let selectedIndex = work_order_items.findIndex(el => el.sub_work_order_num === identifier);
+    work_order_items[selectedIndex][name] = value;
+    work_order_items[selectedIndex]["total_price"] =
+      work_order_items[selectedIndex].qty * work_order_items[selectedIndex].unit_price;
+    const total_price = work_order_items.reduce((acc, el) => acc + el.qty * el.unit_price, 0);
+    batch(() => {
+      dispatch(updateState("work_order_items", work_order_items));
+      dispatch(updateState("total_price", total_price));
     });
-    if (flag) {
-      work_order_items.forEach(element => {
-        element.qty = parseInt(element.qty);
-        element.unit_price = parseFloat(element.unit_price);
-        element.total_price = parseFloat(element.unit_price * element.qty);
-        element.cad_dir = cad_dir;
-        element.submit_by = Cookies.get("CN");
-        element.state = BU_PLACE_ORDER;
-        element.internal_work_num = internal_work_num;
-        element.customer = customer;
-        element.customer_po = customer_po;
-        element.po_submit_date = po_submit_date;
-        element.customer_dateline = customer_dateline;
-        element.internal_dateline = internal_dateline;
-        element.delivery_dateline = delivery_dateline;
-        element.ng = false;
-      });
-      const params = { work_order_items };
-      try {
-        const res = await PostInternalWorkOrderItemsAPI(params);
-        const { data } = res;
-        batch(() => {
-          dispatch(ResetState());
-          dispatch(enqueueSnackbar(data, SUCCESS));
-        });
-      } catch (err) {
-        dispatch(enqueueSnackbar(err.message, ERROR));
-      }
-    } else {
-      dispatch(enqueueSnackbar("所有输入不能为空! ", ERROR));
-    }
+  };
+};
+
+export const addWorkOrderItem = () => {
+  return (dispatch, getState) => {
+    let { work_order_num, work_order_items } = getState().POReducer;
+    const len = work_order_items.length;
+    const item = {
+      sub_work_order_num: `${work_order_num}-${len + 1}`,
+      part_number: "",
+      unit: "",
+      qty: "",
+      unit_price: "",
+    };
+    work_order_items.push(item);
+    dispatch(updateState("work_order_items", work_order_items));
   };
 };
 
 export const PrintLabel = () => {
   return async (dispatch, getState) => {
     const state = getState();
-    const { po_submit_date, internal_dateline, work_order_items } = state.POReducer;
+    const { work_order, work_order_items } = state.POReducer;
 
     const data = work_order_items.map(element => {
       return {
-        item_id: element.item_id,
-        po_submit_date: po_submit_date,
-        internal_dateline: internal_dateline,
+        item_id: element.sub_work_order_num,
+        po_submit_date: work_order.submit_date,
+        internal_dateline: work_order.internal_deadline,
         qty: element.qty,
-        item_num: element.item_num,
+        item_num: element.part_number,
         unit: element.unit,
       };
     });
@@ -259,28 +78,126 @@ export const PrintLabel = () => {
         .catch(err => console.log(err));
     });
 
-    dispatch(enqueueSnackbar("打印成功! ", SUCCESS));
+    dispatch(notify(SUCCESS, "打印成功! "));
   };
 };
 
-export const UploadedFile = data => {
+export const uploadFile = data => {
   return (dispatch, getState) => {
     const state = getState();
-    const { internal_work_num } = state.POReducer;
+    const { work_order } = state.POReducer;
     let total_price = 0;
     const work_order_items = data.map(item => {
       return {
-        item_id: `${internal_work_num}-${item.Item}`,
-        item_num: item.Description,
-        unit: item.Unit,
-        qty: item.Quantity,
-        unit_price: item["UNIT PRICE"],
+        sub_work_order_num: `${work_order.work_order_num}-${item["#"]}`,
+        part_number: item.part_number,
+        unit: item.unit,
+        qty: item.qty,
+        unit_price: item.unit_price,
+        total_price: item.unit_price * item.qty,
       };
     });
     total_price = work_order_items.reduce((acc, el) => acc + el.qty * el.unit_price, total_price);
     batch(() => {
-      dispatch(UpdateState("work_order_items", work_order_items));
-      dispatch(UpdateState("total_price", total_price));
+      dispatch(updateState("work_order_items", work_order_items));
+      dispatch(updateState("total_price", total_price));
     });
+  };
+};
+
+// migration to antd
+
+export const GetWorkOrder = queryParams => {
+  return dispatch => {
+    GetWorkOrderAPI(queryParams)
+      .then(res => {
+        const data = res.data[0];
+        data.submit_date = moment(data.submit_date);
+        data.customer_deadline = moment(data.customer_deadline);
+        data.internal_deadline = moment(data.internal_deadline);
+        dispatch(updateState("work_order", data));
+        dispatch(updateState("work_order_items", data.work_order_items));
+        dispatch(updateState("work_order_created", true));
+      })
+      .catch(err => dispatch(notify(ERROR, err.message)));
+  };
+};
+
+export const PostWorkOrder = () => {
+  return async (dispatch, getState) => {
+    const { username } = getState().HeaderReducer;
+    let { work_order, work_order_created } = getState().POReducer;
+
+    if (!work_order_created) {
+      work_order["submit_by"] = username;
+
+      try {
+        const res = await PostWorkOrderAPI(work_order);
+        let { data } = res;
+        data.submit_date = moment(data.submit_date);
+        data.customer_deadline = moment(data.customer_deadline);
+        data.internal_deadline = moment(data.internal_deadline);
+        batch(() => {
+          dispatch(updateState("new", false));
+          dispatch(updateState("work_order_created", true));
+          dispatch(updateState("editing", true));
+          dispatch(updateState("work_order_num", data.work_order_num));
+          dispatch(updateState("cad_dir", data.cad_dir));
+          dispatch(updateState("work_order", data));
+          dispatch(
+            updateState("work_order_items", [
+              { sub_work_order_num: `${data.work_order_num}-1`, part_number: "", unit: "", qty: "", unit_price: "" },
+            ])
+          );
+        });
+      } catch (err) {
+        dispatch(notify(ERROR, err.message));
+      }
+    } else {
+      batch(() => {
+        dispatch(resetState());
+        dispatch(GetCustomers());
+        dispatch(notify(INFO, "新下单， 页面内容清空! "));
+      });
+    }
+  };
+};
+
+export const InsertWorkOrderItems = () => {
+  return async (dispatch, getState) => {
+    let { work_order_items, work_order, reedit } = getState().POReducer;
+    let flag = true;
+    // work_order_items.forEach(ele => {
+    //   for (let value of Object.values(ele)) {
+    //     if (value === "") {
+    //       flag = false;
+    //       return flag;
+    //     }
+    //   }
+    // });
+    work_order_items.forEach(element => {
+      element.current_department = "业务部";
+    });
+
+    if (flag) {
+      try {
+        const res = await PatchWorkOrderAPI(work_order.id, {
+          work_order_state: work_order.work_order_state,
+          work_order_items: work_order_items,
+        });
+        const electron = process.env.NODE_ENV !== "development" && window.require("electron");
+        process.env.NODE_ENV !== "development" && electron.shell.openItem(work_order.cad_dir);
+        if (reedit) {
+          dispatch(notify(SUCCESS, "修改成功! "));
+        } else {
+          dispatch(notify(SUCCESS, "下单成功! "));
+        }
+        console.log(res);
+      } catch (err) {
+        dispatch(notify(ERROR, err.message));
+      }
+    } else {
+      dispatch(notify(ERROR, "订单内容不能有空值! "));
+    }
   };
 };

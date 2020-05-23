@@ -1,21 +1,23 @@
-import { UPDATE_STATE, TOGGLE_STATE } from "../actions/header_actions";
+import commonReducer from "./common_reducer";
 
+// const
+const PREFIX = "HEADER";
+
+// default state
 const defaultState = {
   openSidebar: false,
-  // isAuthenticated: process.env.NODE_ENV === "development" ? true : false
-  isAuthenticated: false
+  username: process.env.NODE_ENV === "development" ? "衡伟亮" : "",
+  department: process.env.NODE_ENV === "development" ? "IT部门" : "",
+  isAuthenticated: process.env.NODE_ENV === "development" ? true : false,
+  // username: "",
+  // department: "",
+  // isAuthenticated: false,
+  sidebarItems: [],
+  currentPath: [],
 };
 
 const reducer = (state = defaultState, action) => {
-  let { name, value } = action;
-  switch (action.type) {
-    case UPDATE_STATE:
-      return { ...state, [name]: value };
-    case TOGGLE_STATE:
-      return { ...state, [name]: !state[name] };
-    default:
-      return state;
-  }
+  return commonReducer(PREFIX)(state, action, defaultState);
 };
 
 export { reducer };

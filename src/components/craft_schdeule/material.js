@@ -1,14 +1,9 @@
 import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import Paper from "@material-ui/core/Paper";
-import TextField from "@material-ui/core/TextField";
+import { Grid, Typography, MenuItem, Select, Paper, TextField } from "@material-ui/core";
 
-import { GetMaterials, UpdateObjectState, updateSelectMaterial } from "../../actions/craft_schedule_actions";
+import { GetMaterials, updateObjectState, updateSelectMaterial } from "../../actions/craft_schedule_actions";
 
 const useStyle = makeStyles(theme => ({
   paperRoot: {
@@ -28,7 +23,7 @@ function Material(props) {
   const { data, materials, selected_material, dimension } = props;
 
   // methods from actions
-  const { GetMaterials, UpdateObjectState, updateSelectMaterial } = props;
+  const { GetMaterials, updateObjectState, updateSelectMaterial } = props;
 
   useEffect(() => {
     GetMaterials();
@@ -83,7 +78,7 @@ function Material(props) {
                     style={{ maxWidth: 50 }}
                     placeholder="长"
                     value={dimension.length}
-                    onChange={e => UpdateObjectState("dimension", "length", e.target.value)}
+                    onChange={e => updateObjectState("dimension", "length", e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={3}>
@@ -91,7 +86,7 @@ function Material(props) {
                     style={{ maxWidth: 50 }}
                     placeholder="宽"
                     value={dimension.width}
-                    onChange={e => UpdateObjectState("dimension", "width", e.target.value)}
+                    onChange={e => updateObjectState("dimension", "width", e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={3}>
@@ -99,7 +94,7 @@ function Material(props) {
                     style={{ maxWidth: 50 }}
                     placeholder="高"
                     value={dimension.height}
-                    onChange={e => UpdateObjectState("dimension", "height", e.target.value)}
+                    onChange={e => updateObjectState("dimension", "height", e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={3}>
@@ -107,7 +102,7 @@ function Material(props) {
                     placeholder="数量"
                     style={{ maxWidth: 50 }}
                     value={dimension.qty}
-                    onChange={e => UpdateObjectState("dimension", "qty", e.target.value)}
+                    onChange={e => updateObjectState("dimension", "qty", e.target.value)}
                   />
                 </Grid>
               </Grid>
@@ -131,4 +126,4 @@ const mapStateToProps = ({ CraftScheduleReducer }) => {
   };
 };
 
-export default connect(mapStateToProps, { GetMaterials, UpdateObjectState, updateSelectMaterial })(Material);
+export default connect(mapStateToProps, { GetMaterials, updateObjectState, updateSelectMaterial })(Material);

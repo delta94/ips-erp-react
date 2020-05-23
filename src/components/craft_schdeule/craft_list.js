@@ -2,13 +2,9 @@ import React from "react";
 import clsx from "clsx";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import Checkbox from "@material-ui/core/Checkbox";
-import TextField from "@material-ui/core/TextField";
+import { Grid, Typography, Checkbox, Paper, TextField } from "@material-ui/core";
 
-import { clickSeqCheckbox, UpdateArrayObjectState } from "../../actions/craft_schedule_actions";
+import { clickSeqCheckbox, updateArrayObjectState } from "../../actions/craft_schedule_actions";
 
 const useStyle = makeStyles(theme => ({
   root: { margin: 10 },
@@ -61,7 +57,7 @@ function CraftList(props) {
   const { data, crafts } = props;
 
   // methods from actions
-  const { clickSeqCheckbox, UpdateArrayObjectState } = props;
+  const { clickSeqCheckbox, updateArrayObjectState } = props;
   const renderHeader = () => {
     return (
       <Grid container justify="space-around" spacing={2} className={classes.gridRoot}>
@@ -74,11 +70,23 @@ function CraftList(props) {
         <Grid item xs={1}>
           <Typography color="primary">工艺编号</Typography>
         </Grid>
-        <Grid item xs={5}>
+        <Grid item xs={4}>
           <Typography color="primary">工业内容</Typography>
         </Grid>
-        <Grid item xs={1}>
-          {data.ng ? <Typography color="primary">等级 数量</Typography> : <Typography color="primary">数量</Typography>}
+        <Grid item xs={2}>
+          <Grid container direction="row">
+            {data.ng && (
+              <Grid item xs={4}>
+                <Typography color="primary">等级</Typography>
+              </Grid>
+            )}
+            <Grid item xs={4}>
+              <Typography color="primary">数量</Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography color="primary">单位</Typography>
+            </Grid>
+          </Grid>
         </Grid>
         <Grid item xs={1}>
           <Typography color="primary">预计工时</Typography>
@@ -122,7 +130,7 @@ function CraftList(props) {
           <Grid item xs={1}>
             <Typography variant="body2">{craft.craft_num}</Typography>
           </Grid>
-          <Grid item xs={5}>
+          <Grid item xs={4}>
             <TextField
               margin="none"
               multiline
@@ -131,29 +139,36 @@ function CraftList(props) {
               className={classes.gridItemAlign}
               value={craft.description}
               size="small"
-              onChange={e => UpdateArrayObjectState("crafts", index, "description", e.target.value)}
+              onChange={e => updateArrayObjectState("crafts", index, "description", e.target.value)}
             />
           </Grid>
-          <Grid item xs={1}>
+          <Grid item xs={2}>
             <Grid container direction="row">
               {data.ng && (
-                <Grid item xs={6}>
+                <Grid item xs={4}>
                   <TextField
                     disabled={!craft.check}
                     value={craft.level}
-                    type="number"
-                    onChange={e => UpdateArrayObjectState("crafts", index, "level", e.target.value)}
+                    onChange={e => updateArrayObjectState("crafts", index, "level", e.target.value)}
                     className={clsx(classes.gridItemAlign, classes.narrowTextInput)}
                     size="small"
                   />
                 </Grid>
               )}
-              <Grid item xs={6}>
+              <Grid item xs={4}>
                 <TextField
                   disabled={!craft.check}
                   value={craft.qty}
-                  type="number"
-                  onChange={e => UpdateArrayObjectState("crafts", index, "qty", e.target.value)}
+                  onChange={e => updateArrayObjectState("crafts", index, "qty", e.target.value)}
+                  className={clsx(classes.gridItemAlign, classes.narrowTextInput)}
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  disabled={!craft.check}
+                  value={craft.unit}
+                  onChange={e => updateArrayObjectState("crafts", index, "unit", e.target.value)}
                   className={clsx(classes.gridItemAlign, classes.narrowTextInput)}
                   size="small"
                 />
@@ -164,17 +179,16 @@ function CraftList(props) {
             <TextField
               disabled={!craft.check}
               value={craft.estimate}
-              type="number"
-              onChange={e => UpdateArrayObjectState("crafts", index, "estimate", e.target.value)}
+              onChange={e => updateArrayObjectState("crafts", index, "estimate", e.target.value)}
               className={clsx(classes.gridItemAlign, classes.narrowTextInput)}
               size="small"
             />
           </Grid>
           <Grid item xs={1}>
-            <Typography variant="body2">{craft.start_time.toLocaleString()}</Typography>
+            <Typography variant="body2">{craft.start_time.toLocaleString("zh-cn", { hour12: false })}</Typography>
           </Grid>
           <Grid item xs={1}>
-            <Typography variant="body2">{craft.end_time.toLocaleString()}</Typography>
+            <Typography variant="body2">{craft.end_time.toLocaleString("zh-cn", { hour12: false })}</Typography>
           </Grid>
         </Grid>
       );
@@ -199,4 +213,4 @@ const mapStateToProps = ({ CraftScheduleReducer }) => {
   };
 };
 
-export default connect(mapStateToProps, { clickSeqCheckbox, UpdateArrayObjectState })(CraftList);
+export default connect(mapStateToProps, { clickSeqCheckbox, updateArrayObjectState })(CraftList);

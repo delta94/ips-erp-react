@@ -1,76 +1,80 @@
-import React from "react";
+import React, { useEffect } from "react";
+import IconFont from "../common/iconfont";
+import { Menu } from "antd";
 import { connect } from "react-redux";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
-import { makeStyles } from "@material-ui/core/styles";
-import { Link } from "react-router-dom";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import Sidebar from "../sidebar";
-import Cookies from "js-cookie";
+// import Icons from "./icon";
 
-import { ToggleState, clickLogout } from "../../actions/header_actions";
+import { NavLink } from "react-router-dom";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-  },
-  title: {
-    flexGrow: 1,
-  },
-  link: {
-    color: "white",
-    textDecoration: "none",
-  },
-}));
+import { GetSidebarItems, clickLogout, updateState } from "../../actions/header_actions";
 
-function Header(props) {
-  const classes = useStyles();
+const { SubMenu } = Menu;
 
-  // methods from action
-  const { ToggleState, clickLogout } = props;
+const AppMenu = props => {
+  const { sidebarItems, department, isAuthenticated } = props;
+  const { GetSidebarItems, clickLogout, updateState } = props;
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      GetSidebarItems();
+    }
+    return () => {};
+  }, [GetSidebarItems, isAuthenticated]);
+
   return (
-    <div className={classes.root}>
-      {Cookies.get("CN") && <Sidebar />}
-      <AppBar position="static">
-        <Toolbar>
-          {Cookies.get("OU") && (
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={() => ToggleState("openSidebar")}
-              // onClick={handleDrawerOpen}
-              edge="start"
-              // className={clsx(classes.menuButton, open && classes.hide)}
-            >
-              <MenuIcon />
-            </IconButton>
-          )}
-          <Typography variant="h6" className={classes.title}>
-            <Link to="/" className={classes.link}>
-              主页
-            </Link>
-          </Typography>
-          {Cookies.get("OU") ? (
-            <React.Fragment>
-              <Typography>
-                {Cookies.get("CN")} - {Cookies.get("OU")}
-              </Typography>
-              <IconButton color="inherit" aria-label="logout" onClick={() => clickLogout()}>
-                <ExitToAppIcon />
-              </IconButton>
-            </React.Fragment>
-          ) : (
-            <Link className={classes.link} to="/login">
-              登录
-            </Link>
-          )}
-        </Toolbar>
-      </AppBar>
-    </div>
-  );
-}
+    <Menu theme="dark" defaultSelectedKeys={["1"]} mode="inline">
+      {sidebarItems.map(item => {
+        if (item.allow_department.includes(department)) {
+          if (item.link) {
+            // const IconTorender = Icons["AccountBookFilled"];
+            return (
+              <Menu.Item style={{ marginTop: 0 }} key={item.name}>
+                <IconFont type={item.icon} />
+                <NavLink
+                  to={item.link}
+                  className="nav-text"
+                  onClick={() => updateState("currentPath", [item.name])}
+                ></NavLink>
+                {item.name}
+              </Menu.Item>
+            );
+          } else {
+            return (
+              <SubMenu key={item.name} title={item.name} icon={<IconFont type={item.icon} />}>
+                {/* <IconFont type={item.icon} /> */}
+                {item.items.map(subitem => (
+                  <Menu.Item style={{ marginTop: 0 }} key={subitem.link}>
+                    <IconFont type={subitem.icon} />
+                    <NavLink
+                      to={subitem.link}
+                      className="nav-text"
+                      onClick={() => updateState("currentPath", [item.name, subitem.name])}
+                    ></NavLink>
+                    {subitem.name}
+                  </Menu.Item>
+                ))}
+              </SubMenu>
+            );
+          }
+        }
+        return null;
+      })}
 
-export default connect(null, { ToggleState, clickLogout })(Header);
+      <Menu.Item style={{ marginTop: 0 }} onClick={clickLogout}>
+        <IconFont type="icon-kehu" />
+        登出
+      </Menu.Item>
+    </Menu>
+  );
+};
+
+const mapStateToProps = ({ HeaderReducer }) => {
+  return {
+    sidebarItems: HeaderReducer.sidebarItems,
+    department: HeaderReducer.department,
+    isAuthenticated: HeaderReducer.isAuthenticated,
+    currentPath: HeaderReducer.currentPath,
+  };
+};
+
+export default connect(mapStateToProps, { GetSidebarItems, clickLogout, updateState })(AppMenu);

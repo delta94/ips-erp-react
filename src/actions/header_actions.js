@@ -1,26 +1,19 @@
-import Cookies from "js-cookie";
-export const UPDATE_STATE = "HEADER/UPDATE_STATE";
-export const TOGGLE_STATE = "HEADER/TOGGLE_STATE";
+import { push } from "connected-react-router";
+import { GetSidebarItemsAPI } from "../api";
+import action, { GetAPI } from "./common_actions";
 
-export const UpdateState = (name, value) => {
-  return {
-    type: UPDATE_STATE,
-    name,
-    value,
-  };
-};
+// const
+const PREFIX = "HEADER";
 
-export const ToggleState = name => {
-  return {
-    type: TOGGLE_STATE,
-    name,
-  };
-};
+// from common action
+export const actions = action(PREFIX);
+export const { toggleState, updateState } = actions;
 
 export const clickLogout = () => {
-  return () => {
-    Cookies.remove("CN");
-    Cookies.remove("OU");
-    window.location.replace("/login");
+  return dispatch => {
+    dispatch(actions.resetState());
+    dispatch(push("/login"));
   };
 };
+
+export const GetSidebarItems = () => GetAPI(actions)("sidebarItems", GetSidebarItemsAPI);

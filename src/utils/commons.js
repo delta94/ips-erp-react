@@ -1,4 +1,12 @@
+import { notification } from "antd";
 import differenceInMinutes from "date-fns/differenceInMinutes";
+
+export const openNotification = (type, msg) => {
+  notification[type]({
+    message: msg,
+  });
+};
+
 export const propComparator = key => {
   return function compare(a, b) {
     if (a[key] < b[key]) {
@@ -136,4 +144,41 @@ export const calEndTime = (time, estimate) => {
   }
   console.log(`end_time: ${end_time}`);
   return end_time;
+};
+
+const util = (() => {
+  // 获取数据类型
+  let getType = obj => {
+    let type = Object.prototype.toString.call(obj);
+    return /object\s(.*)]/.exec(type)[1];
+  };
+
+  let isType = (obj, type) => {
+    obj = getType(obj).toLowerCase();
+    return obj === type;
+  };
+
+  return {
+    isType: isType,
+  };
+})();
+
+// 将obj对象传入，return一个复制后的对象出来
+export const deepCopy = obj => {
+  // 若不是对象类型或是null类型，直接输出
+  if (typeof obj !== "object" || obj === null) {
+    return obj;
+  }
+
+  let i;
+  // 根据目标是Array类型还是object来设置目标参数的类型
+  let target = util.isType(obj, "array") ? [] : {};
+  for (i in obj) {
+    // 判断当前复制的对象是否为对象类型数据
+    if (typeof obj[i] === "object") {
+      deepCopy(obj[i]);
+    }
+    target[i] = obj[i];
+  }
+  return target;
 };
