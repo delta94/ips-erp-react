@@ -160,21 +160,14 @@ export const MatchRFQPrice = (partNumbers, rfq_items) => {
     const query = partNumbers.reduce((acc, el) => acc + `&part_numbers=${el}`, "");
     MatchRFQPriceAPI(query)
       .then(res => {
-        let msg = ``;
         rfq_items.forEach(element => {
           res.data.forEach(el => {
             if (element.part_number === el.part_number) {
-              msg += `${element.part_number} 有报价记录: ${el.unit_price_rmb} RMB\n`;
               element.unit_price_rmb = el.unit_price_rmb;
             }
           });
         });
-        batch(() => {
-          dispatch(updateState("rfq_items", rfq_items));
-          if (msg) {
-            dispatch(notify(INFO, msg));
-          }
-        });
+        dispatch(updateState("rfq_items", rfq_items));
       })
       .catch(err => err.message);
   };

@@ -26,13 +26,20 @@ const RFQOperation = props => {
                 let rfq_items = [];
                 let item = {};
                 let counter = 0;
+                let seq = 1;
                 for (let key in row) {
                   let n = key.split("-")[1];
-                  item[n] = row[key];
+                  if (n === "remark" && row[key] === undefined) {
+                    item[n] = "";
+                  } else {
+                    item[n] = row[key];
+                  }
                   counter += 1;
                   if (counter === 4) {
+                    item.seq = seq;
                     rfq_items.push(item);
                     counter = 0;
+                    seq += 1;
                     item = {};
                   }
                 }
