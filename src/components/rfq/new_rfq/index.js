@@ -9,6 +9,7 @@ import { resetState } from "../../../actions/rfq_actions";
 
 const RFQNew = () => {
   const [form] = Form.useForm();
+  const [headerForm] = Form.useForm();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -18,9 +19,9 @@ const RFQNew = () => {
   }, [dispatch]);
   return (
     <Card>
-      <RFQNewHeader />
+      <RFQNewHeader headerForm={headerForm} />
       <RFQNewContent form={form} />
-      <RFQNewOperation form={form} />
+      <RFQNewOperation form={form} headerForm={headerForm} />
     </Card>
   );
 };

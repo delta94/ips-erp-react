@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { connect, useDispatch } from "react-redux";
-import { Table, Input, InputNumber, Row, Col, Button, Checkbox, Descriptions } from "antd";
+import { Table, Input, InputNumber, Row, Col, Button, Checkbox, Descriptions, Form, message } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import {
   updateRFQItems,
@@ -24,11 +24,28 @@ const EditableCell = ({ edit, dataIndex, title, inputType, record, index, childr
         />
       );
     } else if (inputType === "text") {
+      if (record[dataIndex]) {
+        return (
+          <Input
+            disabled={!record.no_price}
+            value={record[dataIndex]}
+            onChange={e => dispatch(updateRFQItems(record.seq, dataIndex, e.target.value))}
+          />
+        );
+      }
       return (
-        <Input
-          value={record[dataIndex]}
-          onChange={e => dispatch(updateRFQItems(record.seq, dataIndex, e.target.value))}
-        />
+        <Form.Item
+          name={`${record.seq}-${dataIndex}`}
+          rules={[{ required: record.no_price, message: "必填" }]}
+          style={{ margin: 0 }}
+          initialvalue={record[dataIndex]}
+        >
+          <Input
+            disabled={!record.no_price}
+            value={record[dataIndex]}
+            onChange={e => dispatch(updateRFQItems(record.seq, dataIndex, e.target.value))}
+          />
+        </Form.Item>
       );
     } else if (inputType === "number") {
       return (
@@ -44,6 +61,7 @@ const EditableCell = ({ edit, dataIndex, title, inputType, record, index, childr
 };
 
 const RFQUndoneContent = props => {
+  const [form] = Form.useForm();
   const { rfq, rfq_items } = props;
   const { updateObjectState, PatchRFQ, updateState, GetRFQs, MatchRFQPrice } = props;
   const columns = [
@@ -136,18 +154,20 @@ const RFQUndoneContent = props => {
               />
             </Descriptions.Item>
           </Descriptions>
-          <Table
-            rowKey="seq"
-            pagination={false}
-            columns={mergedColumns}
-            components={{
-              body: {
-                cell: EditableCell,
-              },
-            }}
-            dataSource={rfq_items}
-            style={{ paddingBottom: "16px" }}
-          />
+          <Form form={form}>
+            <Table
+              rowKey="seq"
+              pagination={false}
+              columns={mergedColumns}
+              components={{
+                body: {
+                  cell: EditableCell,
+                },
+              }}
+              dataSource={rfq_items}
+              style={{ paddingBottom: "16px" }}
+            />
+          </Form>
           <Row gutter={16}>
             <Col>
               <Button
@@ -160,7 +180,18 @@ const RFQUndoneContent = props => {
               </Button>
             </Col>
             <Col>
-              <Button onClick={PatchRFQ}>保存</Button>
+              <Button
+                onClick={async () => {
+                  try {
+                    await form.validateFields();
+                    PatchRFQ();
+                  } catch (errInfo) {
+                    console.log("Validate Failed:", errInfo);
+                  }
+                }}
+              >
+                保存
+              </Button>
             </Col>
           </Row>
         </>

@@ -1,9 +1,10 @@
 import React from "react";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { Table, Input, InputNumber, Button, Divider, Form } from "antd";
-import { addRfqItem } from "../../../actions/rfq_actions";
+import { addRfqItem, updateRFQItems } from "../../../actions/rfq_actions";
 
 const EditableCell = ({ fix, dataIndex, title, inputType, record, index, children, ...restProps }) => {
+  const dispatch = useDispatch();
   const inputNode =
     inputType === "number" ? (
       <Form.Item
@@ -16,7 +17,11 @@ const EditableCell = ({ fix, dataIndex, title, inputType, record, index, childre
           },
         ]}
       >
-        <InputNumber style={{ width: "100%" }} />
+        <InputNumber
+          style={{ width: "100%" }}
+          value={record[dataIndex]}
+          onChange={value => dispatch(updateRFQItems(record.seq, dataIndex, value))}
+        />
       </Form.Item>
     ) : (
       <Form.Item
@@ -29,7 +34,10 @@ const EditableCell = ({ fix, dataIndex, title, inputType, record, index, childre
           },
         ]}
       >
-        <Input />
+        <Input
+          value={record[dataIndex]}
+          onChange={e => dispatch(updateRFQItems(record.seq, dataIndex, e.target.value))}
+        />
       </Form.Item>
     );
   return <td {...restProps}>{fix ? children : <>{inputNode}</>}</td>;

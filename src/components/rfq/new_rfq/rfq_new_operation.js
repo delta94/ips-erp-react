@@ -6,7 +6,7 @@ import ImportBtn from "../../common/import_btn_antd";
 import { uploadFile, PostRFQ, newRFQ } from "../../../actions/rfq_actions";
 
 const RFQOperation = props => {
-  const { form } = props;
+  const { form, headerForm } = props;
   const { uploadFile, PostRFQ, newRFQ } = props;
   return (
     <>
@@ -22,6 +22,7 @@ const RFQOperation = props => {
             type="primary"
             onClick={async () => {
               try {
+                await headerForm.validateFields();
                 const row = await form.validateFields();
                 let rfq_items = [];
                 let item = {};

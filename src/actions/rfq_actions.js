@@ -140,11 +140,13 @@ export const PostRFQ = rfq_items => {
 export const PatchRFQ = () => {
   return (dispatch, getState) => {
     let { rfq, rfq_items } = getState().RFQReducer;
-    rfq_items.forEach(element => {
-      if (element.unit_price_rmb !== 0) {
-        rfq.price_set = true;
-      }
+    rfq.price_set = true;
+    const requirement_not_meet = rfq_items.filter(el => {
+      return (!el.no_price && el.unit_price_rmb === 0) || (el.no_price && el.reason === "");
     });
+    if (requirement_not_meet.length !== 0) {
+      rfq.price_set = false;
+    }
     const { _id, ...new_rfq } = rfq;
     PatchItemAPI(_id, "rfqs", { ...new_rfq, rfq_items })
       .then(() => {
@@ -156,14 +158,18 @@ export const PatchRFQ = () => {
 };
 
 export const MatchRFQPrice = (partNumbers, rfq_items) => {
-  return dispatch => {
+  return (dispatch, getState) => {
+    const { currencies, rfq } = getState().RFQReducer;
     const query = partNumbers.reduce((acc, el) => acc + `&part_numbers=${el}`, "");
     MatchRFQPriceAPI(query)
       .then(res => {
         rfq_items.forEach(element => {
           res.data.forEach(el => {
             if (element.part_number === el.part_number) {
+              const rate = currencies.find(el => el.name === rfq.currency).rate;
               element.unit_price_rmb = el.unit_price_rmb;
+              element.unit_price_foreign = Math.round(element.unit_price_rmb / rate);
+              element.total_price = element.unit_price_foreign * element.qty;
             }
           });
         });

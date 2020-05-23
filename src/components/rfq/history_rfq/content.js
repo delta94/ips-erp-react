@@ -41,14 +41,20 @@ const RFQContent = props => {
     {
       title: `单价(${rfq.currency})`,
       dataIndex: "unit_price_foreign",
+      render: value => <div>{value === 0 ? "无单价" : value}</div>,
     },
     {
       title: "小计",
       dataIndex: "total_price",
+      render: value => <div>{value === 0 ? "无小计" : value}</div>,
     },
     {
       title: "备注",
       dataIndex: "remark",
+    },
+    {
+      title: "不报价原因",
+      dataIndex: "reason",
     },
   ];
 
@@ -68,7 +74,7 @@ const RFQContent = props => {
             rowClassName="editable-row"
             footer={() => (
               <Row>
-                <Col offset={18}>
+                <Col offset={22} span={2}>
                   <div>合计金额: {rfq_items.reduce((acc, el) => acc + el.total_price, 0)}</div>
                 </Col>
               </Row>
