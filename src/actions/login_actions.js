@@ -26,7 +26,7 @@ export const PostLogin = params => {
         dispatch(push("/"));
       });
     } catch (error) {
-      dispatch(notify(ERROR, err.message));
+      dispatch(notify(ERROR, error));
     }
   };
 };
@@ -40,7 +40,7 @@ export const ResetPwd = params => {
       });
     } catch (err) {
       // dispatch(enqueueSnackbar(err.message, ERROR));
-      dispatch(notify(ERROR, err.message));
+      dispatch(notify(ERROR, err));
     }
   };
 };
