@@ -26,7 +26,7 @@ export const PostLogin = params => {
         dispatch(push("/"));
       });
     } catch (error) {
-      dispatch(enqueueSnackbar(error.message, ERROR));
+      dispatch(notify(ERROR, err.message));
     }
   };
 };
@@ -36,7 +36,7 @@ export const ResetPwd = params => {
     try {
       await ResetPwdAPI(params);
       batch(() => {
-        dispatch(notify("密码重置成功", SUCCESS));
+        dispatch(notify(SUCCESS, "密码重置成功"));
       });
     } catch (err) {
       // dispatch(enqueueSnackbar(err.message, ERROR));
