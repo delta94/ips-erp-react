@@ -34,12 +34,9 @@ export const PostLogin = params => {
 export const ResetPwd = params => {
   return async dispatch => {
     try {
-      const res = await ResetPwdAPI(params);
-      const { data } = res;
-      console.log(data);
-
+      await ResetPwdAPI(params);
       batch(() => {
-        dispatch(enqueueSnackbar("密码重置为Passw0rd", SUCCESS));
+        dispatch(notify("密码重置成功", SUCCESS));
       });
     } catch (err) {
       // dispatch(enqueueSnackbar(err.message, ERROR));

@@ -70,5 +70,7 @@ div.ant-input-number-handler-wrap {
 }
 
 div.ant-table-container > div > table > tbody > tr > td {
-  padding: 4px;
+  /* padding: 2px 2px 2px 2px; */
+  padding-top: 2px;
+  padding-bottom: 2px;
 }

@@ -10,7 +10,16 @@ function NestedTable() {
   const [orgData, setOrgData] = useState([]);
   const [search, setSearch] = useState("");
   const GetWorkOrder = expr => {
-    GetWorkOrderAPI(`work_order_state=加工中&internal_deadline=${expr}&internal_deadline=${new Date().toISOString()}`)
+    // GetWorkOrderAPI(`work_order_state=加工中&internal_deadline=${expr}&internal_deadline=${new Date().toISOString()}`)
+    //   .then(res => {
+    //     res.data.forEach(element => {
+    //       element.days = moment(element.internal_deadline).diff(moment(), "days");
+    //     });
+    //     setOrgData(res.data);
+    //     setWorkOrders(res.data);
+    //   })
+    //   .catch(err => console.log(err));
+    GetWorkOrderAPI(`work_order_state=加工中&internal_deadline_${expr}=${new Date().toISOString()}`)
       .then(res => {
         res.data.forEach(element => {
           element.days = moment(element.internal_deadline).diff(moment(), "days");

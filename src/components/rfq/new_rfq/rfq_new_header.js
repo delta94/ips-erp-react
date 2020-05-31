@@ -51,7 +51,7 @@ const RFQNewHeader = props => {
             </Form.Item>
           </Col>
           <Col span={5}>
-            <Form.Item name="email_rfq_date" rules={[{ required: true, message: "必填" }]}>
+            <Form.Item name="email_rfq_date" rules={[{ required: true, message: "必填" }]} initialValue={moment()}>
               <DatePicker
                 placeholder="日期"
                 className="full-width"
