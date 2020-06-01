@@ -121,28 +121,21 @@ const EditableTable = () => {
         return editable ? (
           <Space size="small">
             <Tooltip title="保存">
-              <Button onClick={() => save(record._id)} type="primary" shape="round" icon={<SaveOutlined />} />
+              <Button onClick={() => save(record._id)} type="link" icon={<SaveOutlined />} />
             </Tooltip>
             <Tooltip title="取消">
-              <Button onClick={cancel} type="primary" danger shape="round" icon={<UndoOutlined />} />
+              <Button onClick={cancel} type="link" danger icon={<UndoOutlined />} />
             </Tooltip>
           </Space>
         ) : (
           <Space size="small">
             <Tooltip title="编辑">
-              <Button
-                disabled={editingKey !== ""}
-                onClick={() => edit(record)}
-                type="primary"
-                shape="round"
-                icon={<EditOutlined />}
-              />
+              <Button disabled={editingKey !== ""} onClick={() => edit(record)} type="link" icon={<EditOutlined />} />
             </Tooltip>
             <Tooltip title="删除">
               <Button
-                type="primary"
+                type="link"
                 danger
-                shape="round"
                 onClick={async () => {
                   const res = await RemoveItemAPI(record._id, "customers");
                   openNotification(SUCCESS, res.message);
