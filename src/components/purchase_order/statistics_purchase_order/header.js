@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Row, Col, Select, DatePicker, Button, Divider, Form } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import { GetCustomers, GetWOs } from "../../../actions/po_actions";
+import { GetCustomers, GetWOs, GetWOPipeline, updateState } from "../../../actions/po_actions";
 import StatisticsPOContent from "./content";
 
 const StatisticsPOHeader = props => {
   const [form] = Form.useForm();
   const { customers } = props;
-  const { GetCustomers, GetWOs } = props;
+  const { GetCustomers, GetWOs, GetWOPipeline, updateState } = props;
   const [variant, setVariant] = useState("");
 
   useEffect(() => {
@@ -22,10 +22,28 @@ const StatisticsPOHeader = props => {
     }
     if (values.query_type === "order_stat") {
       query += `submit_date_$gte=${values.date_range[0].toISOString()}&submit_date_$lte=${values.date_range[1].toISOString()}`;
+      GetWOs(query);
     } else {
-      query += `shipping_date_$gte=${values.date_range[0].toISOString()}&shipping_date_$lte=${values.date_range[1].toISOString()}`;
+      query = JSON.stringify([
+        {
+          $unwind: {
+            path: "$work_order_items",
+            includeArrayIndex: "index",
+            preserveNullAndEmptyArrays: false,
+          },
+        },
+        {
+          $match: {
+            "work_order_items.shipping_date": {
+              $gte: values.date_range[0].format("YYYY-MM_DD"),
+              $lte: values.date_range[1].format("YYYY-MM_DD"),
+            },
+            customer: values.customer !== undefined ? values.customer : { $exists: true },
+          },
+        },
+      ]);
+      GetWOPipeline(query);
     }
-    GetWOs(query);
   };
 
   return (
@@ -50,7 +68,10 @@ const StatisticsPOHeader = props => {
               <Select
                 className="full-width"
                 placeholder="请选择下单统计 | 发货统计"
-                onChange={value => setVariant(value)}
+                onChange={value => {
+                  setVariant(value);
+                  updateState("work_orders", []);
+                }}
               >
                 <Select.Option value="order_stat">下单统计</Select.Option>
                 <Select.Option value="deliver_stat">发货统计</Select.Option>
@@ -81,4 +102,4 @@ const mapStateToProps = ({ POReducer }) => {
   };
 };
 
-export default connect(mapStateToProps, { GetCustomers, GetWOs })(StatisticsPOHeader);
+export default connect(mapStateToProps, { GetCustomers, GetWOs, GetWOPipeline, updateState })(StatisticsPOHeader);

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Card, Row, Col, Input, Divider, Table, Button, Space, Form } from "antd";
-import { GetItemsPipelineAPI } from "../../../api";
+import { GetItemsPipelineAPI, PatchItemsAPI, UpdateDispatchAPI } from "../../../api";
 import { openNotification } from "../../../utils/commons";
-import { ERROR, INFO } from "../../../utils/constants";
+import { ERROR, INFO, SUCCESS } from "../../../utils/constants";
 
 const PostPO = () => {
   const [form] = Form.useForm();
@@ -19,12 +19,19 @@ const PostPO = () => {
       {
         $unwind: {
           path: "$work_order_items",
+          includeArrayIndex: "work_order_items.index",
           preserveNullAndEmptyArrays: false,
         },
       },
       {
         $match: {
           "work_order_items.sub_work_order_num": sub_work_order_num,
+          "work_order_items.shipping_date": "",
+        },
+      },
+      {
+        $addFields: {
+          "work_order_items._id": "$_id",
         },
       },
       {
@@ -39,16 +46,50 @@ const PostPO = () => {
         if (res.data !== null) {
           setData([...data, ...res.data]);
         } else {
-          openNotification(INFO, "小工号不存在");
+          openNotification(INFO, "小工号不存在或小工号已出货");
         }
       })
       .catch(err => openNotification(ERROR, err));
   };
 
   const onFinish = values => {
-    console.log(values);
-    const sub_work_order_num = data.map(el => el.sub_work_order_num);
-    console.log(sub_work_order_num);
+    const sub_work_order_num = [
+      ...new Set(data.map(el => el.sub_work_order_num.slice(0, el.sub_work_order_num.lastIndexOf("-")))),
+    ];
+
+    const matchItems = sub_work_order_num.map(el => {
+      return { work_order_num: el, index: [], id: "", ...values };
+    });
+
+    data.forEach(element => {
+      matchItems.forEach(el => {
+        if (element.sub_work_order_num.includes(el.work_order_num)) {
+          el.index.push(String(element.index));
+          el.id = element._id;
+          el.shipping_date = new Date().toISOString().split("T")[0];
+        }
+      });
+    });
+
+    UpdateDispatchAPI(matchItems)
+      .then(res => openNotification(SUCCESS, res))
+      .catch(err => openNotification(ERROR, err));
+
+    // 20200603
+    // end up writting specical handler to deal with this
+    // const query = JSON.stringify({
+    //   $or: matchItems,
+    // });
+
+    // PatchItemsAPI("work_orders", query, {
+    //   "work_order_items.$[].shipping_num": values.shipping_num,
+    //   "work_order_items.$[].invoice_num": values.invoice_num,
+    // })
+    //   .then(res => openNotification(SUCCESS, res.message))
+    //   .catch(err => openNotification(ERROR, err));
+    // 20200602
+    // end up using work_order_num to match and update
+    // 20200601
     // from sub_work_order_num, i can derive the work_order_num and thus
     // get request to backend and get the whole document from db
     // update the fields accordingly and post to backend

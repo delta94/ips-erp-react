@@ -1,19 +1,17 @@
 import React, { useEffect } from "react";
-import moment from "moment";
 import { connect } from "react-redux";
 import { Col, Row, Input, Select, DatePicker, Divider, Form } from "antd";
 
-import { GetCustomers, updateObjectState } from "../../../actions/po_actions";
+import { GetCustomers } from "../../../actions/po_actions";
 
 const { Option } = Select;
 
 const PurchaseOrderInfo = props => {
-  const { form } = props;
   // vars from reducer
-  const { customers, work_order } = props;
+  const { customers } = props;
 
   // methods from action
-  const { GetCustomers, updateObjectState } = props;
+  const { GetCustomers } = props;
 
   useEffect(() => {
     GetCustomers();
@@ -42,11 +40,7 @@ const PurchaseOrderInfo = props => {
           </Form.Item>
         </Col>
         <Col span={5}>
-          <Form.Item
-            // initialValue={moment()}
-            name="submit_date"
-            rules={[{ required: true, message: "必填" }]}
-          >
+          <Form.Item name="submit_date" rules={[{ required: true, message: "必填" }]}>
             <DatePicker className="full-width" placeholder="下单日期" />
           </Form.Item>
         </Col>
@@ -68,8 +62,7 @@ const PurchaseOrderInfo = props => {
 const mapStateToProps = ({ POReducer }) => {
   return {
     customers: POReducer.customers,
-    work_order: POReducer.work_order,
   };
 };
 
-export default connect(mapStateToProps, { GetCustomers, updateObjectState })(PurchaseOrderInfo);
+export default connect(mapStateToProps, { GetCustomers })(PurchaseOrderInfo);

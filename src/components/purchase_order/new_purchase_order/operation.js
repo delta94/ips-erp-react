@@ -3,25 +3,25 @@ import { connect } from "react-redux";
 import { Button, Row, Col } from "antd";
 import ImportBtn from "../../common/import_btn_antd";
 
-import { PostWorkOrder, InsertWorkOrderItems, uploadFile, PrintLabel } from "../../../actions/po_actions";
+import { PostWorkOrder, uploadFile, PrintLabel, resetState } from "../../../actions/po_actions";
 
 const NewPOOperation = props => {
+  const { work_order_created } = props;
   const { headerForm, contentForm } = props;
-  const { PostWorkOrder, InsertWorkOrderItems, uploadFile } = props;
+  const { PostWorkOrder, uploadFile, resetState, PrintLabel } = props;
   return (
     <Row gutter={[16, 16]}>
       <Col span={3}>
-        <ImportBtn btnText="上传Excel" uploadFile={uploadFile} form={contentForm} />
-      </Col>
-      <Col span={3}>
-        <Button onClick={PrintLabel}>打印标签</Button>
+        <ImportBtn type="primary" btnText="上传Excel" uploadFile={uploadFile} form={contentForm} />
       </Col>
       <Col span={3}>
         <Button
+          type="primary"
           onClick={async () => {
             try {
               await contentForm.validateFields();
-              InsertWorkOrderItems();
+              const work_order = await headerForm.validateFields();
+              PostWorkOrder(work_order, contentForm);
             } catch (err) {
               console.log(err);
             }
@@ -31,13 +31,21 @@ const NewPOOperation = props => {
         </Button>
       </Col>
       <Col span={3}>
+        <Button type="primary" disabled={!work_order_created} onClick={PrintLabel}>
+          打印标签
+        </Button>
+      </Col>
+      <Col span={3}>
         <Button
+          type="primary"
           // TODO clear the form and reducer
           // need a flag to indicated whether information is already enter
           onClick={async () => {
             try {
-              const values = await headerForm.validateFields();
-              PostWorkOrder(values);
+              headerForm.resetFields();
+              contentForm.resetFields();
+              resetState();
+              // PostWorkOrder(values);
             } catch (err) {
               console.log(err);
             }
@@ -50,4 +58,10 @@ const NewPOOperation = props => {
   );
 };
 
-export default connect(null, { PostWorkOrder, InsertWorkOrderItems, uploadFile, PrintLabel })(NewPOOperation);
+const mapStateToProps = ({ POReducer }) => {
+  return {
+    work_order_created: POReducer.work_order_created,
+  };
+};
+
+export default connect(mapStateToProps, { PostWorkOrder, uploadFile, PrintLabel, resetState })(NewPOOperation);

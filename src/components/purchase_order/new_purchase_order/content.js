@@ -59,16 +59,16 @@ const PurchaseOrderContent = props => {
   const { addWorkOrderItem } = props;
 
   const columns = [
-    {
-      title: "小工号",
-      dataIndex: "sub_work_order_num",
-      width: "28%",
-      editable: false,
-    },
+    // {
+    //   title: "小工号",
+    //   dataIndex: "sub_work_order_num",
+    //   width: "28%",
+    //   editable: false,
+    // },
     {
       title: "图号",
       dataIndex: "part_number",
-      width: "29%",
+      width: "35%",
       editable: true,
     },
     {
@@ -118,32 +118,30 @@ const PurchaseOrderContent = props => {
       <Divider orientation="left" style={{ color: "#333", fontWeight: "normal" }}>
         订单内容
       </Divider>
-      {work_order_created && (
-        <Table
-          pagination={false}
-          rowKey="sub_work_order_num"
-          size="small"
-          components={{
-            body: {
-              cell: EditableCell,
-            },
-          }}
-          bordered
-          dataSource={work_order_items}
-          columns={mergedColumns}
-          rowClassName="editable-row"
-          footer={() => (
-            <Row justify="space-between" align="middle">
-              <Col>
-                <Button onClick={addWorkOrderItem}>添加小工号</Button>
-              </Col>
-              <Col>
-                <div>总金额: {total_price}</div>
-              </Col>
-            </Row>
-          )}
-        />
-      )}
+      <Table
+        pagination={false}
+        rowKey="sub_work_order_num"
+        size="small"
+        components={{
+          body: {
+            cell: EditableCell,
+          },
+        }}
+        bordered
+        dataSource={work_order_items}
+        columns={mergedColumns}
+        rowClassName="editable-row"
+        footer={() => (
+          <Row justify="space-between" align="middle">
+            <Col>
+              <Button onClick={addWorkOrderItem}>添加小工号</Button>
+            </Col>
+            <Col>
+              <div>总金额: {total_price}</div>
+            </Col>
+          </Row>
+        )}
+      />
     </>
   );
 };

@@ -61,10 +61,8 @@ export const updateWorkOrderItemRemark = (work_order, items, remark) => {
 
 export const addWorkOrderItem = () => {
   return (dispatch, getState) => {
-    let { work_order_num, work_order_items } = getState().POReducer;
-    const len = work_order_items.length;
+    let { work_order_items } = getState().POReducer;
     const item = {
-      sub_work_order_num: `${work_order_num}-${len + 1}`,
       part_number: "",
       unit: "",
       qty: "",
@@ -78,13 +76,14 @@ export const addWorkOrderItem = () => {
 export const PrintLabel = () => {
   return async (dispatch, getState) => {
     const state = getState();
-    const { work_order, work_order_items } = state.POReducer;
+    const { work_order } = state.POReducer;
+    const { work_order_items } = work_order;
 
     const data = work_order_items.map(element => {
       return {
         item_id: element.sub_work_order_num,
-        po_submit_date: work_order.submit_date,
-        internal_dateline: work_order.internal_deadline,
+        po_submit_date: work_order.submit_date.format("YYYY-MM-DD"),
+        internal_dateline: work_order.internal_deadline.format("YYYY-MM-DD"),
         qty: element.qty,
         item_num: element.part_number,
         unit: element.unit,
@@ -101,12 +100,10 @@ export const PrintLabel = () => {
 };
 
 export const uploadFile = (data, form) => {
-  return (dispatch, getState) => {
-    const state = getState();
-    const { work_order } = state.POReducer;
+  return dispatch => {
     let total_price = 0;
     data.forEach(item => {
-      let nPrefix = `${work_order.work_order_num}-${item["#"]}`;
+      let nPrefix = `seq-${item["#"]}`;
       let pn = `${nPrefix}-part_number`;
       let unit = `${nPrefix}-unit`;
       let qty = `${nPrefix}-qty`;
@@ -120,7 +117,7 @@ export const uploadFile = (data, form) => {
     });
     const work_order_items = data.map(item => {
       return {
-        sub_work_order_num: `${work_order.work_order_num}-${item["#"]}`,
+        sub_work_order_num: `seq-${item["#"]}`,
         part_number: item.part_number,
         unit: item.unit,
         qty: item.qty,
@@ -165,14 +162,15 @@ export const GetWOs = queryParams => {
   };
 };
 
-export const PostWorkOrder = work_order => {
+export const PostWorkOrder = (work_order, form) => {
   return async (dispatch, getState) => {
     const { username } = getState().HeaderReducer;
+    const { work_order_items } = getState().POReducer;
 
     work_order["submit_by"] = username;
 
     try {
-      const res = await PostWorkOrderAPI(work_order);
+      const res = await PostWorkOrderAPI({ ...work_order, work_order_items });
       let { data } = res;
       data.submit_date = moment(data.submit_date);
       data.customer_deadline = moment(data.customer_deadline);
@@ -181,16 +179,14 @@ export const PostWorkOrder = work_order => {
         // dispatch(updateState("new", false));
         dispatch(updateState("work_order_created", true));
         // dispatch(updateState("editing", true));
-        dispatch(updateState("work_order_num", data.work_order_num));
+        // dispatch(updateState("work_order_num", data.work_order_num));
         dispatch(updateState("cad_dir", data.cad_dir));
         dispatch(updateState("work_order", data));
-        dispatch(
-          updateState("work_order_items", [
-            { sub_work_order_num: `${data.work_order_num}-1`, part_number: "", unit: "", qty: "", unit_price: "" },
-          ])
-        );
+        // dispatch(updateState("work_order_items", data.work_order_items));
         dispatch(notify(SUCCESS, "新订单创建成功! "));
       });
+      const electron = process.env.NODE_ENV !== "development" && window.require("electron");
+      process.env.NODE_ENV !== "development" && electron.shell.openItem(data.cad_dir);
     } catch (err) {
       dispatch(notify(ERROR, err.message));
     }
