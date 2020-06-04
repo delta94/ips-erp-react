@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import { Col, Row, Input, Select, DatePicker, Divider, Form } from "antd";
+import { Col, Row, Input, Select, DatePicker, Divider, Form, Alert } from "antd";
 
 import { GetCustomers } from "../../../actions/po_actions";
 
@@ -8,7 +8,7 @@ const { Option } = Select;
 
 const PurchaseOrderInfo = props => {
   // vars from reducer
-  const { customers } = props;
+  const { customers, work_order, work_order_created } = props;
 
   // methods from action
   const { GetCustomers } = props;
@@ -19,6 +19,9 @@ const PurchaseOrderInfo = props => {
 
   return (
     <>
+      {work_order_created && (
+        <Alert message={`下单工号为:  ${work_order.work_order_num}`} type="info" showIcon banner />
+      )}
       <Divider orientation="left" style={{ color: "#333", fontWeight: "normal" }}>
         订单信息
       </Divider>
@@ -62,6 +65,8 @@ const PurchaseOrderInfo = props => {
 const mapStateToProps = ({ POReducer }) => {
   return {
     customers: POReducer.customers,
+    work_order: POReducer.work_order,
+    work_order_created: POReducer.work_order_created,
   };
 };
 

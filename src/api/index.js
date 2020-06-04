@@ -117,7 +117,10 @@ export const GetItemsPipelineAPI = async (collection, query) => {
 
 // migration to antd
 export const GetWorkOrderAPI = async queryParams => {
-  return await axios.get(`/work_order?${queryParams}`);
+  if (queryParams) {
+    return await axios.get(`/work_order?${queryParams}`);
+  }
+  return await axios.get(`/work_order`);
 };
 
 export const PostWorkOrderAPI = async params => {

@@ -16,11 +16,17 @@ const StatisticsPOHeader = props => {
   }, []);
 
   const onFinish = values => {
+    console.log(values);
     let query = "";
     if (values.customer !== undefined && values.customer !== "") {
       query += `customer=${values.customer}&`;
     }
     if (values.query_type === "order_stat") {
+      if (values.date_range[0].format("L") === values.date_range[1].format("L")) {
+        // query += `submit_date=${values.date_range[0].toISOString()}`;
+        values.date_range[0].set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+        values.date_range[1].set({ hour: 23, minute: 59, second: 59, millisecond: 100 });
+      }
       query += `submit_date_$gte=${values.date_range[0].toISOString()}&submit_date_$lte=${values.date_range[1].toISOString()}`;
       GetWOs(query);
     } else {
@@ -35,8 +41,8 @@ const StatisticsPOHeader = props => {
         {
           $match: {
             "work_order_items.shipping_date": {
-              $gte: values.date_range[0].format("YYYY-MM_DD"),
-              $lte: values.date_range[1].format("YYYY-MM_DD"),
+              $gte: values.date_range[0].format("YYYY-MM-DD"),
+              $lte: values.date_range[1].format("YYYY-MM-DD"),
             },
             customer: values.customer !== undefined ? values.customer : { $exists: true },
           },

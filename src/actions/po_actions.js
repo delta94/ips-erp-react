@@ -62,7 +62,9 @@ export const updateWorkOrderItemRemark = (work_order, items, remark) => {
 export const addWorkOrderItem = () => {
   return (dispatch, getState) => {
     let { work_order_items } = getState().POReducer;
+    const len = work_order_items.length;
     const item = {
+      sub_work_order_num: `seq-${len + 1}`,
       part_number: "",
       unit: "",
       qty: "",

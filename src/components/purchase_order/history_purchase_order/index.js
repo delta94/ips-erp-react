@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Col, Row, Input, Select, Divider, Table, Card } from "antd";
 import POHistoryContent from "./content";
 
-import { updateState, GetWOPipeline, resetState } from "../../../actions/po_actions";
+import { updateState, GetWOPipeline, resetState, GetWOs } from "../../../actions/po_actions";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -21,7 +21,7 @@ const POHistory = props => {
   const { query_type, work_orders } = props;
 
   // methods from actions
-  const { updateState, GetWOPipeline, resetState } = props;
+  const { updateState, GetWOPipeline, resetState, GetWOs } = props;
   useEffect(() => {
     return () => {
       resetState();
@@ -29,14 +29,18 @@ const POHistory = props => {
   }, []);
 
   const GetWO = value => {
-    const query = JSON.stringify([
-      {
-        $match: {
-          [query_type]: { $regex: value, $options: "$i" },
+    if (query_type !== "") {
+      const query = JSON.stringify([
+        {
+          $match: {
+            [query_type]: { $regex: value, $options: "$i" },
+          },
         },
-      },
-    ]);
-    GetWOPipeline(query);
+      ]);
+      GetWOPipeline(query);
+    } else {
+      GetWOs();
+    }
   };
   const columns = [
     {
@@ -68,12 +72,9 @@ const POHistory = props => {
           </Divider>
           <Row gutter={[16, 16]}>
             <Col span={8}>
-              <Select
-                placeholder="请选择PO# | 运单号 | 发票号"
-                className="full-width"
-                onChange={value => updateState("query_type", value)}
-              >
+              <Select placeholder="请选择" className="full-width" onChange={value => updateState("query_type", value)}>
                 <Option value="work_order_num">大工号</Option>
+                <Option value="po_num">PO#</Option>
                 <Option value="shipping_num">运单号</Option>
                 <Option value="invoice_num">发票号</Option>
               </Select>
@@ -98,4 +99,4 @@ const mapStateToProps = ({ POReducer }) => {
   };
 };
 
-export default connect(mapStateToProps, { updateState, GetWOPipeline, resetState })(POHistory);
+export default connect(mapStateToProps, { updateState, GetWOPipeline, resetState, GetWOs })(POHistory);

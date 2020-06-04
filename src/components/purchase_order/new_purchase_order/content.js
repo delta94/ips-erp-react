@@ -59,12 +59,12 @@ const PurchaseOrderContent = props => {
   const { addWorkOrderItem } = props;
 
   const columns = [
-    // {
-    //   title: "小工号",
-    //   dataIndex: "sub_work_order_num",
-    //   width: "28%",
-    //   editable: false,
-    // },
+    {
+      title: "序号",
+      width: "5%",
+      render: (data, record, index) => <div>{index + 1}</div>,
+      editable: false,
+    },
     {
       title: "图号",
       dataIndex: "part_number",
