@@ -23,6 +23,7 @@ const POHistory = props => {
   // methods from actions
   const { updateState, GetWOPipeline, resetState, GetWOs } = props;
   useEffect(() => {
+    GetWOs();
     return () => {
       resetState();
     };

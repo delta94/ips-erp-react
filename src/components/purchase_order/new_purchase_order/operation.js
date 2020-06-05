@@ -3,12 +3,12 @@ import { connect } from "react-redux";
 import { Button, Row, Col } from "antd";
 import ImportBtn from "../../common/import_btn_antd";
 
-import { PostWorkOrder, uploadFile, PrintLabel, resetState } from "../../../actions/po_actions";
+import { PostWorkOrder, uploadFile, PrintLabel, resetState, GetCustomers } from "../../../actions/po_actions";
 
 const NewPOOperation = props => {
   const { work_order_created } = props;
   const { headerForm, contentForm } = props;
-  const { PostWorkOrder, uploadFile, resetState, PrintLabel } = props;
+  const { PostWorkOrder, uploadFile, resetState, PrintLabel, GetCustomers } = props;
   return (
     <Row gutter={[16, 16]}>
       <Col span={3}>
@@ -45,6 +45,7 @@ const NewPOOperation = props => {
               headerForm.resetFields();
               contentForm.resetFields();
               resetState();
+              GetCustomers();
               // PostWorkOrder(values);
             } catch (err) {
               console.log(err);
@@ -64,4 +65,6 @@ const mapStateToProps = ({ POReducer }) => {
   };
 };
 
-export default connect(mapStateToProps, { PostWorkOrder, uploadFile, PrintLabel, resetState })(NewPOOperation);
+export default connect(mapStateToProps, { PostWorkOrder, uploadFile, PrintLabel, resetState, GetCustomers })(
+  NewPOOperation
+);
