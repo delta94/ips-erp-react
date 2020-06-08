@@ -7,6 +7,7 @@ import { ERROR, INFO, SUCCESS } from "../../../utils/constants";
 const PostPO = () => {
   const [form] = Form.useForm();
   const [data, setData] = useState([]);
+  const [search, setSearch] = useState("");
 
   const columns = [
     { title: "序号", render: (text, record, index) => <div>{index + 1}</div> },
@@ -49,7 +50,8 @@ const PostPO = () => {
           openNotification(INFO, "小工号不存在或小工号已出货");
         }
       })
-      .catch(err => openNotification(ERROR, err));
+      .catch(err => openNotification(ERROR, err))
+      .finally(() => setSearch(""));
   };
 
   const onFinish = values => {
@@ -99,7 +101,13 @@ const PostPO = () => {
     <Card>
       <Space direction="vertical" className="full-width">
         <Divider orientation="left">出货扫描</Divider>
-        <Input.Search placeholder="扫描或输入小工号" onSearch={value => GetWorkOrderItem(value)} />
+        <Input.Search
+          placeholder="扫描或输入小工号"
+          value={search}
+          onChange={({ target: { value } }) => setSearch(value)}
+          // onSearch={value => GetWorkOrderItem(value)}
+          onPressEnter={() => GetWorkOrderItem(search)}
+        />
         <Form form={form} onFinish={onFinish}>
           <Row gutter={[16, 16]}>
             <Col span={12}>

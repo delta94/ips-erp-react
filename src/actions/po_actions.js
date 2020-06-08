@@ -81,11 +81,21 @@ export const PrintLabel = () => {
     const { work_order } = state.POReducer;
     const { work_order_items } = work_order;
 
+    let submit_date = "";
+    let internal_deadline = "";
+    try {
+      submit_date = work_order.submit_date.format("YYYY-MM-DD");
+      internal_deadline = work_order.internal_deadline.format("YYYY-MM-DD");
+    } catch (err) {
+      submit_date = work_order.submit_date.split("T")[0];
+      internal_deadline = work_order.internal_deadline.split("T")[0];
+    }
+
     const data = work_order_items.map(element => {
       return {
         item_id: element.sub_work_order_num,
-        po_submit_date: work_order.submit_date.format("YYYY-MM-DD"),
-        internal_dateline: work_order.internal_deadline.format("YYYY-MM-DD"),
+        po_submit_date: submit_date,
+        internal_dateline: internal_deadline,
         qty: element.qty,
         item_num: element.part_number,
         unit: element.unit,

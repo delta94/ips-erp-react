@@ -56,6 +56,8 @@ const HistoryPOContent = props => {
     { title: "单位", dataIndex: "unit" },
     { title: "单价", dataIndex: "unit_price" },
     { title: "小计", dataIndex: "total_price" },
+    { title: "运单号", dataIndex: "shipping_num" },
+    { title: "发票号", dataIndex: "invoice_num" },
     { title: "备注", render: record => <div>{record.remark === "继续加工" ? "" : record.remark}</div> },
   ];
 

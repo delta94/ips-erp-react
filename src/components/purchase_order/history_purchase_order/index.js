@@ -61,8 +61,16 @@ const POHistory = props => {
     },
     { title: "PO#", dataIndex: "po_num" },
     { title: "厂内交期", dataIndex: "internal_deadline", render: dataIndex => <div>{dataIndex.split("T")[0]}</div> },
-    { title: "发票号", dataIndex: "invoice_num" },
-    { title: "运单号", dataIndex: "shipping_num" },
+    {
+      title: "出货完成",
+      render: record => (
+        <div>
+          {record.work_order_items.reduce((flag, el) => flag && el.shipping_num !== "", true) ? "完成" : "未完成"}
+        </div>
+      ),
+    },
+    // { title: "发票号", dataIndex: "invoice_num" },
+    // { title: "运单号", dataIndex: "shipping_num" },
   ];
   return (
     <Card>
