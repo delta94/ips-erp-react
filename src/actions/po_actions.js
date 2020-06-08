@@ -91,15 +91,34 @@ export const PrintLabel = () => {
       internal_deadline = work_order.internal_deadline.split("T")[0];
     }
 
-    const data = work_order_items.map(element => {
-      return {
-        item_id: element.sub_work_order_num,
-        po_submit_date: submit_date,
-        internal_dateline: internal_deadline,
-        qty: element.qty,
-        item_num: element.part_number,
-        unit: element.unit,
-      };
+    let counter = 0;
+    let obj = {};
+    let data = [];
+    work_order_items.forEach((element, index) => {
+      if ((index + 1) % 2 === 0) {
+        obj.sub_work_order_num1 = element.sub_work_order_num;
+        obj.submit_date1 = submit_date;
+        obj.internal_deadline1 = internal_deadline;
+        obj.qty1 = element.qty;
+        obj.unit1 = element.unit;
+        obj.part_number1 = element.part_number;
+        data.push(obj);
+      } else {
+        obj.sub_work_order_num = element.sub_work_order_num;
+        obj.submit_date = submit_date;
+        obj.internal_deadline = internal_deadline;
+        obj.qty = element.qty;
+        obj.unit_price = element.unit;
+        obj.part_number = element.part_number;
+      }
+      // return {
+      //   sub_work_order_num: element.sub_work_order_num,
+      //   submit_date: submit_date,
+      //   internal_deadline: internal_deadline,
+      //   qty: element.qty,
+      //   part_number: element.part_number,
+      //   unit: element.unit,
+      // };
     });
     data.forEach(element => {
       PrintLabelAPI(element)
