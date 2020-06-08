@@ -131,7 +131,7 @@ const RFQUndoneContent = props => {
       {rfq.customer && (
         <>
           <Row>
-            <Col offset={22} span={2}>
+            <Col span={2}>
               <Button
                 onClick={() => {
                   updateState("showContent", false);

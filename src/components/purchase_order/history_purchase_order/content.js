@@ -76,7 +76,7 @@ const HistoryPOContent = props => {
 
   const backButton = (
     <Row>
-      <Col offset={22} span={2}>
+      <Col span={2}>
         <Button block icon={<ArrowLeftOutlined />} onClick={() => setShowContent(false)}>
           返回
         </Button>
