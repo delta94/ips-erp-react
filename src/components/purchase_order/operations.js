@@ -66,7 +66,7 @@ const PurchaseOrderOperation = props => {
           <ImportBtn type="primary" btnText="上传Excel" uploadFile={uploadFile} />
         </Col>
         <Col flex={1}>
-          <Button type="primary" block onClick={InsertWorkOrderItems}>
+          <Button type="primary" block onClick={() => InsertWorkOrderItems(true)}>
             提交
           </Button>
         </Col>

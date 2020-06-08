@@ -132,11 +132,11 @@ const PurchaseOrderContent = props => {
         columns={mergedColumns}
         rowClassName="editable-row"
         footer={() => (
-          <Row justify="space-between" align="middle">
-            <Col>
+          <Row>
+            {/* <Col>
               <Button onClick={addWorkOrderItem}>添加小工号</Button>
-            </Col>
-            <Col>
+            </Col> */}
+            <Col offset={22} span={2}>
               <div>总金额: {total_price}</div>
             </Col>
           </Row>

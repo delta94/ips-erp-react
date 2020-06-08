@@ -195,20 +195,22 @@ export const PostWorkOrder = (work_order, form) => {
   };
 };
 
-export const InsertWorkOrderItems = () => {
+export const InsertWorkOrderItems = openFolder => {
   return async (dispatch, getState) => {
     let { work_order_items, work_order } = getState().POReducer;
-    work_order_items.forEach(element => {
-      element.current_department = "业务部";
-    });
+    // work_order_items.forEach(element => {
+    //   element.current_department = "业务部";
+    // });
 
     try {
       const res = await PatchWorkOrderAPI(work_order._id, {
         work_order_state: work_order.work_order_state,
         work_order_items: work_order_items,
       });
-      const electron = process.env.NODE_ENV !== "development" && window.require("electron");
-      process.env.NODE_ENV !== "development" && electron.shell.openItem(work_order.cad_dir);
+      if (openFolder) {
+        const electron = process.env.NODE_ENV !== "development" && window.require("electron");
+        process.env.NODE_ENV !== "development" && electron.shell.openItem(work_order.cad_dir);
+      }
       dispatch(notify(SUCCESS, "保存成功! "));
     } catch (err) {
       dispatch(notify(ERROR, err.message));
