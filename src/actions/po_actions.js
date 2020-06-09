@@ -75,7 +75,7 @@ export const addWorkOrderItem = () => {
   };
 };
 
-export const PrintLabel = () => {
+export const PrintLabel = printPartNum => {
   return async (dispatch, getState) => {
     const state = getState();
     const { work_order } = state.POReducer;
@@ -91,7 +91,6 @@ export const PrintLabel = () => {
       internal_deadline = work_order.internal_deadline.split("T")[0];
     }
 
-    let counter = 0;
     let obj = {};
     let data = [];
     work_order_items.forEach((element, index) => {
@@ -101,25 +100,28 @@ export const PrintLabel = () => {
         obj.internal_deadline1 = internal_deadline;
         obj.qty1 = element.qty;
         obj.unit1 = element.unit;
-        obj.part_number1 = element.part_number;
+        if (printPartNum) {
+          obj.part_number1 = element.part_number;
+        }
         data.push(obj);
+        obj = {};
       } else {
         obj.sub_work_order_num = element.sub_work_order_num;
         obj.submit_date = submit_date;
         obj.internal_deadline = internal_deadline;
         obj.qty = element.qty;
-        obj.unit_price = element.unit;
-        obj.part_number = element.part_number;
+        obj.unit = element.unit;
+        if (printPartNum) {
+          obj.part_number = element.part_number;
+        }
+        if (index + 1 === work_order_items.length) {
+          {
+            data.push(obj);
+          }
+        }
       }
-      // return {
-      //   sub_work_order_num: element.sub_work_order_num,
-      //   submit_date: submit_date,
-      //   internal_deadline: internal_deadline,
-      //   qty: element.qty,
-      //   part_number: element.part_number,
-      //   unit: element.unit,
-      // };
     });
+    console.log(data);
     data.forEach(element => {
       PrintLabelAPI(element)
         .then(res => console.log(res))

@@ -171,6 +171,8 @@ const RFQUndoneContent = props => {
           <Row gutter={16}>
             <Col>
               <Button
+                block
+                type="primary"
                 onClick={() => {
                   const electron = process.env.NODE_ENV !== "development" && window.require("electron");
                   process.env.NODE_ENV !== "development" && electron.shell.openItem(rfq.rfq_folder);
@@ -181,6 +183,8 @@ const RFQUndoneContent = props => {
             </Col>
             <Col>
               <Button
+                type="primary"
+                block
                 onClick={async () => {
                   try {
                     await form.validateFields();

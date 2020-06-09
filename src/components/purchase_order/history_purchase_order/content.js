@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { Descriptions, Divider, Table, Row, Col, Button, Space, Select } from "antd";
+import { Descriptions, Divider, Table, Row, Col, Button, Space, Select, Checkbox } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { CSVLink } from "react-csv";
 
@@ -14,6 +14,7 @@ import {
 const HistoryPOContent = props => {
   const { setShowContent } = props;
   const [csvData, setCsvData] = useState([]);
+  const [printPartNum, setPrintPartNum] = useState(true);
   const { work_order, work_order_states } = props;
   const { GetWorkOrderStates, updateWorkOrderItemRemark, InsertWorkOrderItems, PrintLabel } = props;
   const [selectedRows, setSelectedRows] = useState([]);
@@ -88,11 +89,14 @@ const HistoryPOContent = props => {
     <Row gutter={[16, 16]}>
       <Col span={3}>
         <CSVLink data={csvData} filename={`${work_order.work_order_num}.csv`}>
-          <Button block>导出Excel</Button>
+          <Button type="primary" block>
+            导出Excel
+          </Button>
         </CSVLink>
       </Col>
       <Col span={3}>
         <Select
+          // type="primary"
           placeholder="设为"
           className="full-width"
           onChange={value => updateWorkOrderItemRemark(work_order, selectedRows, value)}
@@ -104,13 +108,22 @@ const HistoryPOContent = props => {
           ))}
         </Select>
       </Col>
-      <Col span={3}>
-        <Button onClick={PrintLabel} block>
-          打印标签
-        </Button>
+      <Col span={6}>
+        <Row>
+          <Col span={12}>
+            <Button type="primary" onClick={() => PrintLabel(printPartNum)} block>
+              打印标签
+            </Button>
+          </Col>
+          <Col span={12} align="center" style={{ alignSelf: "center" }}>
+            <Checkbox checked={printPartNum} onChange={() => setPrintPartNum(!printPartNum)}>
+              打印图号
+            </Checkbox>
+          </Col>
+        </Row>
       </Col>
       <Col span={3}>
-        <Button block onClick={InsertWorkOrderItems}>
+        <Button type="primary" block onClick={InsertWorkOrderItems}>
           保存
         </Button>
       </Col>

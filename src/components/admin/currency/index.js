@@ -143,7 +143,9 @@ const Currency = () => {
           />
         </Col>
         <Col span={12}>
-          <Button onClick={() => setVisible(true)}>添加新货币</Button>
+          <Button type="primary" onClick={() => setVisible(true)}>
+            添加新货币
+          </Button>
         </Col>
       </Row>
       <Table rowKey="_id" columns={columns} dataSource={currencies} />

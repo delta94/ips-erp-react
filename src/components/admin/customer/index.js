@@ -193,7 +193,9 @@ const EditableTable = () => {
           />
         </Col>
         <Col span={12}>
-          <Button onClick={() => setVisible(true)}>添加新客户</Button>
+          <Button type="primary" onClick={() => setVisible(true)}>
+            添加新客户
+          </Button>
         </Col>
       </Row>
       <Form form={form} component={false}>

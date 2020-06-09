@@ -15,10 +15,11 @@ const RFQOperation = props => {
       </Divider>
       <Row gutter={16} justify="start">
         <Col>
-          <ImportBtn type="primary" btnText="上传Excel" uploadFile={uploadFile} form={form} />
+          <ImportBtn block type="primary" btnText="上传Excel" uploadFile={uploadFile} form={form} />
         </Col>
         <Col>
           <Button
+            block
             type="primary"
             onClick={async () => {
               try {
@@ -54,10 +55,12 @@ const RFQOperation = props => {
           </Button>
         </Col>
         <Col>
-          <Button type="primary">创建文件夹</Button>
+          <Button block type="primary">
+            创建文件夹
+          </Button>
         </Col>
         <Col>
-          <Button type="primary" onClick={newRFQ}>
+          <Button block type="primary" onClick={newRFQ}>
             新报价
           </Button>
         </Col>

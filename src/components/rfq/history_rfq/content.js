@@ -84,6 +84,8 @@ const RFQContent = props => {
           <Row gutter={16}>
             <Col span={2}>
               <Button
+                type="primary"
+                block
                 onClick={() => {
                   const electron = process.env.NODE_ENV !== "development" && window.require("electron");
                   process.env.NODE_ENV !== "development" && electron.shell.openItem(rfq.rfq_folder);
@@ -94,11 +96,15 @@ const RFQContent = props => {
             </Col>
             <Col span={2}>
               <CSVLink data={csvData} filename={`${rfq.email_rfq_num}.csv`}>
-                <Button>导出Excel</Button>
+                <Button block type="primary">
+                  导出Excel
+                </Button>
               </CSVLink>
             </Col>
             <Col span={2}>
-              <Button onClick={PatchRFQ}>保存</Button>
+              <Button block type="primary" onClick={PatchRFQ}>
+                保存
+              </Button>
             </Col>
           </Row>
         </>

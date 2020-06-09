@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
-import { Button, Row, Col } from "antd";
+import { Button, Row, Col, Checkbox } from "antd";
 import ImportBtn from "../../common/import_btn_antd";
 
 import { PostWorkOrder, uploadFile, PrintLabel, resetState, GetCustomers } from "../../../actions/po_actions";
 
 const NewPOOperation = props => {
+  const [printPartNum, setPrintPartNum] = useState(true);
   const { work_order_created } = props;
   const { headerForm, contentForm } = props;
   const { PostWorkOrder, uploadFile, resetState, PrintLabel, GetCustomers } = props;
@@ -16,6 +17,7 @@ const NewPOOperation = props => {
       </Col>
       <Col span={3}>
         <Button
+          block
           type="primary"
           onClick={async () => {
             try {
@@ -30,14 +32,28 @@ const NewPOOperation = props => {
           提交订单
         </Button>
       </Col>
-      <Col span={3}>
-        <Button type="primary" disabled={!work_order_created} onClick={PrintLabel}>
-          打印标签
-        </Button>
+      <Col span={6}>
+        <Row>
+          <Col span={12}>
+            <Button block type="primary" disabled={!work_order_created} onClick={() => PrintLabel(printPartNum)}>
+              打印标签
+            </Button>
+          </Col>
+          <Col span={12} align="center" style={{ alignSelf: "center" }}>
+            <Checkbox
+              checked={printPartNum}
+              onChange={() => setPrintPartNum(!printPartNum)}
+              disabled={!work_order_created}
+            >
+              打印图号
+            </Checkbox>
+          </Col>
+        </Row>
       </Col>
       <Col span={3}>
         <Button
           type="primary"
+          block
           // TODO clear the form and reducer
           // need a flag to indicated whether information is already enter
           onClick={async () => {

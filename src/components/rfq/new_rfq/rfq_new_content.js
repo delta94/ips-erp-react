@@ -107,7 +107,11 @@ const RFQContent = props => {
             dataSource={rfq_items}
             columns={mergedColumns}
             rowClassName="editable-row"
-            footer={() => <Button onClick={addRfqItem}>添加图号</Button>}
+            footer={() => (
+              <Button type="primary" onClick={addRfqItem}>
+                添加图号
+              </Button>
+            )}
           />
         </Form>
       )}
