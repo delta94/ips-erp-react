@@ -103,7 +103,7 @@ export const PrintLabel = printPartNum => {
         if (printPartNum) {
           obj.part_number1 = element.part_number;
         } else {
-          obj.part_number1 = "";
+          obj.part_number1 = "  ";
         }
         data.push(obj);
         obj = {};
@@ -116,7 +116,7 @@ export const PrintLabel = printPartNum => {
         if (printPartNum) {
           obj.part_number = element.part_number;
         } else {
-          obj.part_number = "";
+          obj.part_number = "  ";
         }
 
         if (index + 1 === work_order_items.length) {
