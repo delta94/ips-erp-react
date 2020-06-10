@@ -101,7 +101,9 @@ export const PrintLabel = printPartNum => {
         obj.qty1 = element.qty;
         obj.unit1 = element.unit;
         if (printPartNum) {
-          obj.part_number1 = `图号:${element.part_number}`;
+          obj.part_number1 = element.part_number;
+        } else {
+          obj.part_number1 = "";
         }
         data.push(obj);
         obj = {};
@@ -112,8 +114,11 @@ export const PrintLabel = printPartNum => {
         obj.qty = element.qty;
         obj.unit = element.unit;
         if (printPartNum) {
-          obj.part_number = `图号:${element.part_number}`;
+          obj.part_number = element.part_number;
+        } else {
+          obj.part_number = "";
         }
+
         if (index + 1 === work_order_items.length) {
           {
             data.push(obj);
