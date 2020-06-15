@@ -53,9 +53,8 @@ Axios.interceptors.response.use(
     }
   },
   error => {
-    console.log(error);
     if (error.response.status === 401) {
-      // window.location.replace("/login");
+      window.location.replace("/login");
     } else if (error.response.status === 400) {
       return Promise.reject(error.response.data);
     }
