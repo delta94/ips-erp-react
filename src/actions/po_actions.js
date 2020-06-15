@@ -131,7 +131,6 @@ export const PrintLabel = (printPartNum, selectedRows) => {
         }
       }
     });
-    console.log(data);
     data.forEach(element => {
       PrintLabelAPI(element)
         .then(res => console.log(res))
@@ -190,7 +189,7 @@ export const GetWorkOrder = queryParams => {
         dispatch(updateState("work_order_items", data.work_order_items));
         dispatch(updateState("work_order_created", true));
       })
-      .catch(err => dispatch(notify(ERROR, err.message)));
+      .catch(err => dispatch(notify(ERROR, err)));
   };
 };
 
@@ -201,7 +200,7 @@ export const GetWOs = queryParams => {
         const data = res.data;
         dispatch(updateState("work_orders", data));
       })
-      .catch(err => dispatch(notify(ERROR, err.message)));
+      .catch(err => dispatch(notify(ERROR, err)));
   };
 };
 
@@ -231,7 +230,7 @@ export const PostWorkOrder = (work_order, form) => {
       const electron = process.env.NODE_ENV !== "development" && window.require("electron");
       process.env.NODE_ENV !== "development" && electron.shell.openItem(data.cad_dir);
     } catch (err) {
-      dispatch(notify(ERROR, err.message));
+      dispatch(notify(ERROR, err));
     }
   };
 };
@@ -254,7 +253,7 @@ export const InsertWorkOrderItems = openFolder => {
       }
       dispatch(notify(SUCCESS, "保存成功! "));
     } catch (err) {
-      dispatch(notify(ERROR, err.message));
+      dispatch(notify(ERROR, err));
     }
   };
 };

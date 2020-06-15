@@ -15,9 +15,9 @@ const AppMenu = props => {
   const { GetSidebarItems, clickLogout, updateState } = props;
 
   useEffect(() => {
-    if (isAuthenticated) {
-      GetSidebarItems();
-    }
+    // if (isAuthenticated) {
+    GetSidebarItems();
+    // }
     return () => {};
   }, [GetSidebarItems, isAuthenticated]);
 

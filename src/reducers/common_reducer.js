@@ -13,6 +13,8 @@ const commonReducer = PREFIX => {
     let { name, index, key, value } = action;
     switch (action.type) {
       case `${PREFIX}/${NOTIFICATION}`:
+        console.log(PREFIX);
+        console.log(name, value);
         openNotification(name, value);
         return { ...state };
       case `${PREFIX}/${UPDATE_STATE}`:
