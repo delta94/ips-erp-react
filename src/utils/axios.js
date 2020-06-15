@@ -1,4 +1,7 @@
 import axios from "axios";
+import store from "../store";
+import { updateState } from "../actions/header_actions";
+import { history } from "../store";
 var url;
 
 if (process.env.REACT_APP_LOCATION === "ips") {
@@ -53,15 +56,8 @@ Axios.interceptors.response.use(
   },
   error => {
     if (error.response.status === 401) {
-      const startUrl =
-        process.env.ELECTRON_START_URL ||
-        url.format({
-          pathname: path.join(__dirname, "/../build/index.html"),
-          protocol: "file:",
-          slashes: true,
-        });
-      window.location.loadURL(startUrl);
-      // window.location.replace("/login");
+      store.dispatch(updateState("isAuthenticated", false));
+      history.push("/login");
     } else if (error.response.status === 400) {
       return Promise.reject(error.response.data);
     }
