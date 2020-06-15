@@ -58,6 +58,7 @@ Axios.interceptors.response.use(
     if (error.response.status === 401) {
       store.dispatch(updateState("isAuthenticated", false));
       history.push("/login");
+      return Promise.reject("登录过期, 请重新登录! ");
     } else if (error.response.status === 400) {
       return Promise.reject(error.response.data);
     }
