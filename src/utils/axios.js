@@ -1,5 +1,6 @@
 import axios from "axios";
-
+import { useDispatch } from "react-redux";
+import { push } from "connected-react-router";
 var url;
 
 if (process.env.REACT_APP_LOCATION === "ips") {
@@ -54,7 +55,9 @@ Axios.interceptors.response.use(
   },
   error => {
     if (error.response.status === 401) {
-      window.location.replace("/login");
+      const dispatch = useDispatch();
+      dispatch(push("/login"));
+      // window.location.replace("/login");
     } else if (error.response.status === 400) {
       return Promise.reject(error.response.data);
     }
