@@ -98,15 +98,7 @@ const action = (prefix, params) =>
 
 export default action;
 
-export const GetAPI = action => (
-  name,
-  api,
-  params,
-  optional,
-  notify = false,
-  successText = "加载成功! ",
-  errText = "加载失败! "
-) => {
+export const GetAPI = action => (name, api, params, optional, notify = false, successText = "加载成功! ") => {
   return async dispatch => {
     try {
       const res = await api(params);
@@ -121,7 +113,7 @@ export const GetAPI = action => (
         }
       });
     } catch (err) {
-      dispatch(action.notify(ERROR, errText));
+      dispatch(action.notify(ERROR, err));
     }
   };
 };

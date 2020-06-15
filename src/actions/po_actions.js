@@ -75,11 +75,16 @@ export const addWorkOrderItem = () => {
   };
 };
 
-export const PrintLabel = printPartNum => {
+export const PrintLabel = (printPartNum, selectedRows) => {
   return async (dispatch, getState) => {
     const state = getState();
     const { work_order } = state.POReducer;
-    const { work_order_items } = work_order;
+    let work_order_items = [];
+    if (selectedRows.length) {
+      work_order_items = work_order.work_order_items.filter(el => selectedRows.includes(el.sub_work_order_num));
+    } else {
+      work_order_items = work_order.work_order_items;
+    }
 
     let submit_date = "";
     let internal_deadline = "";

@@ -46,7 +46,6 @@ Axios.interceptors.response.use(
       return response;
     }
     if (!response.data) {
-      // console.log(response.data);
       return Promise.reject(response);
     }
 

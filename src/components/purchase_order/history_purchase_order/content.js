@@ -111,7 +111,7 @@ const HistoryPOContent = props => {
       <Col span={6}>
         <Row>
           <Col span={12}>
-            <Button type="primary" onClick={() => PrintLabel(printPartNum)} block>
+            <Button type="primary" onClick={() => PrintLabel(printPartNum, selectedRows)} block>
               打印标签
             </Button>
           </Col>

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import { Col, Row, Input, Select, DatePicker, Divider, Form, Alert } from "antd";
+import { Col, Row, Input, Select, DatePicker, Divider, Form, Alert, Typography } from "antd";
+import { CheckCircleTwoTone } from "@ant-design/icons";
 
 import { GetCustomers } from "../../../actions/po_actions";
 
@@ -20,7 +21,22 @@ const PurchaseOrderInfo = props => {
   return (
     <>
       {work_order_created && (
-        <Alert message={`下单工号为:  ${work_order.work_order_num}`} type="info" showIcon banner />
+        <Alert
+          message={
+            <>
+              <Row gutter={16}>
+                <Col style={{ alignSelf: "center" }}>
+                  <CheckCircleTwoTone style={{ fontSize: "1rem" }} twoToneColor="#52c41a" />
+                </Col>
+                <Col>
+                  <Typography.Title level={4}> 下单工号为: {work_order.work_order_num} </Typography.Title>
+                </Col>
+              </Row>
+            </>
+          }
+          type="info"
+          // showIcon
+        />
       )}
       <Divider orientation="left" style={{ color: "#333", fontWeight: "normal" }}>
         订单信息
