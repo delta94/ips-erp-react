@@ -20,7 +20,7 @@ const StatisticsPOContent = props => {
 
   const submitDateColumns = [
     { title: "下单日期", dataIndex: "submit_date", render: data => <div>{data.split("T")[0]}</div> },
-    { title: "大工号", dataIndex: "work_order_num" },
+    { title: "系列号", dataIndex: "work_order_num" },
     {
       title: "厂内交期",
       dataIndex: "internal_deadline",
@@ -40,7 +40,7 @@ const StatisticsPOContent = props => {
       render: data => <div>{data.work_order_items.shipping_date && data.work_order_items.shipping_date}</div>,
       // render: data => <div>{data.work_order_items !== null && data.work_order_items.shipping_date.split("T")[0]}</div>,
     },
-    { title: "小工号", render: data => <div>{data.work_order_items.sub_work_order_num}</div> },
+    { title: "工号", render: data => <div>{data.work_order_items.sub_work_order_num}</div> },
     {
       title: "厂内交期",
       dataIndex: "internal_deadline",

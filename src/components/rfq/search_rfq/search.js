@@ -67,7 +67,7 @@ const PurchaseOrderHeader = props => {
       <Row gutter={[16, 16]}>
         <Col span={8}>
           <Select
-            // defaultValue="选择大工号或者PO#"
+            // defaultValue="选择系列号或者PO#"
             // value={query_type}
             placeholder="选择邮件/RFQ或图号"
             className="full-width"

@@ -45,7 +45,7 @@ const POHistory = props => {
   };
   const columns = [
     {
-      title: "大工号",
+      title: "系列号",
       dataIndex: "work_order_num",
       render: (dataIndex, record) => (
         <div
@@ -82,7 +82,7 @@ const POHistory = props => {
           <Row gutter={[16, 16]}>
             <Col span={8}>
               <Select placeholder="请选择" className="full-width" onChange={value => updateState("query_type", value)}>
-                <Option value="work_order_num">大工号</Option>
+                <Option value="work_order_num">系列号</Option>
                 <Option value="po_num">PO#</Option>
                 <Option value="shipping_num">运单号</Option>
                 <Option value="invoice_num">发票号</Option>

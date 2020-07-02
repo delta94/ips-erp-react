@@ -11,7 +11,7 @@ const PostPO = () => {
 
   const columns = [
     { title: "序号", render: (text, record, index) => <div>{index + 1}</div> },
-    { title: "小工号", dataIndex: "sub_work_order_num" },
+    { title: "工号", dataIndex: "sub_work_order_num" },
     { title: "出货日期", render: () => <div>{new Date().toISOString().split("T")[0]}</div> },
   ];
 
@@ -47,7 +47,7 @@ const PostPO = () => {
         if (res.data !== null) {
           setData([...data, ...res.data]);
         } else {
-          openNotification(INFO, "小工号不存在或小工号已出货");
+          openNotification(INFO, "工号不存在或工号已出货");
         }
       })
       .catch(err => openNotification(ERROR, err))
@@ -102,7 +102,7 @@ const PostPO = () => {
       <Space direction="vertical" className="full-width">
         <Divider orientation="left">出货扫描</Divider>
         <Input.Search
-          placeholder="扫描或输入小工号"
+          placeholder="扫描或输入工号"
           value={search}
           onChange={({ target: { value } }) => setSearch(value)}
           // onSearch={value => GetWorkOrderItem(value)}

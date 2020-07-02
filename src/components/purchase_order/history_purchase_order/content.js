@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { Descriptions, Divider, Table, Row, Col, Button, Space, Select, Checkbox } from "antd";
+import { Descriptions, Divider, Table, Row, Col, Button, Space, Select, Checkbox, Input } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { CSVLink } from "react-csv";
 
@@ -8,7 +8,9 @@ import {
   GetWorkOrderStates,
   updateWorkOrderItemRemark,
   InsertWorkOrderItems,
+  updateObjectState,
   PrintLabel,
+  GetWOs,
 } from "../../../actions/po_actions";
 
 const HistoryPOContent = props => {
@@ -16,8 +18,16 @@ const HistoryPOContent = props => {
   const [csvData, setCsvData] = useState([]);
   const [printPartNum, setPrintPartNum] = useState(true);
   const { work_order, work_order_states } = props;
-  const { GetWorkOrderStates, updateWorkOrderItemRemark, InsertWorkOrderItems, PrintLabel } = props;
+  const {
+    GetWorkOrderStates,
+    updateWorkOrderItemRemark,
+    InsertWorkOrderItems,
+    PrintLabel,
+    updateObjectState,
+    GetWOs,
+  } = props;
   const [selectedRows, setSelectedRows] = useState([]);
+  const [editable, setEditable] = useState(false);
 
   const generateCSVData = () => {
     let data = work_order.work_order_items.map(el => [
@@ -27,14 +37,15 @@ const HistoryPOContent = props => {
       el.unit,
       el.unit_price,
     ]);
-    data.unshift(["小工号", "图号", "数量", "单位", "单价"]);
+    data.unshift(["工号", "图号", "数量", "单位", "单价"]);
     return data;
   };
 
   useEffect(() => {
     setCsvData(generateCSVData());
     GetWorkOrderStates();
-  }, [work_order]);
+    setEditable(work_order.po_num === "欠PO" || editable);
+  }, []);
 
   // const rowSelection = {
   //   onChange: (selectedRowKeys, selectedRows) => {
@@ -48,7 +59,7 @@ const HistoryPOContent = props => {
   };
 
   const columns = [
-    { title: "小工号", dataIndex: "sub_work_order_num" },
+    { title: "工号", dataIndex: "sub_work_order_num" },
     { title: "图号", dataIndex: "part_number" },
     {
       title: "数量",
@@ -65,12 +76,26 @@ const HistoryPOContent = props => {
   const Info = (
     <>
       <Divider orientation="left">订单信息</Divider>
-      <Descriptions column={5}>
-        <Descriptions.Item label="PO#">{work_order.po_num}</Descriptions.Item>
+      <Descriptions column={3}>
+        {editable ? (
+          <Descriptions.Item label="PO#">
+            <Input
+              placeholder="欠PO"
+              allowClear
+              // prefix={<SearchOutlined />}
+              value={work_order.po_num}
+              onChange={e => {
+                updateObjectState("work_order", "po_num", e.target.value);
+              }}
+            />
+          </Descriptions.Item>
+        ) : (
+          <Descriptions.Item label="PO#">{work_order.po_num}</Descriptions.Item>
+        )}
         <Descriptions.Item label="下单日期">{work_order.submit_date.split("T")[0]}</Descriptions.Item>
         <Descriptions.Item label="厂内交期">{work_order.internal_deadline.split("T")[0]}</Descriptions.Item>
-        <Descriptions.Item label="运单号">{work_order.shipping_num}</Descriptions.Item>
-        <Descriptions.Item label="发票号">{work_order.invoice_num}</Descriptions.Item>
+        {/* <Descriptions.Item label="运单号">{work_order.shipping_num}</Descriptions.Item>
+        <Descriptions.Item label="发票号">{work_order.invoice_num}</Descriptions.Item> */}
       </Descriptions>
     </>
   );
@@ -78,7 +103,14 @@ const HistoryPOContent = props => {
   const backButton = (
     <Row>
       <Col span={2}>
-        <Button block icon={<ArrowLeftOutlined />} onClick={() => setShowContent(false)}>
+        <Button
+          block
+          icon={<ArrowLeftOutlined />}
+          onClick={() => {
+            setShowContent(false);
+            GetWOs();
+          }}
+        >
           返回
         </Button>
       </Col>
@@ -87,6 +119,11 @@ const HistoryPOContent = props => {
 
   const Ops = (
     <Row gutter={[16, 16]}>
+      <Col span={3}>
+        <Button type="primary" block>
+          添加工号
+        </Button>
+      </Col>
       <Col span={3}>
         <CSVLink data={csvData} filename={`${work_order.work_order_num}.csv`}>
           <Button type="primary" block>
@@ -160,4 +197,6 @@ export default connect(mapStateToProps, {
   updateWorkOrderItemRemark,
   InsertWorkOrderItems,
   PrintLabel,
+  updateObjectState,
+  GetWOs,
 })(HistoryPOContent);

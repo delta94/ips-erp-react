@@ -35,7 +35,7 @@ function NestedTable() {
   }, []);
   const expandedRowRender = props => {
     const columns = [
-      { title: "小工号", dataIndex: "sub_work_order_num", key: "sub_work_order_num" },
+      { title: "工号", dataIndex: "sub_work_order_num", key: "sub_work_order_num" },
       // { title: "完成率", dataIndex: "name", key: "name" },
       { title: "当前部门", dataIndex: "current_department", key: "current_department" },
       { title: "状态", dataIndex: "process_state", key: "process_state" },
@@ -61,7 +61,7 @@ function NestedTable() {
         <Col offset={12} span={12}>
           <Input
             value={search}
-            placeholder="输入大工号"
+            placeholder="输入系列号"
             suffix={<SearchOutlined style={{ color: "rgba(0,0,0,.45)" }} />}
             onChange={e => {
               setSearch(e.target.value);

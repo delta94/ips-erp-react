@@ -134,7 +134,7 @@ const PurchaseOrderContent = props => {
         footer={() => (
           <Row>
             {/* <Col>
-              <Button onClick={addWorkOrderItem}>添加小工号</Button>
+              <Button onClick={addWorkOrderItem}>添加工号</Button>
             </Col> */}
             <Col offset={22} span={2}>
               <div>总金额: {total_price}</div>

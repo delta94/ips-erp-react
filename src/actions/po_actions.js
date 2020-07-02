@@ -54,7 +54,7 @@ export const updateWorkOrderItemRemark = (work_order, items, remark) => {
     });
     batch(() => {
       dispatch(updateState("work_order", work_order));
-      dispatch(updateState("work_order_items", work_order.work_order_items));
+      // dispatch(updateState("work_order_items", work_order.work_order_items));
     });
   };
 };
@@ -198,6 +198,7 @@ export const GetWOs = queryParams => {
     GetWorkOrderAPI(queryParams)
       .then(res => {
         const data = res.data;
+        data.sort((a, b) => (a.po_num < b.po_num ? 1 : -1));
         dispatch(updateState("work_orders", data));
       })
       .catch(err => dispatch(notify(ERROR, err)));
@@ -210,7 +211,9 @@ export const PostWorkOrder = (work_order, form) => {
     const { work_order_items } = getState().POReducer;
 
     work_order["submit_by"] = username;
-
+    work_order_items.forEach(element => {
+      element.remark = "";
+    });
     try {
       const res = await PostWorkOrderAPI({ ...work_order, work_order_items });
       let { data } = res;
@@ -237,15 +240,19 @@ export const PostWorkOrder = (work_order, form) => {
 
 export const InsertWorkOrderItems = openFolder => {
   return async (dispatch, getState) => {
-    let { work_order_items, work_order } = getState().POReducer;
+    // let { work_order_items, work_order } = getState().POReducer;
+    let { work_order } = getState().POReducer;
     // work_order_items.forEach(element => {
     //   element.current_department = "业务部";
     // });
-
+    const { _id, ...work_order_edit } = work_order;
+    delete work_order_edit.submit_date;
+    delete work_order_edit.customer_deadline;
+    delete work_order_edit.internal_deadline;
     try {
-      const res = await PatchWorkOrderAPI(work_order._id, {
+      const res = await PatchWorkOrderAPI(_id, {
+        ...work_order_edit,
         work_order_state: work_order.work_order_state,
-        work_order_items: work_order_items,
       });
       if (openFolder) {
         const electron = process.env.NODE_ENV !== "development" && window.require("electron");
