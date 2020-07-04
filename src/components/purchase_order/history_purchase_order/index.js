@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Col, Row, Input, Select, Divider, Table, Card } from "antd";
-import POHistoryContent from "./content";
 
 import { updateState, GetWOPipeline, resetState, GetWOs } from "../../../actions/po_actions";
+import POHistoryContent from "./content";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -95,7 +95,9 @@ const POHistory = props => {
           <Table rowKey="_id" dataSource={work_orders} columns={columns} pagination={false} />
         </>
       ) : (
-        <POHistoryContent setShowContent={setShowContent} />
+        <>
+          <POHistoryContent setShowContent={setShowContent} />
+        </>
       )}
     </Card>
   );

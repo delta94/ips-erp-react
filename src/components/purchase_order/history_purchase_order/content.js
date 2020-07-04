@@ -1,8 +1,22 @@
-import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
-import { Descriptions, Divider, Table, Row, Col, Button, Space, Select, Checkbox, Input } from "antd";
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import React, { useContext, useState, useEffect, useRef } from "react";
+import {
+  Table,
+  Input,
+  Button,
+  Popconfirm,
+  Form,
+  Descriptions,
+  Divider,
+  Space,
+  Row,
+  Col,
+  Select,
+  Checkbox,
+  InputNumber,
+} from "antd";
+import { DeleteOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { CSVLink } from "react-csv";
+import { connect } from "react-redux";
 
 import {
   GetWorkOrderStates,
@@ -13,10 +27,87 @@ import {
   GetWOs,
 } from "../../../actions/po_actions";
 
-const HistoryPOContent = props => {
+const EditableContext = React.createContext();
+
+const EditableRow = ({ index, ...props }) => {
+  const [form] = Form.useForm();
+  return (
+    <Form form={form} component={false}>
+      <EditableContext.Provider value={form}>
+        <tr {...props} />
+      </EditableContext.Provider>
+    </Form>
+  );
+};
+
+const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, ...restProps }) => {
+  const [editing, setEditing] = useState(false);
+  const inputRef = useRef();
+  const form = useContext(EditableContext);
+  useEffect(() => {
+    if (editing) {
+      inputRef.current.focus();
+    }
+  }, [editing]);
+
+  const toggleEdit = () => {
+    setEditing(!editing);
+    form.setFieldsValue({
+      [dataIndex]: record[dataIndex],
+    });
+  };
+
+  const save = async e => {
+    try {
+      const values = await form.validateFields();
+      toggleEdit();
+      handleSave({ ...record, ...values });
+    } catch (errInfo) {
+      console.log("Save failed:", errInfo);
+    }
+  };
+
+  let childNode = children;
+
+  if (editable) {
+    childNode = editing ? (
+      <Form.Item
+        style={{
+          margin: 0,
+        }}
+        name={dataIndex}
+        rules={[
+          {
+            required: true,
+            message: `${title} 必填.`,
+          },
+        ]}
+      >
+        {dataIndex === "qty" || dataIndex === "unit_price" ? (
+          <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} />
+        ) : (
+          <Input ref={inputRef} onPressEnter={save} onBlur={save} />
+        )}
+      </Form.Item>
+    ) : (
+      <div
+        className="editable-cell-value-wrap"
+        style={{
+          paddingRight: 24,
+        }}
+        onClick={toggleEdit}
+      >
+        {children}
+      </div>
+    );
+  }
+
+  return <td {...restProps}>{childNode}</td>;
+};
+
+// export default class EditableTable extends React.Component {
+const EditableTable = props => {
   const { setShowContent } = props;
-  const [csvData, setCsvData] = useState([]);
-  const [printPartNum, setPrintPartNum] = useState(true);
   const { work_order, work_order_states } = props;
   const {
     GetWorkOrderStates,
@@ -26,8 +117,39 @@ const HistoryPOContent = props => {
     updateObjectState,
     GetWOs,
   } = props;
+  const columns = [
+    { title: "工号", dataIndex: "sub_work_order_num" },
+    { title: "图号", dataIndex: "part_number", editable: true },
+    { title: "数量", dataIndex: "qty", editable: true },
+    { title: "单位", dataIndex: "unit", editable: true },
+    { title: "单价", dataIndex: "unit_price", editable: true },
+    { title: "小计", dataIndex: "total_price" },
+    { title: "运单号", dataIndex: "shipping_num" },
+    { title: "发票号", dataIndex: "invoice_num" },
+    { title: "备注", render: record => <div>{record.remark === "继续加工" ? "" : record.remark}</div> },
+    {
+      title: "操作",
+      // dataIndex: "operation",
+      render: record =>
+        dataSource.length >= 1 ? (
+          <Popconfirm title="确定删除?" onConfirm={() => handleDelete(record.sub_work_order_num)}>
+            <Button type="link" danger icon={<DeleteOutlined />} />
+          </Popconfirm>
+        ) : null,
+    },
+  ];
+
+  const [dataSource, setDataSource] = useState(work_order.work_order_items);
   const [selectedRows, setSelectedRows] = useState([]);
   const [editable, setEditable] = useState(false);
+  const [csvData, setCsvData] = useState([]);
+  const [printPartNum, setPrintPartNum] = useState(true);
+
+  useEffect(() => {
+    setCsvData(generateCSVData());
+    GetWorkOrderStates();
+    setEditable(work_order.po_num === "欠PO" || editable);
+  }, []);
 
   const generateCSVData = () => {
     let data = work_order.work_order_items.map(el => [
@@ -41,37 +163,40 @@ const HistoryPOContent = props => {
     return data;
   };
 
-  useEffect(() => {
-    setCsvData(generateCSVData());
-    GetWorkOrderStates();
-    setEditable(work_order.po_num === "欠PO" || editable);
-  }, []);
-
-  // const rowSelection = {
-  //   onChange: (selectedRowKeys, selectedRows) => {
-  //     console.log(`selectedRowKeys: ${selectedRowKeys}`, "selectedRows: ", selectedRows);
-  //   },
-  // };
-  const rowSelection = {
-    onChange: selectedRowKeys => {
-      setSelectedRows(selectedRowKeys);
-    },
+  const handleDelete = sub_work_order_num => {
+    const data = dataSource.filter(item => item.sub_work_order_num !== sub_work_order_num);
+    setDataSource(data);
+    updateObjectState("work_order", "work_order_items", data);
   };
 
-  const columns = [
-    { title: "工号", dataIndex: "sub_work_order_num" },
-    { title: "图号", dataIndex: "part_number" },
-    {
-      title: "数量",
-      dataIndex: "qty",
-    },
-    { title: "单位", dataIndex: "unit" },
-    { title: "单价", dataIndex: "unit_price" },
-    { title: "小计", dataIndex: "total_price" },
-    { title: "运单号", dataIndex: "shipping_num" },
-    { title: "发票号", dataIndex: "invoice_num" },
-    { title: "备注", render: record => <div>{record.remark === "继续加工" ? "" : record.remark}</div> },
-  ];
+  const handleAdd = () => {
+    const dataCopy = [...dataSource];
+    const lastItem = dataCopy.slice(-1)[0].sub_work_order_num.split("-");
+    const sub_work_order_num = lastItem.slice(0, 2).join("-");
+    const lastIndex = parseInt(lastItem[2]) + 1;
+    const newData = {
+      sub_work_order_num: `${sub_work_order_num}-${lastIndex}`,
+      part_number: "",
+      qty: 0,
+      unit_price: 0,
+      unit: "",
+      total_price: 0,
+    };
+    setDataSource([...dataCopy, newData]);
+    updateObjectState("work_order", "work_order_items", [...dataCopy, newData]);
+  };
+
+  const handleSave = row => {
+    let dataCopy = [...dataSource];
+    const index = dataCopy.findIndex(item => row.sub_work_order_num === item.sub_work_order_num);
+    let item = dataCopy[index];
+    item = { ...item, ...row };
+    item.total_price = parseFloat(parseFloat(item.qty) * parseFloat(item.unit_price));
+    // dataCopy.splice(index, 1, { ...item, ...row });
+    dataCopy[index] = item;
+    setDataSource([...dataCopy]);
+    updateObjectState("work_order", "work_order_items", dataCopy);
+  };
 
   const Info = (
     <>
@@ -120,7 +245,7 @@ const HistoryPOContent = props => {
   const Ops = (
     <Row gutter={[16, 16]}>
       <Col span={3}>
-        <Button type="primary" block>
+        <Button type="primary" block onClick={handleAdd}>
           添加工号
         </Button>
       </Col>
@@ -167,21 +292,58 @@ const HistoryPOContent = props => {
     </Row>
   );
 
+  const components = {
+    body: {
+      row: EditableRow,
+      cell: EditableCell,
+    },
+  };
+
+  const rowSelection = {
+    onChange: selectedRowKeys => {
+      setSelectedRows(selectedRowKeys);
+    },
+  };
+  const mergeColumns = columns.map(col => {
+    if (!col.editable) {
+      return col;
+    }
+
+    return {
+      ...col,
+      onCell: record => ({
+        record,
+        editable: col.editable,
+        dataIndex: col.dataIndex,
+        title: col.title,
+        handleSave: handleSave,
+      }),
+    };
+  });
   return (
-    <>
-      <Space direction="vertical">
-        {backButton}
-        {Info}
-        <Table
-          rowSelection={rowSelection}
-          rowKey="sub_work_order_num"
-          dataSource={work_order.work_order_items}
-          columns={columns}
-          pagination={false}
-        />
-        {Ops}
-      </Space>
-    </>
+    <Space direction="vertical">
+      {/* <Button
+        onClick={handleAdd}
+        type="primary"
+        style={{
+          marginBottom: 16,
+        }}
+      >
+        Add a row
+      </Button> */}
+      {backButton}
+      {Info}
+      <Table
+        rowSelection={rowSelection}
+        rowKey="sub_work_order_num"
+        components={components}
+        // bordered
+        dataSource={dataSource}
+        columns={mergeColumns}
+        pagination={false}
+      />
+      {Ops}
+    </Space>
   );
 };
 
@@ -199,4 +361,4 @@ export default connect(mapStateToProps, {
   PrintLabel,
   updateObjectState,
   GetWOs,
-})(HistoryPOContent);
+})(EditableTable);
