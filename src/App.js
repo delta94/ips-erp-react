@@ -17,11 +17,12 @@ import AdminCurrency from "./components/admin/currency";
 import { Layout, Breadcrumb } from "antd";
 import RFQRoutes from "./routes/rfq_routes";
 import PORoutes from "./routes/po_routes";
+import PartNumSearch from "./components/PartNumSearch";
 
 const { Content, Footer, Sider } = Layout;
 
 function App(props) {
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
   const { history } = props;
 
   const onCollapse = collapsed => {
@@ -62,6 +63,7 @@ function App(props) {
               <Route exact path="/craft_schedule" component={CraftSchedule} />
               <Route exact path="/admin/customer" component={AdminCustomer} />
               <Route exact path="/admin/currency" component={AdminCurrency} />
+              <Route exact path="/part_num_search" component={PartNumSearch} />
             </Switch>
             <PORoutes />
             <RFQRoutes />
