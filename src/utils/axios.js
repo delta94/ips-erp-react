@@ -1,5 +1,7 @@
 import axios from "axios";
-
+import store from "../store";
+import { updateState } from "../actions/header_actions";
+import { history } from "../store";
 var url;
 
 if (process.env.REACT_APP_LOCATION === "ips") {
@@ -44,7 +46,6 @@ Axios.interceptors.response.use(
       return response;
     }
     if (!response.data) {
-      // console.log(response.data);
       return Promise.reject(response);
     }
 
@@ -53,9 +54,10 @@ Axios.interceptors.response.use(
     }
   },
   error => {
-    console.log(error);
     if (error.response.status === 401) {
-      // window.location.replace("/login");
+      store.dispatch(updateState("isAuthenticated", false));
+      history.push("/login");
+      return Promise.reject("登录过期, 请重新登录! ");
     } else if (error.response.status === 400) {
       return Promise.reject(error.response.data);
     }

@@ -2,8 +2,16 @@ import { notification } from "antd";
 import differenceInMinutes from "date-fns/differenceInMinutes";
 
 export const openNotification = (type, msg) => {
+  let message = "";
+  if (msg instanceof Object) {
+    for (let [key, value] of Object.entries(msg)) {
+      message += `${key}: ${value}`;
+    }
+  } else {
+    message = msg;
+  }
   notification[type]({
-    message: msg,
+    message: message,
   });
 };
 

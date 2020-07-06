@@ -30,6 +30,13 @@ const Login = props => {
     wrapperCol: { offset: 11 },
   };
 
+  const checkPassword = str => {
+    // at least one number, one lowercase and one uppercase letter
+    // at least six characters that are letters, numbers or the underscore
+    var re = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{8,}$/;
+    return re.test(str);
+  };
+
   return (
     <Form name="normal_login" className="login-form" initialValues={{ remember: true }} onFinish={onFinish} {...layout}>
       <Form.Item {...titleLayout}>
@@ -38,11 +45,23 @@ const Login = props => {
       <Form.Item name="username" rules={[{ required: true, message: "请输入用户名!" }]}>
         <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="用户名" />
       </Form.Item>
-      {!reset && (
-        <Form.Item name="password" rules={[{ required: true, message: "请输入密码!" }]}>
-          <Input prefix={<LockOutlined className="site-form-item-icon" />} type="password" placeholder="密码" />
-        </Form.Item>
-      )}
+      <Form.Item
+        name="password"
+        required
+        rules={[
+          // { required: true },
+          () => ({
+            validator(rule, value) {
+              if (checkPassword(value)) {
+                return Promise.resolve();
+              }
+              return Promise.reject("密码需要含有小写，大写与数字。最短8位");
+            },
+          }),
+        ]}
+      >
+        <Input prefix={<LockOutlined className="site-form-item-icon" />} type="password" placeholder="密码" />
+      </Form.Item>
       <Form.Item>
         <Button type="link" onClick={() => setReset(!reset)}>
           {!reset ? "重置密码" : "返回登录"}

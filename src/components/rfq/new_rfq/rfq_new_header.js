@@ -19,7 +19,7 @@ const RFQNewHeader = props => {
   return (
     <>
       <Divider orientation="left">报价信息</Divider>
-      <Form form={headerForm} component={false}>
+      <Form form={headerForm} component={false} initialValues={{ email_rfq_date: moment() }}>
         <Row gutter={16}>
           <Col span={4}>
             <Form.Item name="customer" rules={[{ required: true, message: "必填" }]}>

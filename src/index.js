@@ -8,9 +8,9 @@ import { Provider } from "react-redux";
 // import store from "./store";
 // import { history } from './store'
 
-import configureStore, { history } from "./store";
+import store, { history } from "./store";
 
-const store = configureStore();
+// const store = configureStore();
 
 ReactDOM.render(
   <Provider store={store}>

@@ -11,7 +11,7 @@ const RFQHeader = props => {
   return (
     <>
       <Row>
-        <Col offset={22} span={2}>
+        <Col span={2}>
           <Button block icon={<ArrowLeftOutlined />} onClick={() => updateState("showContent", false)}>
             返回
           </Button>

@@ -131,7 +131,7 @@ const RFQUndoneContent = props => {
       {rfq.customer && (
         <>
           <Row>
-            <Col offset={22} span={2}>
+            <Col span={2}>
               <Button
                 onClick={() => {
                   updateState("showContent", false);
@@ -171,6 +171,8 @@ const RFQUndoneContent = props => {
           <Row gutter={16}>
             <Col>
               <Button
+                block
+                type="primary"
                 onClick={() => {
                   const electron = process.env.NODE_ENV !== "development" && window.require("electron");
                   process.env.NODE_ENV !== "development" && electron.shell.openItem(rfq.rfq_folder);
@@ -181,6 +183,8 @@ const RFQUndoneContent = props => {
             </Col>
             <Col>
               <Button
+                type="primary"
+                block
                 onClick={async () => {
                   try {
                     await form.validateFields();

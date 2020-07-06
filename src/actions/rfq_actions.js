@@ -2,6 +2,7 @@ import { GetCustomersAPI, GetCurrencyAPI, PostRFQAPI, PatchItemAPI, MatchRFQPric
 import action, { GetAPI, GetItems, GetItemsPipelinem, GetItemsPipeline } from "./common_actions";
 import { ERROR, SUCCESS, INFO } from "../utils/constants";
 import { batch } from "react-redux";
+import { openNotification } from "../utils/commons";
 
 // const
 const PREFIX = "RFQ";
@@ -133,7 +134,7 @@ export const PostRFQ = rfq_items => {
         process.env.NODE_ENV !== "development" && electron.shell.openItem(res.data.rfq_folder);
         dispatch(notify(SUCCESS, "保存成功! "));
       })
-      .catch(err => dispatch(notify(ERROR, err.message)));
+      .catch(err => dispatch(notify(ERROR, err)));
   };
 };
 
@@ -153,7 +154,7 @@ export const PatchRFQ = () => {
         GetRFQs();
         dispatch(notify(SUCCESS, "保存成功! "));
       })
-      .catch(err => console.log(err));
+      .catch(err => notify(ERROR, err));
   };
 };
 
@@ -175,6 +176,6 @@ export const MatchRFQPrice = (partNumbers, rfq_items) => {
         });
         dispatch(updateState("rfq_items", rfq_items));
       })
-      .catch(err => err.message);
+      .catch(err => openNotification(ERROR, err));
   };
 };

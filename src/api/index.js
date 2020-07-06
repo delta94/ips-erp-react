@@ -86,6 +86,10 @@ export const PatchItemAPI = async (item_id, collection, params) => {
     .catch(err => console.log(err));
 };
 
+export const PatchItemsAPI = async (collection, query, update) => {
+  return await axios.patch(`/patch_items?collection=${collection}&query=${query}`, update);
+};
+
 export const RemoveItemAPI = async (item_id, collection) => {
   return await axios
     .delete(`/remove_item/${item_id}?collection=${collection}`)
@@ -113,7 +117,10 @@ export const GetItemsPipelineAPI = async (collection, query) => {
 
 // migration to antd
 export const GetWorkOrderAPI = async queryParams => {
-  return await axios.get(`/work_order?${queryParams}`);
+  if (queryParams) {
+    return await axios.get(`/work_order?${queryParams}`);
+  }
+  return await axios.get(`/work_order`);
 };
 
 export const PostWorkOrderAPI = async params => {
@@ -122,6 +129,10 @@ export const PostWorkOrderAPI = async params => {
 
 export const PatchWorkOrderAPI = async (id, params) => {
   return await axios.patch(`/work_order/${id}`, params);
+};
+
+export const UpdateDispatchAPI = async params => {
+  return await axios.post(`/work_order_update_dispatch`, params);
 };
 
 export const PostRFQAPI = async params => {

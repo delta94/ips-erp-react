@@ -26,7 +26,7 @@ export const PostLogin = params => {
         dispatch(push("/"));
       });
     } catch (error) {
-      dispatch(enqueueSnackbar(error.message, ERROR));
+      dispatch(notify(ERROR, error));
     }
   };
 };
@@ -34,16 +34,13 @@ export const PostLogin = params => {
 export const ResetPwd = params => {
   return async dispatch => {
     try {
-      const res = await ResetPwdAPI(params);
-      const { data } = res;
-      console.log(data);
-
+      await ResetPwdAPI(params);
       batch(() => {
-        dispatch(enqueueSnackbar("密码重置为Passw0rd", SUCCESS));
+        dispatch(notify(SUCCESS, "密码重置成功"));
       });
     } catch (err) {
       // dispatch(enqueueSnackbar(err.message, ERROR));
-      dispatch(notify(ERROR, err.message));
+      dispatch(notify(ERROR, err));
     }
   };
 };

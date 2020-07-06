@@ -49,8 +49,7 @@ const Currency = () => {
           <Tooltip title="编辑">
             {!data.edit ? (
               <Button
-                type="primary"
-                shape="round"
+                type="link"
                 icon={<EditOutlined />}
                 onClick={() => {
                   let index = currencies.findIndex(s => s._id === data._id);
@@ -61,8 +60,7 @@ const Currency = () => {
               />
             ) : (
               <Button
-                type="primary"
-                shape="round"
+                type="link"
                 icon={<SaveOutlined />}
                 onClick={async () => {
                   patchCurrency(data);
@@ -72,9 +70,8 @@ const Currency = () => {
           </Tooltip>
           <Tooltip title="删除">
             <Button
-              type="primary"
+              type="link"
               danger
-              shape="round"
               icon={<DeleteOutlined />}
               onClick={async () => {
                 const res = await RemoveItemAPI(data._id, "currencies");
@@ -146,7 +143,9 @@ const Currency = () => {
           />
         </Col>
         <Col span={12}>
-          <Button onClick={() => setVisible(true)}>添加新货币</Button>
+          <Button type="primary" onClick={() => setVisible(true)}>
+            添加新货币
+          </Button>
         </Col>
       </Row>
       <Table rowKey="_id" columns={columns} dataSource={currencies} />

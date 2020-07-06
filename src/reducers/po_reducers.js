@@ -8,6 +8,7 @@ const PREFIX = "PO";
 const defaultState = () => ({
   // migration to antd
   query_type: "",
+  work_orders: [],
   work_order: {
     customer: "",
     po_num: "",
