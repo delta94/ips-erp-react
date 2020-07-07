@@ -47,6 +47,8 @@ const POHistory = props => {
     {
       title: "系列号",
       dataIndex: "work_order_num",
+      defaultSortOrder: "descend",
+      sorter: (a, b) => a.work_order_num.localeCompare(b.work_order_num),
       render: (dataIndex, record) => (
         <div
           onClick={() => {
@@ -59,8 +61,20 @@ const POHistory = props => {
         </div>
       ),
     },
-    { title: "PO#", dataIndex: "po_num" },
-    { title: "厂内交期", dataIndex: "internal_deadline", render: dataIndex => <div>{dataIndex.split("T")[0]}</div> },
+    {
+      title: "PO#",
+      dataIndex: "po_num",
+      defaultSortOrder: "descend",
+      sorter: (a, b) => a.po_num.localeCompare(b.po_num),
+    },
+    {
+      title: "厂内交期",
+      dataIndex: "internal_deadline",
+      render: dataIndex => <div>{dataIndex.split("T")[0]}</div>,
+
+      defaultSortOrder: "descend",
+      sorter: (a, b) => a.internal_deadline.localeCompare(b.internal_deadline),
+    },
     {
       title: "出货完成",
       render: record => (

@@ -36,9 +36,7 @@ const EngineerProcess = () => {
 
     GetItemsPipelineAPI("work_orders", query)
       .then(res => {
-        if (res.data === null) {
-          openNotification(INFO, "搜索不到该图号!");
-        } else {
+        if (res.data !== null) {
           res.data.forEach(el => {
             el.submit_date = el.submit_date.split("T")[0];
             el.internal_deadline = el.internal_deadline.split("T")[0];
@@ -75,8 +73,18 @@ const EngineerProcess = () => {
 
   const columns = [
     { title: "下单日期", dataIndex: "submit_date" },
-    { title: "工号", dataIndex: "sub_work_order_num" },
-    { title: "厂内交期", dataIndex: "internal_deadline" },
+    {
+      title: "工号",
+      dataIndex: "sub_work_order_num",
+      defaultSortOrder: "descend",
+      sorter: (a, b) => a.sub_work_order_num.localeCompare(b.sub_work_order_num),
+    },
+    {
+      title: "厂内交期",
+      dataIndex: "internal_deadline",
+      defaultSortOrder: "descend",
+      sorter: (a, b) => a.internal_deadline.localeCompare(b.internal_deadline),
+    },
     { title: "状态", dataIndex: "remark" },
   ];
 
