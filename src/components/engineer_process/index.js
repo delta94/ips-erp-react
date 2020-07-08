@@ -76,13 +76,11 @@ const EngineerProcess = () => {
     {
       title: "工号",
       dataIndex: "sub_work_order_num",
-      defaultSortOrder: "descend",
       sorter: (a, b) => a.sub_work_order_num.localeCompare(b.sub_work_order_num),
     },
     {
       title: "厂内交期",
       dataIndex: "internal_deadline",
-      defaultSortOrder: "descend",
       sorter: (a, b) => a.internal_deadline.localeCompare(b.internal_deadline),
     },
     { title: "状态", dataIndex: "remark" },
