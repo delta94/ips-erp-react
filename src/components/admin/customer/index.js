@@ -12,17 +12,17 @@ import {
   Col,
   Divider,
   Select,
-  DatePicker,
+  // DatePicker,
   InputNumber,
 } from "antd";
 import { EditOutlined, DeleteOutlined, UndoOutlined, SaveOutlined, SearchOutlined } from "@ant-design/icons";
 import moment from "moment";
-import { GetItemsAPI, InsertItemAPI, RemoveItemAPI } from "../../../api";
+import { GetItemsAPI, InsertItemAPI, RemoveItemAPI, PatchItemAPI } from "../../../api";
 import { openNotification } from "../../../utils/commons";
 import { ERROR, SUCCESS } from "../../../utils/constants";
 
-const EditableCell = ({ editing, dataIndex, title, record, index, children, ...restProps }) => {
-  const inputNode = <Input />;
+const EditableCell = ({ editing, dataIndex, title, record, index, number, children, ...restProps }) => {
+  const inputNode = number ? <InputNumber /> : <Input />;
 
   return (
     <td {...restProps}>
@@ -92,6 +92,8 @@ const EditableTable = () => {
           ...item,
           ...row,
         });
+        const res = await PatchItemAPI(_id, "customers", { ...row });
+        openNotification(SUCCESS, res);
         setCustomers(newData);
         setEditingKey("");
       } else {
@@ -124,6 +126,12 @@ const EditableTable = () => {
       title: "结算币种",
       dataIndex: "currency",
       editable: true,
+    },
+    {
+      title: "汇率",
+      dataIndex: "rate",
+      editable: true,
+      number: true,
     },
     {
       title: "操作",
@@ -174,6 +182,7 @@ const EditableTable = () => {
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
+        number: col.number,
       }),
     };
   });
@@ -275,9 +284,9 @@ const EditableTable = () => {
             <Input />
           </Form.Item>
           <Divider orientation="left">收款信息</Divider>
-          <Form.Item label="对账日期" name="reconciliation_date">
+          {/* <Form.Item label="对账日期" name="reconciliation_date">
             <DatePicker className="full-width" />
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item
             label="收款天数"
             name="reconciliation_days"
