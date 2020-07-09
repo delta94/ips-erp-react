@@ -12,17 +12,18 @@ export const actions = action(PREFIX);
 export const { updateArrayObjectState, updateObjectState, notify, resetState, updateState } = actions;
 
 export const GetCustomers = () => GetItems(actions)("customers");
-export const GetCurrency = () => GetItems(actions)("currencies");
+// export const GetCurrency = () => GetItems(actions)("currencies");
 
 export const GetRFQs = query => GetItems(actions)("rfqs", query);
 export const GetRFQsPipeline = query => GetItemsPipeline(actions)("rfqs", query);
 
 export const updateCustomer = value => {
   return (dispatch, getState) => {
-    const { rfq, customers } = getState().RFQReducer;
+    // const { rfq, customers } = getState().RFQReducer;
+    const { rfq } = getState().RFQReducer;
     rfq["customer"] = value;
-    const currency = customers.find(el => el.internal === value).currency;
-    rfq["currency"] = currency;
+    // const currency = customers.find(el => el.internal === value).currency;
+    // rfq["currency"] = currency;
     dispatch(updateState("rfq", rfq));
   };
 };
@@ -30,11 +31,13 @@ export const updateCustomer = value => {
 export const updateRFQItems = (seq, key, value) => {
   return (dispatch, getState) => {
     const index = seq - 1;
-    let { rfq_items, currencies, rfq } = getState().RFQReducer;
+    // let { rfq_items, currencies, rfq } = getState().RFQReducer;
+    let { rfq_items, rfq, customers } = getState().RFQReducer;
     const { discount_rate } = rfq;
     let rfq_item = rfq_items[index];
     rfq_item[key] = value;
-    const rate = currencies.find(el => el.name === rfq.currency).rate;
+    // const rate = currencies.find(el => el.name === rfq.currency).rate;
+    const rate = customers.find(el => el.internal === rfq.customer).rate;
     // const unit_price_rmb = rfq_item.unit_price_foreign * rate;
     const unit_price_foreign = Math.round(rfq_item.unit_price_rmb / rate);
     let total_price = 0;
@@ -52,8 +55,10 @@ export const updateRFQItems = (seq, key, value) => {
 
 export const updateRFQ = () => {
   return (dispatch, getState) => {
-    let { rfq, rfq_items, currencies } = getState().RFQReducer;
-    const rate = currencies.find(el => el.name === rfq.currency).rate;
+    // let { rfq, rfq_items, currencies } = getState().RFQReducer;
+    let { rfq, rfq_items, customers } = getState().RFQReducer;
+    // const rate = currencies.find(el => el.name === rfq.currency).rate;
+    const rate = customers.find(el => el.internal === rfq.customer).rate;
     const { shipping_fee, discount_rate } = rfq;
     rfq_items.forEach(element => {
       if (element.unit_price_foreign !== 0) {
@@ -118,7 +123,7 @@ export const newRFQ = () => {
   return dispatch => {
     batch(() => {
       dispatch(resetState());
-      dispatch(GetCurrency());
+      // dispatch(GetCurrency());
       dispatch(GetCustomers());
       dispatch(notify(INFO, "新报价， 页面内容清空! "));
     });
@@ -160,21 +165,25 @@ export const PatchRFQ = () => {
 
 export const MatchRFQPrice = (partNumbers, rfq_items) => {
   return (dispatch, getState) => {
-    const { currencies, rfq } = getState().RFQReducer;
+    // const { currencies, rfq } = getState().RFQReducer;
+    const { customers, rfq } = getState().RFQReducer;
     const query = partNumbers.reduce((acc, el) => acc + `&part_numbers=${el}`, "");
     MatchRFQPriceAPI(query)
       .then(res => {
-        rfq_items.forEach(element => {
-          res.data.forEach(el => {
-            if (element.part_number === el.part_number) {
-              const rate = currencies.find(el => el.name === rfq.currency).rate;
-              element.unit_price_rmb = el.unit_price_rmb;
-              element.unit_price_foreign = Math.round(element.unit_price_rmb / rate);
-              element.total_price = element.unit_price_foreign * element.qty;
-            }
+        if (res.data !== null) {
+          rfq_items.forEach(element => {
+            res.data.forEach(el => {
+              if (element.part_number === el.part_number) {
+                // const rate = currencies.find(el => el.name === rfq.currency).rate;
+                const rate = customers.find(el => el.internal === rfq.customer).rate;
+                element.unit_price_rmb = el.unit_price_rmb;
+                element.unit_price_foreign = Math.round(element.unit_price_rmb / rate);
+                element.total_price = element.unit_price_foreign * element.qty;
+              }
+            });
           });
-        });
-        dispatch(updateState("rfq_items", rfq_items));
+          dispatch(updateState("rfq_items", rfq_items));
+        }
       })
       .catch(err => openNotification(ERROR, err));
   };

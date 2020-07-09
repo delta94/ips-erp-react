@@ -82,7 +82,7 @@ const RFQContent = props => {
             style={{ paddingBottom: "16px" }}
           />
           <Row gutter={16}>
-            <Col span={2}>
+            <Col span={3}>
               <Button
                 type="primary"
                 block
@@ -94,14 +94,14 @@ const RFQContent = props => {
                 打开文件夹
               </Button>
             </Col>
-            <Col span={2}>
+            <Col span={3}>
               <CSVLink data={csvData} filename={`${rfq.email_rfq_num}.csv`}>
                 <Button block type="primary">
                   导出Excel
                 </Button>
               </CSVLink>
             </Col>
-            <Col span={2}>
+            <Col span={3}>
               <Button block type="primary" onClick={PatchRFQ}>
                 保存
               </Button>
