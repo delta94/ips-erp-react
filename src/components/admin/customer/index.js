@@ -15,9 +15,9 @@ import {
   // DatePicker,
   InputNumber,
 } from "antd";
-import { EditOutlined, DeleteOutlined, UndoOutlined, SaveOutlined, SearchOutlined } from "@ant-design/icons";
+import { EditOutlined, SearchOutlined } from "@ant-design/icons";
 import moment from "moment";
-import { GetItemsAPI, InsertItemAPI, RemoveItemAPI, PatchItemAPI } from "../../../api";
+import { GetItemsAPI, InsertItemAPI, PatchItemAPI } from "../../../api";
 import { openNotification } from "../../../utils/commons";
 import { ERROR, SUCCESS } from "../../../utils/constants";
 
@@ -55,6 +55,7 @@ const EditableTable = () => {
   const [search, setSearch] = useState("");
   const [visible, setVisible] = useState(false);
   const [country, setCountry] = useState();
+  const [selectedCustomer, setSelectedCustomer] = useState();
 
   const GetCustomers = () => {
     GetItemsAPI("customers")
@@ -71,39 +72,8 @@ const EditableTable = () => {
 
   const isEditing = record => record._id === editingKey;
 
-  const edit = record => {
-    form.setFieldsValue({ name: "", age: "", address: "", ...record });
-    setEditingKey(record._id);
-  };
-
   const cancel = () => {
     setEditingKey("");
-  };
-
-  const save = async _id => {
-    try {
-      const row = await form.validateFields();
-
-      const newData = [...customers];
-      const index = newData.findIndex(item => _id === item._id);
-      if (index > -1) {
-        const item = newData[index];
-        newData.splice(index, 1, {
-          ...item,
-          ...row,
-        });
-        const res = await PatchItemAPI(_id, "customers", { ...row });
-        openNotification(SUCCESS, res);
-        setCustomers(newData);
-        setEditingKey("");
-      } else {
-        newData.push(row);
-        setCustomers(newData);
-        setEditingKey("");
-      }
-    } catch (errInfo) {
-      console.log("Validate Failed:", errInfo);
-    }
   };
 
   const columns = [
@@ -136,38 +106,24 @@ const EditableTable = () => {
     {
       title: "操作",
       dataIndex: "operation",
-      render: (_, record) => {
-        const editable = isEditing(record);
-        return editable ? (
-          <Space size="small">
-            <Tooltip title="保存">
-              <Button onClick={() => save(record._id)} type="link" icon={<SaveOutlined />} />
-            </Tooltip>
-            <Tooltip title="取消">
-              <Button onClick={cancel} type="link" danger icon={<UndoOutlined />} />
-            </Tooltip>
-          </Space>
-        ) : (
-          <Space size="small">
-            <Tooltip title="编辑">
-              <Button disabled={editingKey !== ""} onClick={() => edit(record)} type="link" icon={<EditOutlined />} />
-            </Tooltip>
-            <Tooltip title="删除">
-              <Button
-                type="link"
-                danger
-                onClick={async () => {
-                  const res = await RemoveItemAPI(record._id, "customers");
-                  openNotification(SUCCESS, res.message);
-                  let newCustomers = customers.filter(s => s._id !== record._id);
-                  setCustomers([...newCustomers]);
-                }}
-                icon={<DeleteOutlined />}
-              />
-            </Tooltip>
-          </Space>
-        );
-      },
+      render: (_, record) => (
+        <Space size="small">
+          <Tooltip title="编辑">
+            <Button
+              onClick={() => {
+                setVisible(true);
+                const selectedCustomer = customers.find(el => el._id === record._id);
+                setSelectedCustomer(selectedCustomer);
+                newCustomerForm.resetFields();
+                newCustomerForm.setFieldsValue({ ...selectedCustomer });
+              }}
+              type="link"
+              icon={<EditOutlined />}
+            />
+          </Tooltip>
+        </Space>
+        // );
+      ),
     },
   ];
 
@@ -214,7 +170,13 @@ const EditableTable = () => {
           />
         </Col>
         <Col span={12}>
-          <Button type="primary" onClick={() => setVisible(true)}>
+          <Button
+            type="primary"
+            onClick={() => {
+              setVisible(true);
+              newCustomerForm.resetFields();
+            }}
+          >
             添加新客户
           </Button>
         </Col>
@@ -245,19 +207,31 @@ const EditableTable = () => {
         width="50%"
       >
         <Form
-          initialValues={{ reconciliation_date: moment() }}
           {...layout}
           name="basic"
           form={newCustomerForm}
           onFinish={async values => {
-            const res = await InsertItemAPI("customers", values);
-            if (res) {
-              GetCustomers();
-              openNotification(SUCCESS, res.message);
-              setVisible(false);
-              newCustomerForm.resetFields();
+            if (selectedCustomer) {
+              PatchItemAPI(selectedCustomer._id, "customers", { ...values })
+                .then(res => {
+                  GetCustomers();
+                  openNotification(SUCCESS, res);
+                  setVisible(false);
+                  setSelectedCustomer("");
+                  newCustomerForm.resetFields();
+                })
+                .catch(err => openNotification(ERROR, err));
             } else {
-              openNotification(ERROR, res.message);
+              InsertItemAPI("customers", values)
+                .then(res => {
+                  GetCustomers();
+                  openNotification(SUCCESS, res);
+                  setVisible(false);
+                  newCustomerForm.resetFields();
+                })
+                .catch(err => {
+                  openNotification(ERROR, err);
+                });
             }
           }}
         >
