@@ -19,8 +19,7 @@ export const GetRFQsPipeline = query => GetItemsPipeline(actions)("rfqs", query)
 
 export const updateCustomer = value => {
   return (dispatch, getState) => {
-    // const { rfq, customers } = getState().RFQReducer;
-    const { rfq } = getState().RFQReducer;
+    const { rfq, customers } = getState().RFQReducer;
     const currency = customers.find(el => el.internal === value).currency;
     rfq["customer"] = value;
     rfq["currency"] = currency;
