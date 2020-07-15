@@ -21,7 +21,9 @@ export const updateCustomer = value => {
   return (dispatch, getState) => {
     // const { rfq, customers } = getState().RFQReducer;
     const { rfq } = getState().RFQReducer;
+    const currency = customers.find(el => el.internal === value).currency;
     rfq["customer"] = value;
+    rfq["currency"] = currency;
     // const currency = customers.find(el => el.internal === value).currency;
     // rfq["currency"] = currency;
     dispatch(updateState("rfq", rfq));
