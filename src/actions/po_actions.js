@@ -136,7 +136,7 @@ export const PrintLabel = (printPartNum, selectedRows) => {
         .then(res => console.log(res))
         .catch(err => console.log(err));
     });
-
+    console.log(data);
     dispatch(notify(SUCCESS, "打印成功! "));
   };
 };
@@ -198,6 +198,9 @@ export const GetWOs = queryParams => {
     GetWorkOrderAPI(queryParams)
       .then(res => {
         const data = res.data;
+        data.forEach(el => {
+          el.done = el.work_order_items.reduce((flag, el) => flag && el.shipping_num !== "", true) ? "完成" : "未完成";
+        });
         data.sort((a, b) => (a.po_num < b.po_num ? 1 : -1));
         dispatch(updateState("work_orders", data));
       })

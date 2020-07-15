@@ -63,7 +63,6 @@ const POHistory = props => {
     {
       title: "PO#",
       dataIndex: "po_num",
-      sorter: (a, b) => a.po_num.localeCompare(b.po_num),
     },
     {
       title: "厂内交期",
@@ -80,7 +79,7 @@ const POHistory = props => {
         </div>
       ),
       // defaultSortOrder: "descend",
-      // sorter: (a, b) => a.shipping_num - b.shipping_num,
+      sorter: (a, b) => a.done.localeCompare(b.done),
     },
     // { title: "发票号", dataIndex: "invoice_num" },
     // { title: "运单号", dataIndex: "shipping_num" },

@@ -49,11 +49,11 @@ const RFQContent = props => {
       render: value => <div>{value === 0 ? "无小计" : value}</div>,
     },
     {
-      title: "备注",
+      title: "业务备注",
       dataIndex: "remark",
     },
     {
-      title: "不报价原因",
+      title: "工程备注",
       dataIndex: "reason",
     },
   ];

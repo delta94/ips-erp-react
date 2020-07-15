@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Card, Input, Table, Row, Col, Divider, Tooltip, Button } from "antd";
+import { Card, Input, Table, Row, Col, Divider, Tooltip, Button, Alert } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
 import { GetItemsPipelineAPI, PatchItemsAPI } from "../../api";
 import { openNotification } from "../../utils/commons";
-import { ERROR, INFO, SUCCESS } from "../../utils/constants";
+import { ERROR, SUCCESS } from "../../utils/constants";
 
 const EngineerProcess = () => {
   const [unprocess, setUnprocess] = useState([]);
   const [processing, setProcessing] = useState([]);
   const [search, setSearch] = useState();
+  const [warning, setWarning] = useState(false);
 
   const GetSubWorkOrderNum = (match, method) => {
     const query = JSON.stringify([
@@ -50,8 +51,31 @@ const EngineerProcess = () => {
       .catch(err => openNotification(ERROR, err));
   };
 
-  const ProcessSubWorkOrderNum = (value, remark) => {
-    PatchItemsAPI("work_orders", JSON.stringify({ "work_order_items.sub_work_order_num": value.trim() }), {
+  const FinishSubWorkOrderNum = (data, remark) => {
+    if (data.film === undefined || data.film === null || data.film.length === 0) {
+      setWarning(true);
+    } else {
+      setWarning(false);
+      PatchItemsAPI(
+        "work_orders",
+        JSON.stringify({ "work_order_items.sub_work_order_num": data.sub_work_order_num.trim() }),
+        {
+          "work_order_items.$.remark": remark,
+          "work_order_items.$.film": data.film,
+        }
+      )
+        .then(res => {
+          openNotification(SUCCESS, res);
+          Init();
+        })
+        .catch(err => openNotification(ERROR, err))
+        .finally(() => setSearch(""));
+    }
+  };
+
+  const ProcessSubWorkOrderNum = (data, remark) => {
+    setWarning(false);
+    PatchItemsAPI("work_orders", JSON.stringify({ "work_order_items.sub_work_order_num": data.trim() }), {
       "work_order_items.$.remark": remark,
     })
       .then(res => {
@@ -88,20 +112,38 @@ const EngineerProcess = () => {
 
   const processingColumns = [
     ...columns,
-    {
-      title: "操作",
-      render: data => (
-        <Tooltip title="完成处理">
-          <Button
-            type="link"
-            icon={<CheckOutlined />}
-            onClick={() => {
-              ProcessSubWorkOrderNum(data.sub_work_order_num, "完成处理");
+    ...[
+      {
+        title: "胶片号",
+        dataIndex: "film",
+        render: (data, record) => (
+          <Input
+            value={data}
+            onChange={e => {
+              const itemIndex = processing.findIndex(el => el.sub_work_order_num === record.sub_work_order_num);
+              processing[itemIndex].film = e.target.value;
+              setProcessing([...processing]);
             }}
           />
-        </Tooltip>
-      ),
-    },
+        ),
+      },
+      {
+        title: "操作",
+        render: data => (
+          <Tooltip title="完成处理">
+            <Button
+              type="link"
+              icon={<CheckOutlined />}
+              onClick={() => {
+                // console.log(data);
+                // FinishSubWorkOrderNum(data.sub_work_order_num, "完成处理");
+                FinishSubWorkOrderNum(data, "完成处理");
+              }}
+            />
+          </Tooltip>
+        ),
+      },
+    ],
   ];
   return (
     <Card>
@@ -117,6 +159,7 @@ const EngineerProcess = () => {
           ></Input.Search>
         </Col>
         <Col span={24}>
+          {warning && <Alert message="胶片号不能为空" type="warning" showIcon closable />}
           <Divider orientation="left">正在处理</Divider>
           <Table rowKey="sub_work_order_num" pagination={false} columns={processingColumns} dataSource={processing} />
         </Col>

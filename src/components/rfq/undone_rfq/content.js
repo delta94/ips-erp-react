@@ -41,7 +41,7 @@ const EditableCell = ({ edit, dataIndex, title, inputType, record, index, childr
           initialvalue={record[dataIndex]}
         >
           <Input
-            disabled={!record.no_price}
+            // disabled={!record.no_price}
             value={record[dataIndex]}
             onChange={e => dispatch(updateRFQItems(record.seq, dataIndex, e.target.value))}
           />
@@ -98,7 +98,7 @@ const RFQUndoneContent = props => {
       edit: true,
     },
     {
-      title: "理由",
+      title: "工程备注",
       dataIndex: "reason",
       variant: "text",
       edit: true,
