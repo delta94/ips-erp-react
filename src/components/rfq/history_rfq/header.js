@@ -1,15 +1,15 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { Table, Tag } from "antd";
-import { GetRFQs, GetCurrency, updateState } from "../../../actions/rfq_actions";
+import { GetRFQs, GetCustomers, updateState } from "../../../actions/rfq_actions";
 
 const RFQHistoryHeader = props => {
   const { rfqs } = props;
-  const { GetRFQs, updateState, GetCurrency } = props;
+  const { GetRFQs, updateState, GetCustomers } = props;
 
   useEffect(() => {
     GetRFQs(JSON.stringify({ $and: [{ delivery_date: { $ne: 0 } }, { price_set: true }] }));
-    GetCurrency();
+    GetCustomers();
   }, []);
   const columns = [
     { title: "日期", render: record => <div>{record.email_rfq_date.split("T")[0]}</div> },
@@ -40,4 +40,4 @@ const mapStateToProps = ({ RFQReducer }) => {
   };
 };
 
-export default connect(mapStateToProps, { GetRFQs, updateState, GetCurrency })(RFQHistoryHeader);
+export default connect(mapStateToProps, { GetRFQs, updateState, GetCustomers })(RFQHistoryHeader);

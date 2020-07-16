@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { Table, Tag } from "antd";
-import { GetRFQs, GetCurrency, updateState } from "../../../actions/rfq_actions";
+import { GetRFQs, updateState, GetCustomers } from "../../../actions/rfq_actions";
 
 const RFQUndoneHeader = props => {
   const { rfqs } = props;
-  const { GetRFQs, updateState, GetCurrency } = props;
+  const { GetRFQs, updateState, GetCustomers } = props;
 
   const determineUndonePart = record => {
     if (!record.delivery_date && !record.price_set) {
@@ -21,7 +21,7 @@ const RFQUndoneHeader = props => {
 
   useEffect(() => {
     GetRFQs(JSON.stringify({ $or: [{ delivery_date: 0 }, { price_set: false }] }));
-    GetCurrency();
+    GetCustomers();
   }, []);
   const columns = [
     { title: "日期", render: record => <div>{record.email_rfq_date.split("T")[0]}</div> },
@@ -53,4 +53,4 @@ const mapStateToProps = ({ RFQReducer }) => {
   };
 };
 
-export default connect(mapStateToProps, { GetRFQs, updateState, GetCurrency })(RFQUndoneHeader);
+export default connect(mapStateToProps, { GetRFQs, updateState, GetCustomers })(RFQUndoneHeader);

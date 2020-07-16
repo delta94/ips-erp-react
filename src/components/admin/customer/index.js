@@ -1,12 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { Table, Input, Form, Tooltip, Button, Space, Card, Modal, Row, Col } from "antd";
-import { EditOutlined, DeleteOutlined, UndoOutlined, SaveOutlined, SearchOutlined } from "@ant-design/icons";
-import { GetItemsAPI, InsertItemAPI, RemoveItemAPI } from "../../../api";
+import {
+  Table,
+  Input,
+  Form,
+  Tooltip,
+  Button,
+  Space,
+  Card,
+  Modal,
+  Row,
+  Col,
+  Divider,
+  Select,
+  // DatePicker,
+  InputNumber,
+} from "antd";
+import { EditOutlined, SearchOutlined } from "@ant-design/icons";
+import moment from "moment";
+import { GetItemsAPI, InsertItemAPI, PatchItemAPI } from "../../../api";
 import { openNotification } from "../../../utils/commons";
 import { ERROR, SUCCESS } from "../../../utils/constants";
 
-const EditableCell = ({ editing, dataIndex, title, record, index, children, ...restProps }) => {
-  const inputNode = <Input />;
+const EditableCell = ({ editing, dataIndex, title, record, index, number, children, ...restProps }) => {
+  const inputNode = number ? <InputNumber /> : <Input />;
 
   return (
     <td {...restProps}>
@@ -38,6 +54,8 @@ const EditableTable = () => {
   const [orgCustomers, setOrgCustomers] = useState([]);
   const [search, setSearch] = useState("");
   const [visible, setVisible] = useState(false);
+  const [country, setCountry] = useState();
+  const [selectedCustomer, setSelectedCustomer] = useState();
 
   const GetCustomers = () => {
     GetItemsAPI("customers")
@@ -54,37 +72,8 @@ const EditableTable = () => {
 
   const isEditing = record => record._id === editingKey;
 
-  const edit = record => {
-    form.setFieldsValue({ name: "", age: "", address: "", ...record });
-    setEditingKey(record._id);
-  };
-
   const cancel = () => {
     setEditingKey("");
-  };
-
-  const save = async _id => {
-    try {
-      const row = await form.validateFields();
-
-      const newData = [...customers];
-      const index = newData.findIndex(item => _id === item._id);
-      if (index > -1) {
-        const item = newData[index];
-        newData.splice(index, 1, {
-          ...item,
-          ...row,
-        });
-        setCustomers(newData);
-        setEditingKey("");
-      } else {
-        newData.push(row);
-        setCustomers(newData);
-        setEditingKey("");
-      }
-    } catch (errInfo) {
-      console.log("Validate Failed:", errInfo);
-    }
   };
 
   const columns = [
@@ -98,56 +87,43 @@ const EditableTable = () => {
       editable: true,
     },
     {
-      title: "结算货币",
-      dataIndex: "currency",
-      editable: true,
-    },
-    {
       title: "地址",
       dataIndex: "addr",
       width: "48%",
       editable: true,
     },
     {
-      title: "区域",
-      dataIndex: "area",
+      title: "结算币种",
+      dataIndex: "currency",
       editable: true,
+    },
+    {
+      title: "汇率",
+      dataIndex: "rate",
+      editable: true,
+      number: true,
     },
     {
       title: "操作",
       dataIndex: "operation",
-      render: (_, record) => {
-        const editable = isEditing(record);
-        return editable ? (
-          <Space size="small">
-            <Tooltip title="保存">
-              <Button onClick={() => save(record._id)} type="link" icon={<SaveOutlined />} />
-            </Tooltip>
-            <Tooltip title="取消">
-              <Button onClick={cancel} type="link" danger icon={<UndoOutlined />} />
-            </Tooltip>
-          </Space>
-        ) : (
-          <Space size="small">
-            <Tooltip title="编辑">
-              <Button disabled={editingKey !== ""} onClick={() => edit(record)} type="link" icon={<EditOutlined />} />
-            </Tooltip>
-            <Tooltip title="删除">
-              <Button
-                type="link"
-                danger
-                onClick={async () => {
-                  const res = await RemoveItemAPI(record._id, "customers");
-                  openNotification(SUCCESS, res.message);
-                  let newCustomers = customers.filter(s => s._id !== record._id);
-                  setCustomers([...newCustomers]);
-                }}
-                icon={<DeleteOutlined />}
-              />
-            </Tooltip>
-          </Space>
-        );
-      },
+      render: (_, record) => (
+        <Space size="small">
+          <Tooltip title="编辑">
+            <Button
+              onClick={() => {
+                setVisible(true);
+                const selectedCustomer = customers.find(el => el._id === record._id);
+                setSelectedCustomer(selectedCustomer);
+                newCustomerForm.resetFields();
+                newCustomerForm.setFieldsValue({ ...selectedCustomer });
+              }}
+              type="link"
+              icon={<EditOutlined />}
+            />
+          </Tooltip>
+        </Space>
+        // );
+      ),
     },
   ];
 
@@ -162,13 +138,14 @@ const EditableTable = () => {
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
+        number: col.number,
       }),
     };
   });
 
   const layout = {
-    labelCol: { span: 8 },
-    wrapperCol: { span: 8 },
+    labelCol: { span: 4 },
+    wrapperCol: { span: 20 },
   };
   const tailLayout = {
     wrapperCol: { offset: 8, span: 8 },
@@ -193,7 +170,13 @@ const EditableTable = () => {
           />
         </Col>
         <Col span={12}>
-          <Button type="primary" onClick={() => setVisible(true)}>
+          <Button
+            type="primary"
+            onClick={() => {
+              setVisible(true);
+              newCustomerForm.resetFields();
+            }}
+          >
             添加新客户
           </Button>
         </Col>
@@ -215,36 +198,105 @@ const EditableTable = () => {
           }}
         />
       </Form>
-      <Modal title="新客户信息" visible={visible} onCancel={() => setVisible(false)} footer={null} destroyOnClose>
+      <Modal
+        title="新客户信息"
+        visible={visible}
+        onCancel={() => setVisible(false)}
+        footer={null}
+        destroyOnClose
+        width="50%"
+      >
         <Form
           {...layout}
           name="basic"
           form={newCustomerForm}
           onFinish={async values => {
-            const res = await InsertItemAPI("customers", values);
-            if (res) {
-              GetCustomers();
-              openNotification(SUCCESS, res.message);
-              setVisible(false);
+            if (selectedCustomer) {
+              PatchItemAPI(selectedCustomer._id, "customers", { ...values })
+                .then(res => {
+                  GetCustomers();
+                  openNotification(SUCCESS, res);
+                  setVisible(false);
+                  setSelectedCustomer("");
+                  newCustomerForm.resetFields();
+                })
+                .catch(err => openNotification(ERROR, err));
             } else {
-              openNotification(ERROR, res.message);
+              InsertItemAPI("customers", values)
+                .then(res => {
+                  GetCustomers();
+                  openNotification(SUCCESS, res);
+                  setVisible(false);
+                  newCustomerForm.resetFields();
+                })
+                .catch(err => {
+                  openNotification(ERROR, err);
+                });
             }
           }}
         >
-          <Form.Item label="客户代号" name="internal" rules={[{ required: true, message: "请输入客户代号" }]}>
+          <Divider orientation="left">基本信息</Divider>
+          <Form.Item label="客户代码" name="internal" rules={[{ required: true, message: "请输入客户代号" }]}>
             <Input />
           </Form.Item>
-
-          <Form.Item label="名称" name="name" rules={[{ required: true, message: "请输入名称" }]}>
+          <Form.Item label="客户名称" name="name" rules={[{ required: true, message: "请输入名称" }]}>
             <Input />
           </Form.Item>
-          <Form.Item label="结算货币" name="currency" rules={[{ required: true, message: "请输入结算货币" }]}>
+          <Form.Item label="详细地址" name="addr" rules={[{ required: true, message: "请输入地址" }]}>
             <Input />
           </Form.Item>
-          <Form.Item label="地址" name="addr" rules={[{ required: true, message: "请输入地址" }]}>
+          <Form.Item label="国家" name="country" rules={[{ required: true, message: "请输入国家" }]}>
+            <Input onChange={e => setCountry(e.target.value === "中国" ? false : true)} />
+          </Form.Item>
+          <Form.Item label="结算币种" name="currency" rules={[{ required: true, message: "请输入结算货币" }]}>
             <Input />
           </Form.Item>
-          <Form.Item label="区域" name="area" rules={[{ required: true, message: "请输入区域" }]}>
+          <Form.Item label="汇率" name="rate" rules={[{ required: true, message: "请输入汇率" }]}>
+            <InputNumber />
+          </Form.Item>
+          <Form.Item label="业务组别" name="bu_group" rules={[{ required: true, message: "请输入业务组别" }]}>
+            <Input />
+          </Form.Item>
+          <Divider orientation="left">收款信息</Divider>
+          {/* <Form.Item label="对账日期" name="reconciliation_date">
+            <DatePicker className="full-width" />
+          </Form.Item> */}
+          <Form.Item
+            label="收款天数"
+            name="reconciliation_days"
+            rules={[{ required: true, message: "请输入收款天数" }]}
+          >
+            <Select>
+              <Select.Option value={30}>30</Select.Option>
+              <Select.Option value={60}>60</Select.Option>
+              <Select.Option value={90}>90</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="是否报关" name="custom" rules={[{ required: true, message: "请选择是否报关" }]}>
+            <Select>
+              <Select.Option value={true}>报关</Select.Option>
+              <Select.Option value={false}>不报关</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="是否开票" name="invoice" rules={[{ required: true, message: "请选择是否开票" }]}>
+            <Select>
+              <Select.Option value={true}>开票</Select.Option>
+              <Select.Option value={false}>不开票</Select.Option>
+            </Select>
+          </Form.Item>
+          <Divider orientation="left">运输信息</Divider>
+          <Form.Item
+            label="快递公司"
+            name="shipping_company"
+            rules={[{ required: country, message: "请输入快递公司" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="快递账号"
+            name="shipping_account"
+            rules={[{ required: country, message: "请输入快递账号" }]}
+          >
             <Input />
           </Form.Item>
           <Form.Item {...tailLayout}>

@@ -80,10 +80,7 @@ export const GetCraftsAPI = async params => {
 };
 
 export const PatchItemAPI = async (item_id, collection, params) => {
-  return await axios
-    .patch(`/patch_item/${item_id}?collection=${collection}`, params)
-    .then(res => res)
-    .catch(err => console.log(err));
+  return await axios.patch(`/patch_item/${item_id}?collection=${collection}`, params);
 };
 
 export const PatchItemsAPI = async (collection, query, update) => {
@@ -98,10 +95,7 @@ export const RemoveItemAPI = async (item_id, collection) => {
 };
 
 export const InsertItemAPI = async (collection, params) => {
-  return await axios
-    .post(`/insert_item?collection=${collection}`, params)
-    .then(res => res)
-    .catch(err => console.log(err));
+  return await axios.post(`/insert_item?collection=${collection}`, params);
 };
 
 export const GetItemsAPI = async (collection, query) => {

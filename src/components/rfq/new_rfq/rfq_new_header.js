@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { Divider, Row, Col, Select, Input, DatePicker, Form } from "antd";
-import { GetCustomers, updateObjectState, GetCurrency, updateCustomer } from "../../../actions/rfq_actions";
+import { GetCustomers, updateObjectState, updateCustomer } from "../../../actions/rfq_actions";
 import moment from "moment";
 const { Option } = Select;
 
@@ -10,11 +10,11 @@ const RFQNewHeader = props => {
   // vars from reducer
   const { customers, rfq } = props;
   // methods from action
-  const { GetCustomers, updateObjectState, GetCurrency, updateCustomer } = props;
+  const { GetCustomers, updateObjectState, updateCustomer } = props;
   useEffect(() => {
     GetCustomers();
-    GetCurrency();
-  }, [GetCustomers, GetCurrency]);
+    // GetCurrency();
+  }, [GetCustomers]);
 
   return (
     <>
@@ -80,4 +80,4 @@ const mapStateToProps = ({ RFQReducer }) => ({
   rfq: RFQReducer.rfq,
 });
 
-export default connect(mapStateToProps, { GetCustomers, updateObjectState, GetCurrency, updateCustomer })(RFQNewHeader);
+export default connect(mapStateToProps, { GetCustomers, updateObjectState, updateCustomer })(RFQNewHeader);
