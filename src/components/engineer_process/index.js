@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
+import { connect } from "react-redux";
 import { Card, Input, Table, Row, Col, Divider, Tooltip, Button, Alert } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
 import { GetItemsPipelineAPI, PatchItemsAPI } from "../../api";
 import { openNotification } from "../../utils/commons";
 import { ERROR, SUCCESS } from "../../utils/constants";
 
-const EngineerProcess = () => {
+const EngineerProcess = props => {
+  // username from header reducer
+  const { username } = props;
+
+  // local states
   const [unprocess, setUnprocess] = useState([]);
   const [processing, setProcessing] = useState([]);
   const [search, setSearch] = useState();
@@ -45,13 +50,15 @@ const EngineerProcess = () => {
               el.remark = "待处理";
             }
           });
-          method(res.data);
+          method([...res.data]);
+        } else {
+          method([]);
         }
       })
       .catch(err => openNotification(ERROR, err));
   };
 
-  const FinishSubWorkOrderNum = (data, remark) => {
+  const FinishSubWorkOrderNum = (data, username, remark) => {
     if (data.film === undefined || data.film === null || data.film.length === 0) {
       setWarning(true);
     } else {
@@ -62,6 +69,7 @@ const EngineerProcess = () => {
         {
           "work_order_items.$.remark": remark,
           "work_order_items.$.film": data.film,
+          "work_order_items.$.process_by": username,
         }
       )
         .then(res => {
@@ -137,7 +145,7 @@ const EngineerProcess = () => {
               onClick={() => {
                 // console.log(data);
                 // FinishSubWorkOrderNum(data.sub_work_order_num, "完成处理");
-                FinishSubWorkOrderNum(data, "完成处理");
+                FinishSubWorkOrderNum(data, username, "完成处理");
               }}
             />
           </Tooltip>
@@ -172,4 +180,10 @@ const EngineerProcess = () => {
   );
 };
 
-export default EngineerProcess;
+const mapStateToProps = ({ HeaderReducer }) => {
+  return {
+    username: HeaderReducer.username,
+  };
+};
+
+export default connect(mapStateToProps, null)(EngineerProcess);
