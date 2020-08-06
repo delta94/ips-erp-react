@@ -1,147 +1,146 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { Paper, Grid, Typography } from "@material-ui/core";
-import SearchBar from "material-ui-search-bar";
+import { Card, Row, Col, Input, Descriptions, Select, Form, Button, InputNumber, Table } from "antd";
+import { GetMaterials, updateSelectMaterial, updateState } from "../../actions/craft_schedule_actions";
+import List from "./list";
+import Tmp from "./tmp";
 
-import Material from "./material";
-import CraftList from "./craft_list";
-import CraftOperations from "./craft_operations";
+const CraftSchedule = props => {
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const { GetMaterials, updateSelectMaterial, updateState } = props;
 
-import { updateState, GetInternalWorkOrderItem } from "../../actions/craft_schedule_actions";
+  const { materials, selected_material, dimension, qty, crafts } = props;
 
-const useStyle = makeStyles(() => ({
-  root: {
-    margin: "0 auto",
-    marginTop: 10,
-    maxWidth: 600,
-  },
-  paperRoot: {
-    margin: 30,
-  },
-  tableHeader: {
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingLeft: 10,
-  },
-  tableRow: {
-    paddingLeft: 10,
-  },
-  btn: {
-    marginTop: -12,
-  },
-}));
+  useEffect(() => {
+    GetMaterials();
+  }, []);
 
-function EngineerProcess(props) {
-  const classes = useStyle();
+  const columns = [
+    { title: "加工部门", dataIndex: "department" },
+    { title: "工艺描述", dataIndex: "description" },
+  ];
 
-  // vars from reducer
-  const { search, data } = props;
-
-  // methods from actions
-  const { updateState, GetInternalWorkOrderItem } = props;
-
-  const renderHeader = () => {
-    if (data) {
-      return (
-        <Grid container justify="space-around" className={classes.tableHeader} spacing={2}>
-          <Grid item xs={2}>
-            <Typography color="primary">工号</Typography>
-          </Grid>
-          <Grid item xs={2}>
-            <Typography color="primary">品名/图号</Typography>
-          </Grid>
-          <Grid item xs={1}>
-            <Typography color="primary">数量</Typography>
-          </Grid>
-          <Grid item xs={1}>
-            <Typography color="primary">单位</Typography>
-          </Grid>
-          <Grid item xs={1}>
-            <Typography color="primary">下单日期</Typography>
-          </Grid>
-          <Grid item xs={1}>
-            <Typography color="primary">厂内交期</Typography>
-          </Grid>
-          <Grid item xs={1}>
-            <Typography color="primary">下单人</Typography>
-          </Grid>
-          <Grid item xs={1}>
-            <Typography color="primary">处理人</Typography>
-          </Grid>
-          <Grid item xs={1}>
-            <Typography color="primary">状态</Typography>
-          </Grid>
-        </Grid>
-      );
-    } else {
-      return null;
-    }
-  };
-
-  const renderData = () => {
-    if (data) {
-      return (
-        <Grid container justify="space-around" spacing={2} className={classes.tableRow}>
-          <Grid item xs={2}>
-            <Typography>{data.item_id}</Typography>
-          </Grid>
-          <Grid item xs={2}>
-            <Typography>{data.item_num}</Typography>
-          </Grid>
-          <Grid item xs={1}>
-            <Typography>{data.qty}</Typography>
-          </Grid>
-          <Grid item xs={1}>
-            <Typography>{data.unit}</Typography>
-          </Grid>
-          <Grid item xs={1}>
-            <Typography>{data.po_submit_date.split("T")[0]}</Typography>
-          </Grid>
-          <Grid item xs={1}>
-            <Typography>{data.internal_dateline.split("T")[0]}</Typography>
-          </Grid>
-          <Grid item xs={1}>
-            <Typography>{data.submit_by}</Typography>
-          </Grid>
-          <Grid item xs={1}>
-            <Typography>{data.process_by}</Typography>
-          </Grid>
-          <Grid item xs={1}>
-            <Typography>{data.state}</Typography>
-          </Grid>
-        </Grid>
-      );
-    } else {
-      return null;
-    }
+  // rowSelection object indicates the need for row selection
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      // console.log(`selectedRowKeys: ${selectedRowKeys}`, "selectedRows: ", selectedRows);
+      setSelectedRows(selectedRows);
+      setSelectedRowKeys(selectedRowKeys);
+    },
+    selectedRowKeys: selectedRowKeys,
   };
 
   return (
-    <React.Fragment>
-      <SearchBar
-        className={classes.root}
-        value={search}
-        placeholder="输入工号"
-        onChange={v => updateState("search", v)}
-        onRequestSearch={() => GetInternalWorkOrderItem(search)}
-      />
-      <Paper className={classes.paperRoot}>
-        {renderHeader()}
-        {renderData()}
-      </Paper>
-      <Material />
-      <CraftList />
-      <CraftOperations />
-    </React.Fragment>
+    <Card>
+      <Row gutter={[16, 16]}>
+        <Col span={12}>
+          <Input.Search placeholder="扫描工号"></Input.Search>
+        </Col>
+      </Row>
+      <Row gutter={[16, 16]}>
+        <Col span={6} style={{ borderRight: "1px solid black" }}>
+          <Descriptions title="工号信息" column={1}>
+            <Descriptions.Item label="数量">5</Descriptions.Item>
+            <Descriptions.Item label="厂内交期">2020-08-30</Descriptions.Item>
+            <Descriptions.Item label="图号">A039-430DKSJD-JD239</Descriptions.Item>
+            <Descriptions.Item label="工程人员">李某某</Descriptions.Item>
+            <Descriptions.Item label="库存数量">20</Descriptions.Item>
+            <Descriptions.Item label="过往加工记录"></Descriptions.Item>
+          </Descriptions>
+        </Col>
+        <Col span={18}>
+          <Form>
+            <Row gutter={16}>
+              <Col span={6}>
+                <Form.Item>
+                  <Select placeholder="加工材料" onChange={updateSelectMaterial}>
+                    {materials.map(el => (
+                      <Select.Option key={el.id} value={el.id}>
+                        {el.category} - {el.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item>
+                  {selected_material ? (
+                    <Select value={selected_material.hardness}></Select>
+                  ) : (
+                    <Select placeholder="硬度"></Select>
+                  )}
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item>
+                  <Input
+                    placeholder="备料尺寸 (长x宽x高)"
+                    value={dimension}
+                    onChange={e => updateState("dimension", e.target.value)}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item>
+                  <InputNumber
+                    // className="full-width"
+                    style={{ width: "100%" }}
+                    placeholder="备料数量"
+                    value={qty}
+                    onChange={value => updateState("qty", value)}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+          <Row gutter={[16, 16]} justify="space-around" style={{ borderBottom: "1px solid black" }}>
+            <Col>
+              <Button
+                type="primary"
+                onClick={() => {
+                  updateState("crafts", selectedRows);
+                  setSelectedRowKeys([]);
+                }}
+              >
+                排序
+              </Button>
+            </Col>
+            <Col>
+              <Button type="primary">重新选择</Button>
+            </Col>
+            <Col>
+              <Button type="primary">计算</Button>
+            </Col>
+            <Col>
+              <Button type="primary">保存</Button>
+            </Col>
+            <Col>
+              <Button type="primary">打印</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <Table rowKey="id" columns={columns} rowSelection={rowSelection} dataSource={crafts} />
+            </Col>
+            <Col span={24}>
+              <Tmp />
+            </Col>
+          </Row>
+        </Col>
+      </Row>
+    </Card>
   );
-}
+};
 
 const mapStateToProps = ({ CraftScheduleReducer }) => {
   return {
-    search: CraftScheduleReducer.search,
-    data: CraftScheduleReducer.data,
+    materials: CraftScheduleReducer.materials,
+    selected_material: CraftScheduleReducer.selected_material,
+    dimension: CraftScheduleReducer.dimension,
+    qty: CraftScheduleReducer.qty,
+    crafts: CraftScheduleReducer.crafts,
   };
 };
 
-export default connect(mapStateToProps, { updateState, GetInternalWorkOrderItem })(EngineerProcess);
+export default connect(mapStateToProps, { GetMaterials, updateSelectMaterial, updateState })(CraftSchedule);

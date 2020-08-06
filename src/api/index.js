@@ -71,8 +71,12 @@ export const PatchInternalWorkOrderItemAPI = async (item_id, params) => {
   return await axios.patch(`/internal_work_order_item/${item_id}`, params);
 };
 
-export const GetMaterialsAPI = async () => {
-  return await axios.get(`/materials`);
+export const GetMaterialsAPI = async query => {
+  if (query) {
+    return await axios.get(`/materials?query=${JSON.stringify(query)}`);
+  } else {
+    return await axios.get(`/materials`);
+  }
 };
 
 export const GetCraftsAPI = async params => {
