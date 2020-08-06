@@ -8,8 +8,10 @@ const defaultState = {
   search: "",
   data: "",
   materials: [],
-  selected_material: { category: "", name: "", hardness: "" },
-  dimension: { length: "", width: "", height: "", qty: "" },
+  // selected_material: { category: "", name: "", hardness: "" },
+  selected_material: null,
+  dimension: "",
+  qty: "",
   crafts: [],
 };
 

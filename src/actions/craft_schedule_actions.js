@@ -14,11 +14,21 @@ const PREFIX = "CRAFT_SCHEDULE";
 export const actions = action(PREFIX);
 export const { updateArrayObjectState, updateObjectState, updateState } = actions;
 
-export const updateSelectMaterial = name => {
+export const GetMaterials = query => {
+  return dispatch => {
+    GetMaterialsAPI(query)
+      .then(res => {
+        dispatch(updateState("materials", res.data));
+      })
+      .catch(err => console.log(err));
+  };
+};
+
+export const updateSelectMaterial = id => {
   return (dispatch, getState) => {
     const state = getState();
     const { materials } = state.CraftScheduleReducer;
-    const selected_material = materials.filter(el => el.name === name)[0];
+    const selected_material = materials.find(el => el.id === id);
     batch(() => {
       dispatch(actions.updateState("selected_material", selected_material));
       dispatch(GetCrafts(selected_material.category));
@@ -64,7 +74,7 @@ export const clickSeqCheckbox = id => {
 export const GetInternalWorkOrderItem = item_id =>
   GetAPI(actions)("data", GetInternalWorkOrdersItemAPI, item_id, null, true, "读取工号成功! ");
 
-export const GetMaterials = () => GetAPI(actions)("materials", GetMaterialsAPI, null, null, false);
+// export const GetMaterials = () => GetAPI(actions)("materials", GetMaterialsAPI, null, null, false);
 
 // const formatCrafts = data => {
 //   data.forEach(element => {

@@ -29,7 +29,7 @@ const EditableCell = ({ fix, dataIndex, title, inputType, record, index, childre
         style={{ margin: 0 }}
         rules={[
           {
-            required: dataIndex != "remark" && true,
+            required: dataIndex !== "remark" && true,
             message: `请输入 ${title}!`,
           },
         ]}
