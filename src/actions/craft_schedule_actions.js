@@ -124,12 +124,12 @@ export const clickSortCraftSchedule = crafts => {
   };
 };
 
-export const clickCalWorkHour = crafts => {
-  return (dispatch, getState) => {
-    const { data } = getState().CraftScheduleReducer;
+export const clickCalWorkHour = (workOrder, form) => {
+  const crafts = form.getFieldsValue().crafts;
+  return dispatch => {
     const difInternalDeadlineSubmitDate = differenceInMinutes(
-      parseISO(data.internal_dateline),
-      parseISO(data.po_submit_date)
+      parseISO(workOrder.internal_deadline.split("T")[0]),
+      parseISO(workOrder.submit_date.split("T")[0])
     );
     let totalTimeHour = 0;
     totalTimeHour = crafts.reduce((acc, el) => acc + el.estimate * 60, totalTimeHour);
@@ -150,6 +150,7 @@ export const clickCalWorkHour = crafts => {
       element.end_time = new Date(end_time);
     });
     dispatch(actions.updateState("crafts", crafts));
+    form.setFieldsValue({ crafts: crafts });
   };
 };
 

@@ -1,16 +1,56 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Card, Row, Col, Input, Descriptions, Select, Form, Button, InputNumber, Table } from "antd";
-import { GetMaterials, updateSelectMaterial, updateState } from "../../actions/craft_schedule_actions";
-import List from "./list";
-import Tmp from "./tmp";
+import { GetItemsPipelineAPI } from "../../api";
+import {
+  GetMaterials,
+  updateSelectMaterial,
+  updateState,
+  GetCrafts,
+  clickCalWorkHour,
+} from "../../actions/craft_schedule_actions";
+import { openNotification } from "../../utils/commons";
+import { ERROR, INFO } from "../../utils/constants";
+import CraftList from "./craft_list";
 
 const CraftSchedule = props => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const { GetMaterials, updateSelectMaterial, updateState } = props;
+  const [sorted, setSorted] = useState(false);
+  const [search, setSearch] = useState("");
+  const [workOrder, setWorkOrder] = useState({ work_order_items: { qty: "" }, internal_deadline: "" });
+  const { GetMaterials, updateSelectMaterial, updateState, GetCrafts, clickCalWorkHour } = props;
 
   const { materials, selected_material, dimension, qty, crafts } = props;
+
+  const [form] = Form.useForm();
+
+  const GetWorkOrderItem = sub_work_order_num => {
+    const query = JSON.stringify([
+      {
+        $unwind: {
+          path: "$work_order_items",
+          includeArrayIndex: "work_order_items.index",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $match: {
+          "work_order_items.sub_work_order_num": sub_work_order_num,
+        },
+      },
+    ]);
+
+    GetItemsPipelineAPI("work_orders", query)
+      .then(res => {
+        if (res.data !== null) {
+          setWorkOrder(res.data[0]);
+        } else {
+          openNotification(INFO, "工号不存在");
+        }
+      })
+      .catch(err => openNotification(ERROR, err));
+  };
 
   useEffect(() => {
     GetMaterials();
@@ -35,21 +75,26 @@ const CraftSchedule = props => {
     <Card>
       <Row gutter={[16, 16]}>
         <Col span={12}>
-          <Input.Search placeholder="扫描工号"></Input.Search>
+          <Input.Search
+            placeholder="扫描工号"
+            value={search}
+            onChange={({ target: { value } }) => setSearch(value)}
+            onPressEnter={() => GetWorkOrderItem(search)}
+          />
         </Col>
       </Row>
       <Row gutter={[16, 16]}>
-        <Col span={6} style={{ borderRight: "1px solid black" }}>
+        <Col span={4} style={{ borderRight: "1px solid black" }}>
           <Descriptions title="工号信息" column={1}>
-            <Descriptions.Item label="数量">5</Descriptions.Item>
-            <Descriptions.Item label="厂内交期">2020-08-30</Descriptions.Item>
-            <Descriptions.Item label="图号">A039-430DKSJD-JD239</Descriptions.Item>
-            <Descriptions.Item label="工程人员">李某某</Descriptions.Item>
+            <Descriptions.Item label="数量">{workOrder.work_order_items.qty}</Descriptions.Item>
+            <Descriptions.Item label="厂内交期">{workOrder.internal_deadline.split("T")[0]}</Descriptions.Item>
+            <Descriptions.Item label="图号">{workOrder.work_order_items.part_number}</Descriptions.Item>
+            <Descriptions.Item label="工程人员">{workOrder.work_order_items.process_by}</Descriptions.Item>
             <Descriptions.Item label="库存数量">20</Descriptions.Item>
             <Descriptions.Item label="过往加工记录"></Descriptions.Item>
           </Descriptions>
         </Col>
-        <Col span={18}>
+        <Col span={20}>
           <Form>
             <Row gutter={16}>
               <Col span={6}>
@@ -94,39 +139,53 @@ const CraftSchedule = props => {
               </Col>
             </Row>
           </Form>
-          <Row gutter={[16, 16]} justify="space-around" style={{ borderBottom: "1px solid black" }}>
-            <Col>
-              <Button
-                type="primary"
-                onClick={() => {
-                  updateState("crafts", selectedRows);
-                  setSelectedRowKeys([]);
-                }}
-              >
-                排序
-              </Button>
-            </Col>
-            <Col>
-              <Button type="primary">重新选择</Button>
-            </Col>
-            <Col>
-              <Button type="primary">计算</Button>
-            </Col>
-            <Col>
-              <Button type="primary">保存</Button>
-            </Col>
-            <Col>
-              <Button type="primary">打印</Button>
-            </Col>
-          </Row>
-          <Row>
-            <Col span={24}>
-              <Table rowKey="id" columns={columns} rowSelection={rowSelection} dataSource={crafts} />
-            </Col>
-            <Col span={24}>
-              <Tmp />
-            </Col>
-          </Row>
+          <Form form={form}>
+            <Row gutter={[16, 16]} justify="space-around" style={{ borderBottom: "1px solid black" }}>
+              <Col>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    updateState("crafts", selectedRows);
+                    setSelectedRowKeys([]);
+                    setSorted(true);
+                  }}
+                >
+                  排序
+                </Button>
+              </Col>
+              <Col>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    GetCrafts(selected_material.category);
+                    setSorted(false);
+                  }}
+                >
+                  重新选择
+                </Button>
+              </Col>
+              <Col>
+                <Button type="primary" onClick={() => clickCalWorkHour(workOrder, form)}>
+                  计算
+                </Button>
+              </Col>
+              <Col>
+                <Button type="primary">保存</Button>
+              </Col>
+              <Col>
+                <Button type="primary">打印</Button>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={24}>
+                {sorted ? (
+                  <CraftList form={form} />
+                ) : (
+                  <Table rowKey="id" columns={columns} rowSelection={rowSelection} dataSource={crafts} />
+                )}
+              </Col>
+            </Row>
+          </Form>
         </Col>
       </Row>
     </Card>
@@ -143,4 +202,10 @@ const mapStateToProps = ({ CraftScheduleReducer }) => {
   };
 };
 
-export default connect(mapStateToProps, { GetMaterials, updateSelectMaterial, updateState })(CraftSchedule);
+export default connect(mapStateToProps, {
+  GetMaterials,
+  updateSelectMaterial,
+  updateState,
+  GetCrafts,
+  clickCalWorkHour,
+})(CraftSchedule);
