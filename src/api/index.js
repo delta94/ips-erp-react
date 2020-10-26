@@ -140,3 +140,19 @@ export const PostRFQAPI = async params => {
 export const MatchRFQPriceAPI = async query => {
   return await axios.get(`/rfq_match?${query}`);
 };
+
+// spare part api
+export const PostSparePartAPI = async params => {
+  return await axios.post(`/spare_part`, params);
+};
+
+export const GetSparePartAPI = async query => {
+  if (query) {
+    return await axios.get(`/spare_part?store_type=${query}`);
+  }
+  return await axios.get(`/spare_part`);
+};
+
+export const PatchSparePartAPI = async (id, params) => {
+  return await axios.patch(`/spare_part/${id}`, params);
+};

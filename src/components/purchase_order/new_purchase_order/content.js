@@ -1,8 +1,8 @@
 import React from "react";
 import { connect, useDispatch } from "react-redux";
-import { Table, Input, InputNumber, Divider, Button, Row, Col, Form } from "antd";
+import { Table, Input, InputNumber, Divider, Row, Col, Form } from "antd";
 
-import { UpdateWorkOrderItem, addWorkOrderItem } from "../../../actions/po_actions";
+import { UpdateWorkOrderItem } from "../../../actions/po_actions";
 
 const EditableCell = ({ editable, dataIndex, title, inputType, record, index, children, onChange, ...restProps }) => {
   const dispatch = useDispatch();
@@ -53,10 +53,7 @@ const EditableCell = ({ editable, dataIndex, title, inputType, record, index, ch
 
 const PurchaseOrderContent = props => {
   // vars from reducer
-  const { work_order_items, work_order_created, total_price } = props;
-
-  // methods from action
-  const { addWorkOrderItem } = props;
+  const { work_order_items, total_price } = props;
 
   const columns = [
     {
@@ -133,9 +130,6 @@ const PurchaseOrderContent = props => {
         rowClassName="editable-row"
         footer={() => (
           <Row>
-            {/* <Col>
-              <Button onClick={addWorkOrderItem}>添加工号</Button>
-            </Col> */}
             <Col offset={22} span={2}>
               <div>总金额: {total_price}</div>
             </Col>
@@ -149,10 +143,9 @@ const PurchaseOrderContent = props => {
 const mapStateToProps = ({ POReducer }) => {
   return {
     work_order_items: POReducer.work_order_items,
-    work_order_created: POReducer.work_order_created,
     total_price: POReducer.total_price,
     editing: POReducer.editing,
   };
 };
 
-export default connect(mapStateToProps, { addWorkOrderItem, UpdateWorkOrderItem })(PurchaseOrderContent);
+export default connect(mapStateToProps, { UpdateWorkOrderItem })(PurchaseOrderContent);

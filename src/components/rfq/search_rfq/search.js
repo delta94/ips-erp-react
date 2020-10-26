@@ -2,9 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { Col, Row, Input, Select, Divider } from "antd";
 
-import { updateState, GetRFQs, GetRFQsPipeline } from "../../../actions/rfq_actions";
-
-import { GetItemsPipelineAPI } from "../../../api/";
+import { updateState, GetRFQsPipeline } from "../../../actions/rfq_actions";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -21,7 +19,7 @@ const PurchaseOrderHeader = props => {
   const { query_type } = props;
 
   // methods from actions
-  const { updateState, GetRFQs, GetRFQsPipeline } = props;
+  const { updateState, GetRFQsPipeline } = props;
 
   const onSearch = value => {
     let query;
@@ -91,4 +89,4 @@ const mapStateToProps = ({ RFQReducer }) => {
   };
 };
 
-export default connect(mapStateToProps, { updateState, GetRFQs, GetRFQsPipeline })(PurchaseOrderHeader);
+export default connect(mapStateToProps, { updateState, GetRFQsPipeline })(PurchaseOrderHeader);

@@ -2,7 +2,6 @@ import { batch } from "react-redux";
 import { push } from "connected-react-router";
 import { PostLoginAPI, ResetPwdAPI } from "../api";
 import { actions as headerActions } from "./header_actions";
-import { enqueueSnackbar } from "./notify_actions";
 import { ERROR, SUCCESS } from "../utils/constants";
 import action from "./common_actions";
 

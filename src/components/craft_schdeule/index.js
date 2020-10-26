@@ -54,7 +54,7 @@ const CraftSchedule = props => {
 
   useEffect(() => {
     GetMaterials();
-  }, []);
+  }, [GetMaterials]);
 
   const columns = [
     { title: "加工部门", dataIndex: "department" },

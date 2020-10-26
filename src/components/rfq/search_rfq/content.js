@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { Table, Divider, Col, Row } from "antd";
+import { Table, Divider } from "antd";
 
 const RFQContent = props => {
   const [items, setItems] = useState([]);
@@ -36,7 +36,7 @@ const RFQContent = props => {
     return () => {
       setItems([]);
     };
-  }, [rfqs, setItems]);
+  }, [rfqs, setItems, query_type]);
 
   // methods from actions
 

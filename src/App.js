@@ -18,6 +18,9 @@ import { Layout, Breadcrumb } from "antd";
 import RFQRoutes from "./routes/rfq_routes";
 import PORoutes from "./routes/po_routes";
 import PartNumSearch from "./components/PartNumSearch";
+import InputStore from "./components/spare_part_store/input_store";
+import ListStore from "./components/spare_part_store/list_store";
+import OutStore from "./components/spare_part_store/out_store";
 
 const { Content, Footer, Sider } = Layout;
 
@@ -61,6 +64,9 @@ function App(props) {
               {/* <Route exact path="/po_edit" component={PurchaseOrderEdit} /> */}
               <Route exact path="/engineer_process" component={EngineerProcess} />
               <Route exact path="/craft_schedule" component={CraftSchedule} />
+              <Route exact path="/spare-part-store/input" component={InputStore} />
+              <Route exact path="/spare-part-store/list" component={ListStore} />
+              <Route exact path="/spare-part-store/out" component={OutStore} />
               <Route exact path="/admin/customer" component={AdminCustomer} />
               <Route exact path="/admin/currency" component={AdminCurrency} />
               <Route exact path="/part_num_search" component={PartNumSearch} />

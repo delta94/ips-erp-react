@@ -145,12 +145,6 @@ const EditableTable = props => {
   const [csvData, setCsvData] = useState([]);
   const [printPartNum, setPrintPartNum] = useState(true);
 
-  useEffect(() => {
-    setCsvData(generateCSVData());
-    GetWorkOrderStates();
-    setEditable(work_order.po_num === "欠PO" || editable);
-  }, []);
-
   const generateCSVData = () => {
     let data = work_order.work_order_items.map(el => [
       el.sub_work_order_num,
@@ -162,6 +156,12 @@ const EditableTable = props => {
     data.unshift(["工号", "图号", "数量", "单位", "单价"]);
     return data;
   };
+
+  useEffect(() => {
+    setCsvData(generateCSVData());
+    GetWorkOrderStates();
+    setEditable(work_order.po_num === "欠PO" || editable);
+  }, [generateCSVData, GetWorkOrderStates, editable, work_order]);
 
   const handleDelete = sub_work_order_num => {
     const data = dataSource.filter(item => item.sub_work_order_num !== sub_work_order_num);

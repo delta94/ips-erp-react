@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Card, Row, Col, Input, Divider, Table, Button, Space, Form } from "antd";
-import { GetItemsPipelineAPI, PatchItemsAPI, UpdateDispatchAPI } from "../../../api";
+import { GetItemsPipelineAPI, UpdateDispatchAPI } from "../../../api";
 import { openNotification } from "../../../utils/commons";
 import { ERROR, INFO, SUCCESS } from "../../../utils/constants";
 

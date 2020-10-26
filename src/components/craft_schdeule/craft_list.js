@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import { Form, Input, Table, InputNumber, Button } from "antd";
+import { Form, Input, Table, InputNumber } from "antd";
 
 const { Column } = Table;
 
@@ -13,7 +13,7 @@ const FormExample = props => {
 
   useEffect(() => {
     form.setFieldsValue({ crafts: crafts });
-  }, [crafts]);
+  }, [crafts, form]);
 
   // const onFinish = values => {
   //   console.log("form values", values);

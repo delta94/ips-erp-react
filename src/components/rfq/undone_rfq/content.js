@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { connect, useDispatch } from "react-redux";
-import { Table, Input, InputNumber, Row, Col, Button, Checkbox, Descriptions, Form, message } from "antd";
+import { Table, Input, InputNumber, Row, Col, Button, Checkbox, Descriptions, Form } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import {
   updateRFQItems,
@@ -110,7 +110,7 @@ const RFQUndoneContent = props => {
       rfq_items.map(el => el.part_number),
       rfq_items
     );
-  }, []);
+  }, [MatchRFQPrice, rfq_items]);
 
   const mergedColumns = columns.map(col => {
     return {

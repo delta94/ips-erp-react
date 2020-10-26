@@ -13,7 +13,7 @@ const StatisticsPOHeader = props => {
 
   useEffect(() => {
     GetCustomers();
-  }, []);
+  }, [GetCustomers]);
 
   const onFinish = values => {
     console.log(values);

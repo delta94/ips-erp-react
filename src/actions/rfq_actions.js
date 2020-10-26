@@ -1,5 +1,5 @@
-import { GetCustomersAPI, GetCurrencyAPI, PostRFQAPI, PatchItemAPI, MatchRFQPriceAPI } from "../api";
-import action, { GetAPI, GetItems, GetItemsPipelinem, GetItemsPipeline } from "./common_actions";
+import { PostRFQAPI, PatchItemAPI, MatchRFQPriceAPI } from "../api";
+import action, { GetItems, GetItemsPipeline } from "./common_actions";
 import { ERROR, SUCCESS, INFO } from "../utils/constants";
 import { batch } from "react-redux";
 import { openNotification } from "../utils/commons";

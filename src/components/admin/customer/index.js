@@ -16,7 +16,6 @@ import {
   InputNumber,
 } from "antd";
 import { EditOutlined, SearchOutlined } from "@ant-design/icons";
-import moment from "moment";
 import { GetItemsAPI, InsertItemAPI, PatchItemAPI } from "../../../api";
 import { openNotification } from "../../../utils/commons";
 import { ERROR, SUCCESS } from "../../../utils/constants";

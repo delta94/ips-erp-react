@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Divider, Row, Col, InputNumber, Input, Checkbox } from "antd";
-import { updateObjectState, updateRFQ, updateRFQItems } from "../../../actions/rfq_actions";
+import { updateObjectState, updateRFQ } from "../../../actions/rfq_actions";
 
 export const RFQOption = props => {
   // vars from reducer
