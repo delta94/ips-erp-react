@@ -6,6 +6,7 @@ import { GetInternalWorkOrdersItemAPI, GetMaterialsAPI, GetCraftsAPI, PatchInter
 import { propComparator } from "../utils/commons";
 import { SUCCESS, ERROR } from "../utils/constants";
 import action, { GetAPI } from "./common_actions";
+import moment from "moment";
 
 // const
 const PREFIX = "CRAFT_SCHEDULE";
@@ -140,14 +141,17 @@ export const clickCalWorkHour = (workOrder, form) => {
       if (index === 0) {
         let start_time = new Date();
         element.start_time = new Date(start_time.setMinutes(start_time.getMinutes() + 30));
+        element.start_time_display = moment(element.start_time_display).format("YYYY-MM-DD h:mm:ss a");
       } else {
         let start_time = new Date(crafts[index - 1].end_time);
         element.start_time = new Date(start_time.setMinutes(start_time.getMinutes() + 30));
+        element.start_time_display = moment(element.start_time_display).format("YYYY-MM-DD h:mm:ss a");
       }
       let end_time = new Date(element.start_time).setMinutes(
         new Date(element.start_time).getMinutes() + element.estimateFractionMinute
       );
       element.end_time = new Date(end_time);
+      element.end_time_display = moment(element.end_time).format("YYYY-MM-DD h:mm:ss a");
     });
     dispatch(actions.updateState("crafts", crafts));
     form.setFieldsValue({ crafts: crafts });

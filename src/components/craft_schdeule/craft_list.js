@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import { Form, Input, Table, InputNumber } from "antd";
+import { Form, Input, Table, InputNumber, DatePicker } from "antd";
 
 const { Column } = Table;
 
@@ -15,18 +15,14 @@ const FormExample = props => {
     form.setFieldsValue({ crafts: crafts });
   }, [crafts, form]);
 
-  // const onFinish = values => {
-  //   console.log("form values", values);
-  // };
-
   return (
     // <Form form={form} onFinish={onFinish}>
     <Form.List name="crafts">
       {() => (
         <>
           <Table dataSource={form.getFieldValue("crafts")} pagination={false} rowKey="id" className="table-top-align">
-            <Column title="项数" render={(text, record, index) => <div>{index + 1}</div>} width="10%" />
-            <Column dataIndex="department" key="department" title="加工部门" width="15%" />
+            <Column title="项数" render={(text, record, index) => <div>{index + 1}</div>} width="5%" />
+            <Column dataIndex="department" key="department" title="加工部门" width="5%" />
             <Column
               dataIndex="description"
               key="description"
@@ -42,6 +38,7 @@ const FormExample = props => {
               dataIndex="qty"
               key="qty"
               title="加工数量"
+              width="5%"
               render={(text, record, index) => (
                 <Form.Item name={[index, "qty"]} fieldKey={[index, "qty"]} className="mg-bottom-0">
                   <InputNumber />
@@ -52,6 +49,7 @@ const FormExample = props => {
               dataIndex="unit"
               key="unit"
               title="单位"
+              width="5%"
               render={(text, record, index) => (
                 <Form.Item name={[index, "unit"]} fieldKey={[index, "unit"]} className="mg-bottom-0">
                   <Input />
@@ -62,6 +60,7 @@ const FormExample = props => {
               dataIndex="estimate"
               key="estimate"
               title="工时"
+              width="5%"
               render={(text, record, index) => (
                 <Form.Item name={[index, "estimate"]} fieldKey={[index, "estimate"]} className="mg-bottom-0">
                   <InputNumber />
@@ -72,9 +71,14 @@ const FormExample = props => {
               dataIndex="start_time"
               key="start_time"
               title="开始时间"
+              width="20%"
               render={(text, record, index) => (
-                <Form.Item name={[index, "start_time"]} fieldKey={[index, "start_time"]} className="mg-bottom-0">
-                  <Input />
+                <Form.Item
+                  name={[index, "start_time_display"]}
+                  fieldKey={[index, "start_time_display"]}
+                  className="mg-bottom-0"
+                >
+                  <Input readOnly />
                 </Form.Item>
               )}
             />
@@ -82,9 +86,14 @@ const FormExample = props => {
               dataIndex="end_time"
               key="end_time"
               title="结束时间"
+              width="20%"
               render={(text, record, index) => (
-                <Form.Item name={[index, "end_time"]} fieldKey={[index, "end_time"]} className="mg-bottom-0">
-                  <Input />
+                <Form.Item
+                  name={[index, "end_time_display"]}
+                  fieldKey={[index, "end_time_display"]}
+                  className="mg-bottom-0"
+                >
+                  <Input readOnly />
                 </Form.Item>
               )}
             />
