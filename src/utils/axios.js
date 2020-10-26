@@ -3,17 +3,17 @@ import axios from "axios";
 import store from "../store";
 import { updateState } from "../actions/header_actions";
 import { history } from "../store";
-// var url;
+var url;
 
-// if (process.env.REACT_APP_LOCATION === "ips") {
-//   url = "http://192.168.2.11:8080/api/v1";
-// } else if (process.env.REACT_APP_LOCATION === "wg") {
-//   url = `http://10.81.0.210:8080/api/v1`;
-// } else {
-//   url = `http://192.168.0.54:8080/api/v1`;
-// }
+if (process.env.REACT_APP_LOCATION === "ips") {
+  url = "http://192.168.2.11:8080/api/v1";
+} else if (process.env.REACT_APP_LOCATION === "wg") {
+  url = `http://10.81.0.210:8080/api/v1`;
+} else {
+  url = `http://192.168.0.54:8080/api/v1`;
+}
 
-const url = `http://${os.hostname()}:8080/api/v1`;
+// const url = `http://${os.hostname()}:8080/api/v1`;
 
 // if (process.env.NODE_ENV !== "production") {
 // url = `http://192.168.0.54:8080/api/v1`;
