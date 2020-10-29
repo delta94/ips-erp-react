@@ -132,25 +132,41 @@ export const clickCalWorkHour = (workOrder, form) => {
       parseISO(workOrder.internal_deadline.split("T")[0]),
       parseISO(workOrder.submit_date.split("T")[0])
     );
-    let totalTimeHour = 0;
-    totalTimeHour = crafts.reduce((acc, el) => acc + el.estimate * 60, totalTimeHour);
+    // console.log(crafts);
+    // let totalTimeHour = 0;
+    let totalHour = 0;
+    const roundDateHour = date => {
+      date.setHours(date.getHours() + Math.round(date.getMinutes() / 60));
+      date.setMinutes(0, 0, 0); // Resets also seconds and milliseconds
+      return date;
+    };
+    totalHour = crafts.reduce((acc, el) => acc + el.estimate, totalHour);
+    // crafts.forEach(el => {
+    //   console.log(el.estimate / totalHour);
+    // });
+    // totalTimeHour = crafts.reduce((acc, el) => acc + el.estimate * 60, totalTimeHour);
     crafts.forEach(el => {
-      el.estimateFractionMinute = ((el.estimate * 60) / totalTimeHour) * difInternalDeadlineSubmitDate - 60;
+      el.estimateFractionMinute = (el.estimate / totalHour) * difInternalDeadlineSubmitDate;
     });
     crafts.forEach((element, index) => {
       if (index === 0) {
-        let start_time = new Date();
-        element.start_time = new Date(start_time.setMinutes(start_time.getMinutes() + 30));
-        element.start_time_display = moment(element.start_time_display).format("YYYY-MM-DD h:mm:ss a");
+        element.start_time = roundDateHour(new Date());
+        console.log(element.start_time);
+        // element.start_time = new Date(start_time.setMinutes(start_time.getMinutes() + 30));
+        element.start_time_display = moment(element.start_time).format("YYYY-MM-DD h:mm:ss a");
       } else {
-        let start_time = new Date(crafts[index - 1].end_time);
-        element.start_time = new Date(start_time.setMinutes(start_time.getMinutes() + 30));
-        element.start_time_display = moment(element.start_time_display).format("YYYY-MM-DD h:mm:ss a");
+        console.log(crafts[index - 1].end_time);
+        element.start_time = new Date(crafts[index - 1].end_time);
+        // element.start_time = new Date(start_time.setMinutes(start_time.getMinutes() + 30));
+        element.start_time_display = moment(element.start_time).format("YYYY-MM-DD h:mm:ss a");
       }
-      let end_time = new Date(element.start_time).setMinutes(
-        new Date(element.start_time).getMinutes() + element.estimateFractionMinute
+      // let end_time = new Date(element.start_time).setMinutes(
+      //   new Date(element.start_time).getMinutes() + element.estimateFractionMinute
+      // );
+      element.end_time = new Date(element.start_time);
+      element.end_time = new Date(
+        element.end_time.setMinutes(element.start_time.getMinutes() + element.estimateFractionMinute)
       );
-      element.end_time = new Date(end_time);
       element.end_time_display = moment(element.end_time).format("YYYY-MM-DD h:mm:ss a");
     });
     dispatch(actions.updateState("crafts", crafts));

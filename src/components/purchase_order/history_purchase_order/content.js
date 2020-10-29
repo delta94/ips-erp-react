@@ -161,7 +161,7 @@ const EditableTable = props => {
     setCsvData(generateCSVData());
     GetWorkOrderStates();
     setEditable(work_order.po_num === "欠PO" || editable);
-  }, [generateCSVData, GetWorkOrderStates, editable, work_order]);
+  }, []);
 
   const handleDelete = sub_work_order_num => {
     const data = dataSource.filter(item => item.sub_work_order_num !== sub_work_order_num);
