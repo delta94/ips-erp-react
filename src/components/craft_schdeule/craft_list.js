@@ -5,13 +5,19 @@ import { Form, Input, Table, InputNumber } from "antd";
 const { Column } = Table;
 
 const FormExample = props => {
-  const { form } = props;
+  const { form, workOrder } = props;
 
   const { crafts } = props;
 
   useEffect(() => {
+    const qty = workOrder.work_order_items.qty;
+    const unit = workOrder.work_order_items.unit;
+    crafts.forEach(element => {
+      element.qty = qty;
+      element.unit = unit;
+    });
     form.setFieldsValue({ crafts: crafts });
-  }, [crafts, form]);
+  }, [crafts, form, workOrder]);
 
   return (
     <Form form={form}>

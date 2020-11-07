@@ -156,3 +156,11 @@ export const GetSparePartAPI = async query => {
 export const PatchSparePartAPI = async (id, params) => {
   return await axios.patch(`/spare_part/${id}`, params);
 };
+
+export const GetSpareNumAPI = async part_num => {
+  return await axios.get(`/spare_part/num/${part_num}`);
+};
+// work order api
+export const ScheduleWorkOrderAPI = async params => {
+  return await axios.post(`/schedule_work_order`, params);
+};

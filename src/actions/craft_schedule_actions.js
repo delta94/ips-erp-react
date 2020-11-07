@@ -1,12 +1,12 @@
 import { batch } from "react-redux";
 import differenceInMinutes from "date-fns/differenceInMinutes";
 import parseISO from "date-fns/parseISO";
-import { enqueueSnackbar } from "./notify_actions";
-import { GetInternalWorkOrdersItemAPI, GetMaterialsAPI, GetCraftsAPI, PatchInternalWorkOrderItemAPI } from "../api";
+import { GetInternalWorkOrdersItemAPI, GetMaterialsAPI, GetCraftsAPI, ScheduleWorkOrderAPI } from "../api";
 import { propComparator } from "../utils/commons";
 import { SUCCESS, ERROR } from "../utils/constants";
 import action, { GetAPI } from "./common_actions";
 import moment from "moment";
+import { openNotification } from "../utils/commons";
 
 // const
 const PREFIX = "CRAFT_SCHEDULE";
@@ -112,7 +112,7 @@ export const GetCrafts = category => {
       });
       dispatch(updateState("crafts", data));
     } catch (err) {
-      dispatch(enqueueSnackbar(err.message, ERROR));
+      openNotification(ERROR, err);
     }
   };
 };
@@ -132,8 +132,7 @@ export const clickCalWorkHour = (workOrder, form) => {
       parseISO(workOrder.internal_deadline.split("T")[0]),
       parseISO(workOrder.submit_date.split("T")[0])
     );
-    // console.log(crafts);
-    // let totalTimeHour = 0;
+
     let totalHour = 0;
     const roundDateHour = date => {
       date.setHours(date.getHours() + Math.round(date.getMinutes() / 60));
@@ -141,28 +140,17 @@ export const clickCalWorkHour = (workOrder, form) => {
       return date;
     };
     totalHour = crafts.reduce((acc, el) => acc + el.estimate, totalHour);
-    // crafts.forEach(el => {
-    //   console.log(el.estimate / totalHour);
-    // });
-    // totalTimeHour = crafts.reduce((acc, el) => acc + el.estimate * 60, totalTimeHour);
     crafts.forEach(el => {
       el.estimateFractionMinute = (el.estimate / totalHour) * difInternalDeadlineSubmitDate;
     });
     crafts.forEach((element, index) => {
       if (index === 0) {
         element.start_time = roundDateHour(new Date());
-        console.log(element.start_time);
-        // element.start_time = new Date(start_time.setMinutes(start_time.getMinutes() + 30));
         element.start_time_display = moment(element.start_time).format("YYYY-MM-DD h:mm:ss a");
       } else {
-        console.log(crafts[index - 1].end_time);
         element.start_time = new Date(crafts[index - 1].end_time);
-        // element.start_time = new Date(start_time.setMinutes(start_time.getMinutes() + 30));
         element.start_time_display = moment(element.start_time).format("YYYY-MM-DD h:mm:ss a");
       }
-      // let end_time = new Date(element.start_time).setMinutes(
-      //   new Date(element.start_time).getMinutes() + element.estimateFractionMinute
-      // );
       element.end_time = new Date(element.start_time);
       element.end_time = new Date(
         element.end_time.setMinutes(element.start_time.getMinutes() + element.estimateFractionMinute)
@@ -174,9 +162,9 @@ export const clickCalWorkHour = (workOrder, form) => {
   };
 };
 
-export const clickSubmitCraftSchedule = () => {
+export const clickSubmitCraftSchedule = (workOrder, resetUseState) => {
   return async (dispatch, getState) => {
-    const { data, crafts, selected_material, dimension } = getState().CraftScheduleReducer;
+    const { crafts, selected_material, dimension, qty } = getState().CraftScheduleReducer;
     const { username } = getState().HeaderReducer;
     crafts.forEach(element => {
       element.qty = parseInt(element.qty);
@@ -185,19 +173,21 @@ export const clickSubmitCraftSchedule = () => {
     });
     try {
       const params = {
-        state: "下发加工",
+        id: workOrder._id,
+        index: workOrder.work_order_items.index,
         craft_schedule_by: username,
         attach_crafts: crafts,
-        selected_material: { ...selected_material, ...dimension },
+        selected_material: { ...selected_material, dimension, qty },
       };
-      const res = await PatchInternalWorkOrderItemAPI(data.item_id, params);
-      console.log(res);
+      const res = await ScheduleWorkOrderAPI(params);
+      openNotification(SUCCESS, "下发加工成功! ");
       batch(() => {
         dispatch(actions.resetState());
-        dispatch(enqueueSnackbar("下发加工成功! ", SUCCESS));
+        dispatch(GetMaterials());
       });
+      resetUseState();
     } catch (err) {
-      dispatch(enqueueSnackbar(err.message, ERROR));
+      openNotification(ERROR, err);
     }
   };
 };

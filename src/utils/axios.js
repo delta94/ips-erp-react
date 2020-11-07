@@ -1,4 +1,3 @@
-import os from "os";
 import axios from "axios";
 import store from "../store";
 import { updateState } from "../actions/header_actions";
@@ -10,7 +9,7 @@ if (process.env.REACT_APP_LOCATION === "ips") {
 } else if (process.env.REACT_APP_LOCATION === "wg") {
   url = `http://10.81.0.210:8080/api/v1`;
 } else {
-  url = `http://192.168.0.54:8080/api/v1`;
+  url = `http://192.168.78.128:8080/api/v1`;
 }
 
 // const url = `http://${os.hostname()}:8080/api/v1`;

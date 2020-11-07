@@ -1,29 +1,48 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Card, Row, Col, Input, Descriptions, Select, Form, Button, InputNumber, Table } from "antd";
-import { GetItemsPipelineAPI } from "../../api";
+import { GetItemsPipelineAPI, GetSpareNumAPI } from "../../api";
 import {
   GetMaterials,
   updateSelectMaterial,
   updateState,
   GetCrafts,
   clickCalWorkHour,
+  clickSubmitCraftSchedule,
 } from "../../actions/craft_schedule_actions";
 import { openNotification } from "../../utils/commons";
 import { ERROR, INFO } from "../../utils/constants";
 import CraftList from "./craft_list";
+import PrintForm from "./print_form";
 
 const CraftSchedule = props => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [sorted, setSorted] = useState(false);
   const [search, setSearch] = useState("");
+  const [sparePartNum, setSparePartNum] = useState("");
   const [workOrder, setWorkOrder] = useState({ work_order_items: { qty: "" }, internal_deadline: "" });
-  const { GetMaterials, updateSelectMaterial, updateState, GetCrafts, clickCalWorkHour } = props;
+  const {
+    GetMaterials,
+    updateSelectMaterial,
+    updateState,
+    GetCrafts,
+    clickCalWorkHour,
+    clickSubmitCraftSchedule,
+  } = props;
 
   const { materials, selected_material, dimension, qty, crafts } = props;
 
   const [form] = Form.useForm();
+
+  const resetUseState = () => {
+    setSelectedRowKeys([]);
+    setSelectedRows([]);
+    setSorted(false);
+    setSearch("");
+    setWorkOrder({ work_order_items: { qty: "" }, internal_deadline: "" });
+    form.resetFields();
+  };
 
   const GetWorkOrderItem = sub_work_order_num => {
     const query = JSON.stringify([
@@ -45,6 +64,10 @@ const CraftSchedule = props => {
       .then(res => {
         if (res.data !== null) {
           setWorkOrder(res.data[0]);
+          const partNumber = res.data[0].work_order_items.part_number;
+          GetSpareNumAPI(partNumber)
+            .then(res => setSparePartNum(res.data))
+            .catch(err => openNotification(ERROR, err));
         } else {
           openNotification(INFO, "工号不存在");
         }
@@ -90,7 +113,7 @@ const CraftSchedule = props => {
             <Descriptions.Item label="厂内交期">{workOrder.internal_deadline.split("T")[0]}</Descriptions.Item>
             <Descriptions.Item label="图号">{workOrder.work_order_items.part_number}</Descriptions.Item>
             <Descriptions.Item label="工程人员">{workOrder.work_order_items.process_by}</Descriptions.Item>
-            <Descriptions.Item label="库存数量">20</Descriptions.Item>
+            <Descriptions.Item label="库存数量">{sparePartNum}</Descriptions.Item>
             <Descriptions.Item label="过往加工记录"></Descriptions.Item>
           </Descriptions>
         </Col>
@@ -170,22 +193,31 @@ const CraftSchedule = props => {
                 </Button>
               </Col>
               <Col>
-                <Button type="primary">保存</Button>
+                <Button type="primary" onClick={() => clickSubmitCraftSchedule(workOrder, resetUseState)}>
+                  保存
+                </Button>
               </Col>
               <Col>
-                <Button type="primary">打印</Button>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={24}>
-                {sorted ? (
-                  <CraftList form={form} />
-                ) : (
-                  <Table rowKey="id" columns={columns} rowSelection={rowSelection} dataSource={crafts} />
-                )}
+                {/* <Button type="primary">打印</Button> */}
+                <PrintForm workOrder={workOrder} />
               </Col>
             </Row>
           </Form>
+          <Row>
+            <Col span={24}>
+              {sorted ? (
+                <CraftList form={form} workOrder={workOrder} />
+              ) : (
+                <Table
+                  rowKey="id"
+                  columns={columns}
+                  rowSelection={rowSelection}
+                  dataSource={crafts}
+                  pagination={false}
+                />
+              )}
+            </Col>
+          </Row>
         </Col>
       </Row>
     </Card>
@@ -208,4 +240,5 @@ export default connect(mapStateToProps, {
   updateState,
   GetCrafts,
   clickCalWorkHour,
+  clickSubmitCraftSchedule,
 })(CraftSchedule);

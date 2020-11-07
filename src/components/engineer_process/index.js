@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { connect } from "react-redux";
-import { Card, Input, Table, Row, Col, Divider, Tooltip, Button, Alert } from "antd";
+import { Card, Input, Table, Row, Col, Divider, Tooltip, Button } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
 import { GetItemsPipelineAPI, PatchItemsAPI } from "../../api";
 import { openNotification } from "../../utils/commons";
@@ -14,7 +14,6 @@ const EngineerProcess = props => {
   const [unprocess, setUnprocess] = useState([]);
   const [processing, setProcessing] = useState([]);
   const [search, setSearch] = useState();
-  const [warning, setWarning] = useState(false);
 
   const GetSubWorkOrderNum = (match, method) => {
     const query = JSON.stringify([
@@ -59,30 +58,25 @@ const EngineerProcess = props => {
   };
 
   const FinishSubWorkOrderNum = (data, username, remark) => {
-    if (data.film === undefined || data.film === null || data.film.length === 0) {
-      setWarning(true);
-    } else {
-      setWarning(false);
-      PatchItemsAPI(
-        "work_orders",
-        JSON.stringify({ "work_order_items.sub_work_order_num": data.sub_work_order_num.trim() }),
-        {
-          "work_order_items.$.remark": remark,
-          "work_order_items.$.film": data.film,
-          "work_order_items.$.process_by": username,
-        }
-      )
-        .then(res => {
-          openNotification(SUCCESS, res);
-          Init();
-        })
-        .catch(err => openNotification(ERROR, err))
-        .finally(() => setSearch(""));
-    }
+    PatchItemsAPI(
+      "work_orders",
+      JSON.stringify({ "work_order_items.sub_work_order_num": data.sub_work_order_num.trim() }),
+      {
+        "work_order_items.$.remark": remark,
+        "work_order_items.$.film": data.film,
+        "work_order_items.$.process_by": username,
+        "work_order_items.$.process_date": new Date().toISOString(),
+      }
+    )
+      .then(res => {
+        openNotification(SUCCESS, res);
+        Init();
+      })
+      .catch(err => openNotification(ERROR, err))
+      .finally(() => setSearch(""));
   };
 
   const ProcessSubWorkOrderNum = (data, remark) => {
-    setWarning(false);
     PatchItemsAPI("work_orders", JSON.stringify({ "work_order_items.sub_work_order_num": data.trim() }), {
       "work_order_items.$.remark": remark,
     })
@@ -94,14 +88,14 @@ const EngineerProcess = props => {
       .finally(() => setSearch(""));
   };
 
-  const Init = () => {
+  const Init = useCallback(() => {
     GetSubWorkOrderNum({ "work_order_items.remark": { $nin: ["取消工号", "正在处理", "完成处理"] } }, setUnprocess);
     GetSubWorkOrderNum({ "work_order_items.remark": { $eq: "正在处理" } }, setProcessing);
-  };
+  }, [setProcessing, setUnprocess]);
 
   useEffect(() => {
     Init();
-  }, []);
+  }, [Init]);
 
   const columns = [
     { title: "下单日期", dataIndex: "submit_date" },
@@ -167,7 +161,6 @@ const EngineerProcess = props => {
           ></Input.Search>
         </Col>
         <Col span={24}>
-          {warning && <Alert message="胶片号不能为空" type="warning" showIcon closable />}
           <Divider orientation="left">正在处理</Divider>
           <Table rowKey="sub_work_order_num" pagination={false} columns={processingColumns} dataSource={processing} />
         </Col>
