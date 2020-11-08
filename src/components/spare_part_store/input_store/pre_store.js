@@ -15,7 +15,13 @@ const FormExample = () => {
 
   const GetSparePart = useCallback(() => {
     GetSparePartAPI("pre_store")
-      .then(res => form.setFieldsValue({ part: res.data }))
+      .then(res => {
+        if (res.data === null) {
+          form.setFieldsValue({ part: [] });
+        } else {
+          form.setFieldsValue({ part: res.data });
+        }
+      })
       .catch(err => openNotification(ERROR, err));
   }, [form]);
 
